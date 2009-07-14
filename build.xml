@@ -6,6 +6,12 @@
     </target>
 
     <target name="zf-import">
+        <delete>
+            <fileset dir="${srcRoot}library/Zend/">
+                <include name="**.php" />
+                <include name="**/*.php" />
+            </fileset>
+        </delete>
         <copy todir="${srcRoot}library/Zend/">
             <fileset dir="${zendRoot}/library/Zend/">
                 <include name="Application.php" />
