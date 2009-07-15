@@ -14,6 +14,11 @@
 
 class InstallationTest extends \PHPUnit_Framework_TestCase
 {
+    public function testVersionOfPhpIs5Dot3OrLater()
+    {
+        $this->assertTrue(version_compare(PHP_VERSION, '5.3', '>='));
+    }
+
     public function testZendFrameworkClassesAreAutoloaded()
     {
         $form = new \Zend_Form();
@@ -28,6 +33,27 @@ class InstallationTest extends \PHPUnit_Framework_TestCase
 
     public function testNakedPHpClassesAreAutoloaded()
     {
-        $reflector = null;
+        $reflector = new \NakedPhp\Reflect\Reflector();
+        $this->assertTrue($reflector instanceof \NakedPhp\Reflect\Reflector);
+    }
+
+    /**
+     * @dataProvider requiredExtensions
+     * @param string $extensionName the name of the extension for which to test
+     */
+    public function testExtensionIsLoaded($extensionName)
+    {
+        $this->assertTrue(extension_loaded($extensionName));
+    }
+
+    public static function requiredExtensions()
+    {
+        return array(
+            array('pdo'),
+            array('pdo_sqlite'),
+            array('Reflection'),
+            array('session'),
+            array('SPL')
+        );
     }
 }
