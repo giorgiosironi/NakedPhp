@@ -17,4 +17,16 @@ namespace NakedPhp\Reflect;
 
 class Reflector
 {
+    public function listFields($className)
+    {
+        $reflector = new \ReflectionClass($className);
+        $fields = array();
+        foreach ($reflector->getMethods() as $method) {
+            if (preg_match('/get[A-Za-z0-9]+/', $method->getName())) {
+                $name = lcfirst(str_replace('get', '', $method->getName()));
+                $fields[] = $name;
+            }
+        }
+        return $fields;
+    }
 }

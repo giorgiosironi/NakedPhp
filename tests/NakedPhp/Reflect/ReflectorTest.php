@@ -22,7 +22,17 @@ class ReflectorTest extends \PHPUnit_Framework_TestCase
         $reflector = new Reflector();
     }
 
-    public function _testReflectorListFieldsOfAClass()
+    public function testReflectorListFieldsOfAEntityObject()
     {
+        $reflector = new Reflector();
+        $fields = $reflector->listFields('NakedPhp\Reflect\Stubs\User');
+        $this->assertEquals(array('name', 'status'), $fields);
+    }
+
+    public function testReflectorAlsoWorksWithBackslashPrependedNames()
+    {
+        $reflector = new Reflector();
+        $fields = $reflector->listFields('\NakedPhp\Reflect\Stubs\User');
+        $this->assertEquals(array('name', 'status'), $fields);
     }
 }
