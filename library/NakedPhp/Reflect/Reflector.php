@@ -10,6 +10,11 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_
+ * @package    NakedPhp_Reflect
  */
 
+namespace NakedPhp\Reflect;
+
+class Reflector
+{
+}
