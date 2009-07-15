@@ -13,20 +13,24 @@
  * @package    NakedPhp_Reflect
  */
 
-namespace NakedPhp\Reflect;
+namespace NakedPhp\Reflect\Stubs;
 
-class Reflector
+class User
 {
-    public function listFields($className)
+    private $_name;
+
+    public function getName()
     {
-        $reflector = new \ReflectionClass($className);
-        $fields = array();
-        foreach ($reflector->getMethods() as $method) {
-            if (preg_match('/get[A-Za-z0-9]+/', $method->getName())) {
-                $name = str_replace('get', '', $method->getName());
-                $fields[] = $name;
-            }
-        }
-        return $fields;
+        return $this->_name;
+    }
+
+    public function setName($name)
+    {
+        $this->_name = $name;
+    }
+
+    public function getStatus()
+    {
+        return 'guest';
     }
 }

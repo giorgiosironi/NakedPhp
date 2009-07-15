@@ -26,13 +26,13 @@ class ReflectorTest extends \PHPUnit_Framework_TestCase
     {
         $reflector = new Reflector();
         $fields = $reflector->listFields('NakedPhp\Reflect\Stubs\User');
-        $this->assertEquals(array('name', 'status'), $fields);
+        $this->assertEquals(array('Name', 'Status'), $fields);
     }
 
     public function testReflectorAlsoWorksWithBackslashPrependedNames()
     {
         $reflector = new Reflector();
         $fields = $reflector->listFields('\NakedPhp\Reflect\Stubs\User');
-        $this->assertEquals(array('name', 'status'), $fields);
+        $this->assertEquals(array('Name', 'Status'), $fields);
     }
 }
