@@ -14,25 +14,45 @@
  */
 
 namespace NakedPhp\Reflect;
+use NakedPhp\Metadata\NakedClass;
 
 class ReflectorTest extends \PHPUnit_Framework_TestCase
 {
-    public function testReflectorCanBeCreatedWithoutParameters()
+    private $_reflector;
+    private $_result;
+
+    public function setUp()
+    {
+        $this->_reflector = new Reflector();
+        $this->_result = $this->_reflector->analyze('NakedPhp\Reflect\Stubs\User');
+    }
+
+    public function testCanBeCreatedWithoutParameters()
     {
         $reflector = new Reflector();
     }
 
-    public function testReflectorListFieldsOfAEntityObject()
+    public function testCreatesAClassMetadataObject()
     {
-        $reflector = new Reflector();
-        $fields = $reflector->listFields('NakedPhp\Reflect\Stubs\User');
-        $this->assertEquals(array('Name', 'Status'), $fields);
+        $this->assertTrue($this->_result instanceof NakedClass);
     }
 
-    public function testReflectorAlsoWorksWithBackslashPrependedNames()
+    public function testListBusinessMethodsOfAnEntityObject()
     {
-        $reflector = new Reflector();
-        $fields = $reflector->listFields('\NakedPhp\Reflect\Stubs\User');
-        $this->assertEquals(array('Name', 'Status'), $fields);
+        $methods = $this->_result->getMethods();
+        $this->assertEquals('sendMessage', (string) $methods[0]);
+        $this->assertEquals(1, count($methods));
+    }
+
+    public function testListFieldsOfAnEntityObjectThatHaveSetterAndGetter()
+    {
+        $fields = $this->_result->getFields();
+        $this->assertEquals('name', (string) $fields[0]);
+    }
+
+    public function testListFieldsOfAnEntityObjectThatHaveGetter()
+    {
+        $fields = $this->_result->getFields();
+        $this->assertEquals('status', (string) $fields[1]);
     }
 }

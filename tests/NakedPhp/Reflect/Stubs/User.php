@@ -33,4 +33,9 @@ class User
     {
         return 'guest';
     }
+
+    public function sendMessage($title, $text)
+    {
+        // don't do anything
+    }
 }
