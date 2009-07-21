@@ -23,13 +23,14 @@ class ReflectorTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_reflector = new Reflector();
+        // TRICKY: activate autoload
+        new DocblockParser();
+        $parserMock = $this->getMock('NakedPhp\Reflect\DocblockParser', array('parse'), array(), '', false, false, false);
+        $parserMock->expects($this->any())
+                   ->method('parse')
+                   ->will($this->returnValue(array()));
+        $this->_reflector = new Reflector($parserMock);
         $this->_result = $this->_reflector->analyze('NakedPhp\Reflect\Stubs\User');
-    }
-
-    public function testCanBeCreatedWithoutParameters()
-    {
-        $reflector = new Reflector();
     }
 
     public function testCreatesAClassMetadataObject()
@@ -41,7 +42,7 @@ class ReflectorTest extends \PHPUnit_Framework_TestCase
     {
         $methods = $this->_result->getMethods();
         $this->assertEquals('sendMessage', (string) $methods[0]);
-        $this->assertEquals(1, count($methods));
+        $this->assertEquals(2, count($methods));
     }
 
     public function testListFieldsOfAnEntityObjectThatHaveSetterAndGetter()

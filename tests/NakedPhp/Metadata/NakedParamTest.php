@@ -15,34 +15,18 @@
 
 namespace NakedPhp\Metadata;
 
-/**
- * Wraps properties about a domain class like fields, methods and metadata.
- */
-final class NakedClass
+class NakedParamTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var array names of properties
-     */
-    private $_fields;
-
-    /**
-     * @var array available methods
-     */
-    private $_methods;
-
-    public function __construct(array $fields = array(), array $methods = array())
+    public function testRetainsTypeAndName()
     {
-        $this->_fields = $fields;
-        $this->_methods = $methods;
+        $param = new NakedParam('array', 'info');
+        $this->assertEquals('array', (string) $param->getType());
+        $this->assertEquals('info', $param->getName());
     }
 
-    public function getFields()
+    public function testIsNotDefaultByDefault()
     {
-        return $this->_fields;
-    }
-
-    public function getMethods()
-    {
-        return $this->_methods;
+        $param = new NakedParam('array', 'info');
+        $this->assertFalse($param->getDefault());
     }
 }

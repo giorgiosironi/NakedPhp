@@ -16,33 +16,44 @@
 namespace NakedPhp\Metadata;
 
 /**
- * Wraps properties about a domain class like fields, methods and metadata.
+ * Wraps info about a method or constructor param.
  */
-final class NakedClass
+final class NakedParam
 {
     /**
-     * @var array names of properties
+     * @var string
      */
-    private $_fields;
+    private $_type;
 
     /**
-     * @var array available methods
+     * @var string
      */
-    private $_methods;
+    private $_name;
 
-    public function __construct(array $fields = array(), array $methods = array())
+    /**
+     * @var boolean  whether the parameter has a default or has to be specified
+     */
+    private $_default;
+
+    public function __construct($type, $name, $default = false)
     {
-        $this->_fields = $fields;
-        $this->_methods = $methods;
+        $this->_type = $type;
+        $this->_name = $name;
+        $this->_default = $default;
     }
 
-    public function getFields()
+    public function getType()
     {
-        return $this->_fields;
+        return $this->_type;
     }
 
-    public function getMethods()
+    public function getName()
     {
-        return $this->_methods;
+        return $this->_name;
+    }
+
+    public function getDefault()
+    {
+        return $this->_default;
     }
 }

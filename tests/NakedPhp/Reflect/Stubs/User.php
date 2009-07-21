@@ -34,7 +34,19 @@ class User
         return 'guest';
     }
 
+    /**
+     * @param string $title     subject of message
+     * @param string $text      html text
+     */
     public function sendMessage($title, $text)
+    {
+        // don't do anything
+    }
+
+    /**
+     * @return boolean
+     */
+    public function disactivate()
     {
         // don't do anything
     }

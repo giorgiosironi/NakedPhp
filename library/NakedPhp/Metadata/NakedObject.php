@@ -19,7 +19,7 @@ namespace NakedPhp\Metadata;
  * Decorator for a domain object.
  * Wraps the object itself and a list of its fields, methods and metadata.
  */
-class NakedObject
+final class NakedObject
 {
     /**
      * POPO to wrap.

@@ -33,8 +33,8 @@ class InstallationTest extends \PHPUnit_Framework_TestCase
 
     public function testNakedPHpClassesAreAutoloaded()
     {
-        $reflector = new \NakedPhp\Reflect\Reflector();
-        $this->assertTrue($reflector instanceof \NakedPhp\Reflect\Reflector);
+        $reflector = new \NakedPhp\Reflect\DocblockParser();
+        $this->assertTrue($reflector instanceof \NakedPhp\Reflect\DocblockParser);
     }
 
     /**
