@@ -23,26 +23,26 @@
                 <exclude name="Auth/Adapter/DbTable.php" />
                 <include name="Cache.php" />
                 <include name="Cache/**" />
-                <include name="CodeGenerator " />
+                <include name="CodeGenerator/**" />
                 <include name="Captcha.php" />
                 <include name="Captcha/**" />
                 <include name="Config.php" />
                 <include name="Config/**" />
-                <include name="Controller" />
+                <include name="Controller/**" />
                 <include name="Date.php" />
                 <include name="Date/**" />
                 <include name="Dojo.php" />
                 <include name="Dojo/**" />
-                <include name="Dom" />
-                <include name="Exception.php " />
+                <include name="Dom/**" />
+                <include name="Exception.php" />
                 <include name="Feed.php" />
                 <include name="Feed/**" />
-                <include name="File" />
+                <include name="File/**" />
                 <include name="Filter.php" />
                 <include name="Filter/**" />
                 <include name="Form.php" />
                 <include name="Form/**" />
-                <include name="Http" />
+                <include name="Http/**" />
                 <include name="Json.php" />
                 <include name="Json/**" />
                 <exclude name="Json/Server**" />
@@ -52,7 +52,7 @@
                 <include name="Loader/**" />
                 <include name="Locale.php" />
                 <include name="Locale/**.php" />
-                <include name="Locale/Math" />
+                <include name="Locale/Math/**" />
                 <include name="Locale/Data/**.php" />
                 <include name="Locale/Data/en**xml" />
                 <include name="Locale/Data/root.xml" />
@@ -62,8 +62,8 @@
                 <include name="Session.php" />
                 <include name="Session/**" />
                 <exclude name="Session/SaveHandler/DbTable.php" />
-                <include name="Test" />
-                <include name="Tool" />
+                <include name="Test/**" />
+                <include name="Tool/**" />
                 <include name="Translate.php" />
                 <include name="Translate**" />
                 <include name="Uri.php" />
@@ -73,7 +73,7 @@
                 <include name="Version.php" />
                 <include name="View.php" />
                 <include name="View/**" />
-                <include name="Wildfire " />
+                <include name="Wildfire/**" />
             </fileset>
         </copy>
     </target>
