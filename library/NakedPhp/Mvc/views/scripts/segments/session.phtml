@@ -1,0 +1,6 @@
+<?php
+$labels = array();
+foreach ($this->session as $object) {
+    $labels[] = $this->displayObject($object);
+}
+echo implode('; ', $labels);

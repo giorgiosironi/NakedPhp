@@ -17,15 +17,28 @@ namespace NakedPhp\Mvc;
 
 class Controller extends \Zend_Controller_Action
 {
+    private $_session;
+
+    public final function preDispatch()
+    {
+        //\Zend_Session::start();
+        $this->_session = new \Zend_Session_Namespace('NakedPhp');
+        $name = 'name' . rand();
+        $this->_session->$name = uniqid("Prova");
+        $this->view->session = $this->_session;
+    }
+
     public final function postDispatch()
     {
         $paths = $this->view->getScriptPaths();
         $originalPath = array_shift($paths);
         $this->view->setScriptPath($paths);
         $this->view->addScriptPath(__DIR__ . '/views/scripts/');
+        $this->view->addHelperPath(realpath(__DIR__) . '/View/Helper', 'NakedPhp_Mvc_View_Helper_');
 
-            $this->render(null, null, true);
         if (!$this->_helper->ViewRenderer->getNoRender()) {
+            $this->render(null, null, true);
+            $this->renderScript('segments/session.phtml', 'nakedphp_session');
         }
     }
 
