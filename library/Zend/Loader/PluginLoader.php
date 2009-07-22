@@ -125,6 +125,10 @@ class Zend_Loader_PluginLoader implements Zend_Loader_PluginLoader_Interface
     	if($prefix == "") {
     		return $prefix;
     	}
+        $last = strlen($prefix) - 1;
+        if ($prefix{$last} == '\\') {
+            return $prefix;
+        }
         return rtrim($prefix, '_') . '_';
     }
 

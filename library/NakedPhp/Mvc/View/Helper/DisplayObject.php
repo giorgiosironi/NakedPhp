@@ -13,10 +13,16 @@
  * @package    NakedPhp_Mvc
  */
 
-class NakedPhp_Mvc_View_Helper_DisplayObject extends \Zend_View_Helper_Abstract
+namespace NakedPhp\Mvc\View\Helper;
+
+class DisplayObject extends \Zend_View_Helper_Abstract
 {
-    public function displayObject(/*NakedObject*/ $no)
+    public function displayObject(/*NakedObject*/ $no = null)
     {
+        if (count(func_get_args()) == 0) {
+            return $this;
+        }
+
         return (string) $no;
     }
 }

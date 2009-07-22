@@ -34,7 +34,7 @@ class Controller extends \Zend_Controller_Action
         $originalPath = array_shift($paths);
         $this->view->setScriptPath($paths);
         $this->view->addScriptPath(__DIR__ . '/views/scripts/');
-        $this->view->addHelperPath(realpath(__DIR__) . '/View/Helper', 'NakedPhp_Mvc_View_Helper_');
+        $this->view->addHelperPath(realpath(__DIR__) . '/View/Helper', 'NakedPhp\\Mvc\\View\\Helper\\');
 
         if (!$this->_helper->ViewRenderer->getNoRender()) {
             $this->render(null, null, true);
