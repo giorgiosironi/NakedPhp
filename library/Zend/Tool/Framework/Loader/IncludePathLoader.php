@@ -90,6 +90,9 @@ class Zend_Tool_Framework_Loader_IncludePathLoader extends Zend_Tool_Framework_L
             
             // iterate over the accepted items
             foreach ($iterator as $item) {
+                if ($item->isDir()) {
+                    continue;
+                }
                 
                 // ensure that the same named file from separate include_paths is not loaded
                 $relativeItem = preg_replace('#^' . preg_quote($realIncludePath . DIRECTORY_SEPARATOR, '#') . '#', '', $item->getRealPath());
