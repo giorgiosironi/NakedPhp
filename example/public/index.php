@@ -10,9 +10,13 @@ defined('APPLICATION_ENV')
 
 // Ensure library/ is on include_path
 set_include_path(implode(PATH_SEPARATOR, array(
+    realpath(APPLICATION_PATH . '/../../library'),
     realpath(APPLICATION_PATH . '/../library'),
     get_include_path(),
 )));
+require_once 'Doctrine/Common/ClassLoader.php';
+$doctrineAutoloader = new \Doctrine\Common\ClassLoader();
+$doctrineAutoloader->setCheckFileExists(true);
 
 /** Zend_Application */
 require_once 'Zend/Application.php';  

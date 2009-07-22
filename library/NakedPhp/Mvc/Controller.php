@@ -15,10 +15,23 @@
 
 namespace NakedPhp\Mvc;
 
-class Controller extends Zend_Controller_Action
+class Controller extends \Zend_Controller_Action
 {
-    public function indexAction()
+    public final function postDispatch()
+    {
+        $paths = $this->view->getScriptPaths();
+        $originalPath = array_shift($paths);
+        $this->view->setScriptPath($paths);
+        $this->view->addScriptPath(__DIR__ . '/views/scripts/');
+
+            $this->render(null, null, true);
+        if (!$this->_helper->ViewRenderer->getNoRender()) {
+        }
+    }
+
+    public final function indexAction()
     {
         echo "Hello world from NakedPhp!";
+        $collection = new \Doctrine\Common\Collections\Collection();
     }
 }
