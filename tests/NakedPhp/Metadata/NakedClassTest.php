@@ -17,15 +17,9 @@ namespace NakedPhp\Metadata;
 
 class NakedClassTest extends \PHPUnit_Framework_TestCase
 {
-    public function testRetainsFieldsList()
-    {
-        $nc = new NakedClass($fields = array('Name', 'Role'));
-        $this->assertEquals($fields, $nc->getFields());
-    }
-
     public function testRetainsMethodsList()
     {
-        $nc = new NakedClass(array(), $methods = array('doThis', 'doThat'));
+        $nc = new NakedClass($methods = array('doThis', 'doThat'));
         $this->assertEquals($methods, $nc->getMethods());
     }
 }

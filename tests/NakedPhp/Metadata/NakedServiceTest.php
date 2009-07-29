@@ -15,24 +15,11 @@
 
 namespace NakedPhp\Metadata;
 
-/**
- * Wraps properties about a domain class.
- * @abstract    not declared abstract to allow testing of base functionality
- */
-class NakedClass
+class NakedServiceTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var array available methods
-     */
-    protected $_methods;
-
-    public function __construct(array $methods = array())
+    public function testRetainsClassMetadata()
     {
-        $this->_methods = $methods;
-    }
-
-    public function getMethods()
-    {
-        return $this->_methods;
+        $no = new NakedService($this, $class = new NakedServiceClass(array('doSomething')));
+        $this->assertSame($class, $no->getClass());
     }
 }

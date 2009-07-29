@@ -16,23 +16,24 @@
 namespace NakedPhp\Metadata;
 
 /**
- * Wraps properties about a domain class.
- * @abstract    not declared abstract to allow testing of base functionality
+ * Wraps properties about a entity class like fields, methods and metadata.
+ * An entity is defined as a stateful class.
  */
-class NakedClass
+class NakedEntityClass extends NakedClass
 {
     /**
-     * @var array available methods
+     * @var array names of properties
      */
-    protected $_methods;
+    protected $_fields;
 
-    public function __construct(array $methods = array())
+    public function __construct(array $methods = array(), array $fields = array())
     {
-        $this->_methods = $methods;
+        parent::__construct($methods);
+        $this->_fields = $fields;
     }
 
-    public function getMethods()
+    public function getFields()
     {
-        return $this->_methods;
+        return $this->_fields;
     }
 }

@@ -16,23 +16,11 @@
 namespace NakedPhp\Metadata;
 
 /**
- * Wraps properties about a domain class.
- * @abstract    not declared abstract to allow testing of base functionality
+ * Wraps properties about a service domain class.
+ * A service is defined as a stateless object, with a bunch of methods
+ * that takes as parameters scalars and entities or value objects.
+ * Other services should be required in the constructor.
  */
-class NakedClass
+class NakedServiceClass extends NakedClass
 {
-    /**
-     * @var array available methods
-     */
-    protected $_methods;
-
-    public function __construct(array $methods = array())
-    {
-        $this->_methods = $methods;
-    }
-
-    public function getMethods()
-    {
-        return $this->_methods;
-    }
 }

@@ -16,7 +16,7 @@
 namespace NakedPhp\Reflect;
 use NakedPhp\Metadata\NakedClass;
 
-class ReflectorTest extends \PHPUnit_Framework_TestCase
+class EntityReflectorTest extends \PHPUnit_Framework_TestCase
 {
     private $_reflector;
     private $_result;

@@ -17,29 +17,19 @@ namespace NakedPhp\Metadata;
 
 /**
  * Decorator for a domain object.
- * Wraps the object itself and a list of its fields, methods and metadata.
+ * Wraps the object itself.
+ * @abstract    not marked as abstract to allow testing of base behavior
  */
-final class NakedObject
+class NakedObject
 {
     /**
      * POPO to wrap.
      */
-    private $_wrapped;
+    protected $_wrapped;
 
-    /**
-     * @var NakedClass metadata
-     */
-    private $_class;
-
-    public function __construct($wrapped, NakedClass $class = null)
+    public function __construct($wrapped)
     {
         $this->_wrapped = $wrapped;
-        $this->_class = $class;
-    }
-
-    public function getClass()
-    {
-        return $this->_class;
     }
 
     public function __call($name, $args)

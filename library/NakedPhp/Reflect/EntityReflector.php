@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Reflect;
-use NakedPhp\Metadata\NakedClass;
+use NakedPhp\Metadata\NakedEntityClass;
 use NakedPhp\Metadata\NakedMethod;
 use NakedPhp\Metadata\NakedParam;
 
@@ -29,7 +29,7 @@ class EntityReflector
 
     /**
      * @param string $className
-     * @return NakedClass
+     * @return NakedEntityClass
      */
     public function analyze($className)
     {
@@ -54,6 +54,6 @@ class EntityReflector
             }
         }
 
-        return new NakedClass($fields, $methods);
+        return new NakedEntityClass($methods, $fields);
     }
 }

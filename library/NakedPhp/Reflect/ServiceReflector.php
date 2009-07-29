@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\Reflect;
+use NakedPhp\Metadata\NakedServiceClass;
 
 class ServiceReflector
 {
@@ -31,5 +32,6 @@ class ServiceReflector
     public function analyze($className)
     {
         $reflector = new \ReflectionClass($className);
+        return new NakedServiceClass();
     }
 }

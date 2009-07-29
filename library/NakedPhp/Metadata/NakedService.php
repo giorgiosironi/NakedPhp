@@ -16,24 +16,23 @@
 namespace NakedPhp\Metadata;
 
 /**
- * Wraps properties about a service class. A service class should have
- * a stateless interface and be composed of many methods that takes
- * as parameters scalar values or domain objects.
+ * Wraps a service object.
  */
-final class NakedService
+class NakedService extends NakedObject
 {
-    /**
-     * @var array available methods
-     */
-    private $_methods;
+    protected $_class;
 
-    public function __construct(array $methods = array())
+    public function __construct($service, NakedServiceClass $class = null)
     {
-        $this->_methods = $methods;
+        parent::__construct($service);
+        $this->_class = $class;
     }
 
-    public function getMethods()
+    /**
+     * @return NakedServiceClass
+     */
+    public function getClass()
     {
-        return $this->_methods;
+        return $this->_class;
     }
 }

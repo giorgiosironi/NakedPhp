@@ -23,12 +23,6 @@ class NakedObjectTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('cannedResponse', $no->dummyMethod());
     }
 
-    public function testRetainsClassMetadata()
-    {
-        $no = new NakedObject($this, $class = new NakedClass(array('name'), array()));
-        $this->assertSame($class, $no->getClass());
-    }
-
     public function dummyMethod()
     {
         return 'cannedResponse';
