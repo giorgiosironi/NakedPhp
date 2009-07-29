@@ -18,7 +18,7 @@ use NakedPhp\Metadata\NakedClass;
 use NakedPhp\Metadata\NakedMethod;
 use NakedPhp\Metadata\NakedParam;
 
-class Reflector
+class EntityReflector
 {
     private $_parser;
 

@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Reflect\Functional;
-use NakedPhp\Reflect\Reflector;
+use NakedPhp\Reflect\EntityReflector;
 use NakedPhp\Reflect\ReflectFactory;
 use NakedPhp\Metadata\NakedParam;
 
@@ -26,8 +26,8 @@ class UserTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $factory = new ReflectFactory();
-        $this->_reflector = $factory->createReflector();
-        $this->_result = $this->_reflector->analyze('NakedPhp\Reflect\Stubs\User');
+        $this->_reflector = $factory->createEntityReflector();
+        $this->_result = $this->_reflector->analyze('NakedPhp\Stubs\User');
     }
 
     public function testReadsAnnotationsOfMethods()

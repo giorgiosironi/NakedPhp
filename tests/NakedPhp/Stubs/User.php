@@ -10,14 +10,15 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Reflect
+ * @package    NakedPhp_Stubs
  */
 
-namespace NakedPhp\Reflect\Stubs;
+namespace NakedPhp\Stubs;
 
 class User
 {
     private $_name;
+    private $_active = true;
 
     public function getName()
     {
@@ -48,6 +49,11 @@ class User
      */
     public function disactivate()
     {
-        // don't do anything
+        $this->_active = false;
+    }
+
+    public function activate()
+    {
+        $this->_active = true;
     }
 }

@@ -10,28 +10,30 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Reflect
+ * @package    NakedPhp_Metadata
  */
 
-namespace NakedPhp\Reflect;
+namespace NakedPhp\Metadata;
 
-class ReflectFactory
+/**
+ * Wraps properties about a service class. A service class should have
+ * a stateless interface and be composed of many methods that takes
+ * as parameters scalar values or domain objects.
+ */
+final class NakedService
 {
     /**
-     * @return EntityReflector
+     * @var array available methods
      */
-    public function createEntityReflector()
+    private $_methods;
+
+    public function __construct(array $methods = array())
     {
-        $parser = new DocblockParser();
-        return new EntityReflector($parser);
+        $this->_methods = $methods;
     }
 
-    /**
-     * @return ServicesReflector
-     */
-    public function createServiceReflector()
+    public function getMethods()
     {
-        $parser = new DocblockParser();
-        return new ServiceReflector($parser);
+        return $this->_methods;
     }
 }

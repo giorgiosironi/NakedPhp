@@ -10,28 +10,22 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Reflect
+ * @package    NakedPhp_Service
  */
 
-namespace NakedPhp\Reflect;
+namespace NakedPhp\Service;
+use NakedPhp\Metadata\NakedObject;
 
-class ReflectFactory
+class MethodMerger
 {
-    /**
-     * @return EntityReflector
-     */
-    public function createEntityReflector()
+    private $_services;
+
+    public function __construct(array $services)
     {
-        $parser = new DocblockParser();
-        return new EntityReflector($parser);
     }
 
-    /**
-     * @return ServicesReflector
-     */
-    public function createServiceReflector()
+    public function call(NakedObject $no, $method, array $parameters = array())
     {
-        $parser = new DocblockParser();
-        return new ServiceReflector($parser);
+        return call_user_func_array(array($no, $method), $parameters);
     }
 }

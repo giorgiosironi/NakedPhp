@@ -17,15 +17,15 @@ namespace NakedPhp\Mvc;
 
 class Controller extends \Zend_Controller_Action
 {
-    private $_session;
+    private $_factory;
+    private $_sessionContainer;
+    private $_methodCaller;
 
     public final function preDispatch()
     {
-        //\Zend_Session::start();
-        $this->_session = new \Zend_Session_Namespace('NakedPhp');
-        $name = 'name' . rand();
-        $this->_session->$name = uniqid("Prova");
-        $this->view->session = $this->_session;
+        $this->_factory = new NakedPhp\Factory();
+        $this->view->session = $this->_sessionContainer = $this->_factory->getSessionContainer();
+        $this->_methodCaller = $this->_factory->getServices/MethodMerger();
     }
 
     public final function postDispatch()
@@ -38,7 +38,7 @@ class Controller extends \Zend_Controller_Action
 
         if (!$this->_helper->ViewRenderer->getNoRender()) {
             $this->render(null, null, true);
-            $this->renderScript('segments/session.phtml', 'nakedphp_session');
+            $this->renderScript('segments/session.phtml', 'nakedphp_sessionContainer');
         }
     }
 
@@ -46,5 +46,26 @@ class Controller extends \Zend_Controller_Action
     {
         echo "Hello world from NakedPhp!";
         $collection = new \Doctrine\Common\Collections\Collection();
+    }
+
+    public final function viewAction()
+    {
+        $objectKey = $this->_request->getParam('object');
+        $this->view->object = $this->_sessionContainer->get($objectKey);
+        throw new Exception('Not yet implemented.');
+    }
+
+    public final function editAction()
+    {
+        throw new Exception('Not yet implemented.');
+    }
+
+    public final function callAction()
+    {
+        throw new Exception('Not yet implemented.');
+        $object = $this->_request->getParam('object');
+        $method = $this->_request->getParam('method');
+        $parameters = $this->_request->getPost();
+        $this->_methodCaller->call($object, $method, $parameters);
     }
 }

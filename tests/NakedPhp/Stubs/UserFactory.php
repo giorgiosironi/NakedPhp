@@ -10,28 +10,18 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Reflect
+ * @package    NakedPhp_Stubs
  */
 
-namespace NakedPhp\Reflect;
+namespace NakedPhp\Stubs;
 
-class ReflectFactory
+/**
+ * @Singleton
+ */
+class UserFactory
 {
-    /**
-     * @return EntityReflector
-     */
-    public function createEntityReflector()
+    public function createUser()
     {
-        $parser = new DocblockParser();
-        return new EntityReflector($parser);
-    }
-
-    /**
-     * @return ServicesReflector
-     */
-    public function createServiceReflector()
-    {
-        $parser = new DocblockParser();
-        return new ServiceReflector($parser);
+        return new User();
     }
 }

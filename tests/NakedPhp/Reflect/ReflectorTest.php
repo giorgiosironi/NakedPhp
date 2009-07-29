@@ -29,8 +29,8 @@ class ReflectorTest extends \PHPUnit_Framework_TestCase
         $parserMock->expects($this->any())
                    ->method('parse')
                    ->will($this->returnValue(array()));
-        $this->_reflector = new Reflector($parserMock);
-        $this->_result = $this->_reflector->analyze('NakedPhp\Reflect\Stubs\User');
+        $this->_reflector = new EntityReflector($parserMock);
+        $this->_result = $this->_reflector->analyze('NakedPhp\Stubs\User');
     }
 
     public function testCreatesAClassMetadataObject()
@@ -42,7 +42,7 @@ class ReflectorTest extends \PHPUnit_Framework_TestCase
     {
         $methods = $this->_result->getMethods();
         $this->assertEquals('sendMessage', (string) $methods[0]);
-        $this->assertEquals(2, count($methods));
+        $this->assertEquals(3, count($methods));
     }
 
     public function testListFieldsOfAnEntityObjectThatHaveSetterAndGetter()

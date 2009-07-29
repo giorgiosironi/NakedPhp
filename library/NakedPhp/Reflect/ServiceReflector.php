@@ -15,23 +15,21 @@
 
 namespace NakedPhp\Reflect;
 
-class ReflectFactory
+class ServiceReflector
 {
-    /**
-     * @return EntityReflector
-     */
-    public function createEntityReflector()
+    private $_parser;
+
+    public function __construct(DocblockParser $parser)
     {
-        $parser = new DocblockParser();
-        return new EntityReflector($parser);
+        $this->_parser = $parser;
     }
 
     /**
-     * @return ServicesReflector
+     * @param string $className
+     * @return NakedService
      */
-    public function createServiceReflector()
+    public function analyze($className)
     {
-        $parser = new DocblockParser();
-        return new ServiceReflector($parser);
+        $reflector = new \ReflectionClass($className);
     }
 }
