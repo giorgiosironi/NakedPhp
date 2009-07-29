@@ -15,6 +15,8 @@
 
 namespace NakedPhp\Reflect;
 use NakedPhp\Metadata\NakedServiceClass;
+use NakedPhp\Metadata\NakedMethod;
+use NakedPhp\Metadata\NakedParam;
 
 class ServiceReflector
 {
@@ -27,11 +29,27 @@ class ServiceReflector
 
     /**
      * @param string $className
-     * @return NakedService
+     * @return NakedServiceClass
      */
     public function analyze($className)
     {
         $reflector = new \ReflectionClass($className);
-        return new NakedServiceClass();
+        $methods = array();
+
+        foreach ($reflector->getMethods() as $method) {
+            $annotations = $this->_parser->parse($method->getDocComment());
+            $params = array();
+            $return = 'void';
+            foreach ($annotations as $ann) {
+                if ($ann['annotation'] == 'param') {
+                    $params[$ann['name']] = new NakedParam($ann['type'], $ann['name']);
+                } else if ($ann['annotation'] == 'return') {
+                    $return = $ann['type'];
+                }
+            }
+            $methods[] = new NakedMethod($method->getName(), $params, $return);
+        }
+
+        return new NakedServiceClass($methods);
     }
 }

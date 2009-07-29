@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Reflect;
-use NakedPhp\Metadata\NakedClass;
+use NakedPhp\Metadata\NakedServiceClass;
 
 class ServiceReflectorTest extends \PHPUnit_Framework_TestCase
 {
