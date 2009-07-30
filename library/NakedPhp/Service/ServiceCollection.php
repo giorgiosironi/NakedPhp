@@ -14,16 +14,8 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedObject;
 
-class MethodMerger
+interface ServiceCollection extends IteratorAggregate
 {
-    public function __construct(ServiceCollector $serviceDiscoverer = null)
-    {
-    }
-
-    public function call(NakedObject $no, $method, array $parameters = array())
-    {
-        return call_user_func_array(array($no, $method), $parameters);
-    }
+    public function getService($key);
 }

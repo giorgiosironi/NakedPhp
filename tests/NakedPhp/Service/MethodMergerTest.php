@@ -20,7 +20,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
 {
     public function testCallsAMethodOfTheObjectClass()
     {
-        $methodCaller = new MethodMerger(array());
+        $methodCaller = new MethodMerger();
         new \NakedPhp\Stubs\User();
         $mock = $this->getMock('NakedPhp\Stubs\User', array('sendMessage'), array(), '', false, false, false);
         $mock->expects($this->once())

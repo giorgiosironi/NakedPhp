@@ -24,6 +24,17 @@ class DocblockParserTest extends \PHPUnit_Framework_TestCase
         $this->_parser = new DocblockParser();
     }
 
+    public function testRecognizesContainedAnnotations()
+    {
+        $docblock = <<<EOT
+        /**
+         * @NakedDummyAnn
+         * @OtherAnn
+         */
+EOT;
+        $this->assertTrue($this->_parser->contains('NakedDummyAnn', $docblock));
+    }
+
     public function testListsDocblockParamAnnotations()
     {
         $comment = <<<EOT

@@ -27,7 +27,7 @@ class InstallationTest extends \PHPUnit_Framework_TestCase
 
     public function testDoctrineClassesAreAutoloaded()
     {
-        $collection = new \Doctrine\Common\Collections\Collection();
+        $collection = new \Doctrine\Common\Collections\ArrayCollection();
         $this->assertTrue($collection instanceof \Doctrine\Common\Collections\Collection);
     }
 

@@ -22,7 +22,7 @@ class ServiceReflector
 {
     private $_parser;
 
-    public function __construct(DocblockParser $parser)
+    public function __construct(DocblockParser $parser = null)
     {
         $this->_parser = $parser;
     }
@@ -51,5 +51,15 @@ class ServiceReflector
         }
 
         return new NakedServiceClass($methods);
+    }
+
+    public function isService($className)
+    {
+        $reflector = new \ReflectionClass($className);
+        $docComment = $reflector->getDocComment();
+        if ($this->_parser->contains('NakedService', $docComment)) {
+            return true;
+        }
+        return false;
     }
 }

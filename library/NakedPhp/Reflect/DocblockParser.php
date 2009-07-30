@@ -17,14 +17,23 @@ namespace NakedPhp\Reflect;
 
 class DocblockParser
 {
+    /**
+     * Search for '@' . $annotation in $classDocBlock
+     * @return boolean
+     */
+    public function contains($annotation, $classDocBlock)
+    {
+        return (bool) strstr($classDocBlock, $annotation);
+    }
+
     public function foo() {}
     /**
-     * @param string $docblock
+     * @param string $functionDocblock
      * @return array info on the @param and @return annotations contained
      */
-    public function parse($docblock)
+    public function parse($functionDocblock)
     {
-        $lines = explode("\n", $docblock);
+        $lines = explode("\n", $functionDocblock);
         $result = array();
         foreach ($lines as $line) {
             if (strstr($line, '* @')) {

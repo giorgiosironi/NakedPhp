@@ -33,6 +33,16 @@ class ServiceReflectorTest extends \PHPUnit_Framework_TestCase
         $this->_result = $this->_reflector->analyze('NakedPhp\Stubs\UserFactory');
     }
 
+    public function testRecognizesAnAnnotatedClass()
+    {
+        $parserMock = $this->getMock('NakedPhp\Reflect\DocblockParser', array('contains'), array(), '', false, false, false);
+        $parserMock->expects($this->any())
+                   ->method('contains')
+                   ->will($this->returnValue(true));
+        $this->_reflector = new ServiceReflector($parserMock);
+        $this->assertTrue($this->_reflector->isService('NakedPhp\Stubs\UserFactory'));
+    }
+
     public function testCreatesAClassMetadataObject()
     {
         $this->assertTrue($this->_result instanceof NakedServiceClass);

@@ -25,7 +25,7 @@ class Controller extends \Zend_Controller_Action
     {
         $this->_factory = new NakedPhp\Factory();
         $this->view->session = $this->_sessionContainer = $this->_factory->getSessionContainer();
-        $this->_methodCaller = $this->_factory->getServices/MethodMerger();
+        $this->_methodMerger = $this->_factory->getMethodMerger();
     }
 
     public final function postDispatch()
