@@ -19,22 +19,26 @@ use NakedPhp\Reflect\ServiceReflector;
 /**
  * This class discover php Service classes in a folder of the filesystem.
  */
-class ServiceDiscoverer
+class FilesystemServiceDiscoverer
 {
     private $_serviceReflector;
+    private $_folder;
+    private $_prefix;
 
-    public function __construct(ServiceReflector $reflector = null)
+    public function __construct(ServiceReflector $reflector = null, $folder, $prefix = '')
     {
         $this->_serviceReflector = $reflector;
+        $this->_folder = $folder;
+        $this->_prefix = $prefix;
     }
     
-    public function getList($folder, $prefix = '')
+    public function getList()
     {
         $classes = array();
-        foreach (new \DirectoryIterator($folder) as $file) {
+        foreach (new \DirectoryIterator($this->_folder) as $file) {
             $filename = $file->getFilename();
             if ($this->_getExtension($filename) == '.php') {
-                $className = $prefix . $this->_getBaseClassName($filename);
+                $className = $this->_prefix . $this->_getBaseClassName($filename);
                 if ($this->_serviceReflector->isService($className)) {
                     $classes[] = $className;
                 }

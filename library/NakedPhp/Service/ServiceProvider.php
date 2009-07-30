@@ -15,19 +15,20 @@
 
 namespace NakedPhp\Service;
 
-/*final*/ class ServiceCollection
+/**
+ * This class decouples the services instantiation and object management.
+ * Implementors can perform lazy loading, remoting, etc.
+ */
+interface ServiceProvider
 {
-    public function __construct(ServiceProvider $provider)
-    {
-    }
+    /**
+     * @return array    NakedServiceClass instances
+     */
+    public function getServiceClasses();
 
     /**
-     * @param NakedEntityClass $class    the type of the entity considered
-     * @return array                     NakedMethod instances
+     * @param string $className
+     * @return NakedService
      */
-    public function getApplicableMethods(NakedEntityClass $class);
-
-    public function call(NakedMethod $method, NakedEntity $entity, array $parameters = array())
-    {
-    }
+    public function getService($className);
 }

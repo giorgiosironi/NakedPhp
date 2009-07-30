@@ -16,29 +16,29 @@
 namespace NakedPhp\Service;
 use NakedPhp\Reflect\ServiceReflector;
 
-class ServiceDiscovererTest extends \PHPUnit_Framework_TestCase
+class FilesystemServiceDiscovererTest extends \PHPUnit_Framework_TestCase
 {
     public function testExcludesClassesWhichAreNotServices()
     {
         $reflectorStub = new ServiceReflectorStub(array());
-        $discoverer = new ServiceDiscoverer($reflectorStub);
-        $services = $discoverer->getList(__DIR__ . '/../Stubs/');
+        $discoverer = new FilesystemServiceDiscoverer($reflectorStub, __DIR__ . '/../Stubs/');
+        $services = $discoverer->getList();
         $this->assertEquals(array(), $services);
     }
 
     public function testListsAllAnnotatedClassesInAFolder()
     {
         $reflectorStub = new ServiceReflectorStub(array('UserFactory'));
-        $discoverer = new ServiceDiscoverer($reflectorStub);
-        $services = $discoverer->getList(__DIR__ . '/../Stubs/');
+        $discoverer = new FilesystemServiceDiscoverer($reflectorStub, __DIR__ . '/../Stubs/');
+        $services = $discoverer->getList();
         $this->assertEquals(array('UserFactory'), $services);
     }
 
     public function testAcceptsAPrefixForTheClasses()
     {
         $reflectorStub = new ServiceReflectorStub(array('NakedPhp\\Stubs\\UserFactory'));
-        $discoverer = new ServiceDiscoverer($reflectorStub);
-        $services = $discoverer->getList(__DIR__ . '/../Stubs/', 'NakedPhp\\Stubs\\');
+        $discoverer = new FilesystemServiceDiscoverer($reflectorStub, __DIR__ . '/../Stubs/', 'NakedPhp\\Stubs\\');
+        $services = $discoverer->getList();
         $this->assertEquals(array('NakedPhp\\Stubs\\UserFactory'), $services);
     }
 }

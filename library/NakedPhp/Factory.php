@@ -38,8 +38,9 @@ class Factory
     public function getMethodMerger()
     {
         $reflector = $this->_reflectFactory->getServicesReflector();
-        $serviceDiscoverer = new \NakedPhp\Service\ServiceDiscoverer(__DIR__ . '/Stubs', $reflector);
-        $serviceCollection = $serviceDiscoverer->getCollection();
-        $methodCaller = new \NakedPhp\Service\MethodMerger($serviceCollection);
+        $serviceDiscoverer = new \NakedPhp\Service\FilesystemServiceDiscoverer($reflector);
+        $serviceProvider = new \NakedPhp\Service\EmptyConstructorsServiceProvider($serviceDiscoverer->getList()(;
+        $serviceCollection = new \NakedPhp\Service\ServiceCollection($serviceProvider);
+        return new \NakedPhp\Service\MethodMerger($serviceCollection);
     }
 }
