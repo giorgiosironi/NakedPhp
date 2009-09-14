@@ -32,8 +32,23 @@ class NakedObject
         $this->_wrapped = $wrapped;
     }
 
+    public function getClassName()
+    {
+        return get_class($this->_wrapped);
+    }
+
     public function __call($name, $args)
     {
         return call_user_func_array(array($this->_wrapped, $name), $args);
+    }
+
+    public function __toString()
+    {
+        if (method_exists($this->_wrapped, '__toString')) {
+            $result = (string) $this->_wrapped;
+        } else {
+            $result = 'OBJECT';
+        }
+        return $result;
     }
 }

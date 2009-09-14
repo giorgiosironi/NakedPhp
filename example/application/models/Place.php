@@ -9,21 +9,27 @@
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  *
- * @category   NakedPhp
- * @package    NakedPhp_Service
+ * @category   Example
+ * @package    Example_Model
  */
 
-namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedObject;
-
-class MethodMerger
+class Example_Model_Place
 {
-    public function __construct(ServiceCollection $serviceCollection = null)
+    private $_name;
+
+    /**
+     * @param string $name  the name of pub, disco
+     * @return Place        this object
+     */
+    public function edit($name)
     {
+        $this->_name = (string) $name;
+        return $this;
     }
 
-    public function call(NakedObject $no, $method, array $parameters = array())
+    public function __toString()
     {
-        return call_user_func_array(array($no, $method), $parameters);
+        return $this->_name;
     }
 }
+

@@ -10,20 +10,9 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Service
+ * @package    NakedPhp_Mvc
  */
 
-namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedObject;
+namespace NakedPhp\Mvc;
 
-class MethodMerger
-{
-    public function __construct(ServiceCollection $serviceCollection = null)
-    {
-    }
-
-    public function call(NakedObject $no, $method, array $parameters = array())
-    {
-        return call_user_func_array(array($no, $method), $parameters);
-    }
-}
+class Exception { }

@@ -14,16 +14,25 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedObject;
 
-class MethodMerger
+/**
+ * This class iterates over a ServiceProvider.
+ */
+class ServiceIterator implements \IteratorAggregate
 {
-    public function __construct(ServiceCollection $serviceCollection = null)
-    {
-    }
+    private $_serviceProvider;
 
-    public function call(NakedObject $no, $method, array $parameters = array())
+    public function __construct(ServiceProvider $provider)
     {
-        return call_user_func_array(array($no, $method), $parameters);
+        $this->_serviceProvider = $provider;
+    }
+    
+    public function getIterator()
+    {
+        $array = array();
+        foreach ($this->_serviceProvider->getServiceClasses() as $className => $nakedServiceClass) {
+            $array[$className] = $this->_serviceProvider->getService($className);
+        }
+        return new \ArrayIterator($array);
     }
 }

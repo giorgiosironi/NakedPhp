@@ -22,7 +22,7 @@ class DisplayObject extends \Zend_View_Helper_Abstract
         if (count(func_get_args()) == 0) {
             return $this;
         }
-
+        
         return (string) $no;
     }
 }

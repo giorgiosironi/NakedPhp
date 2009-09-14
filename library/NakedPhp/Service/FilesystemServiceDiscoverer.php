@@ -19,7 +19,7 @@ use NakedPhp\Reflect\ServiceReflector;
 /**
  * This class discover php Service classes in a folder of the filesystem.
  */
-class FilesystemServiceDiscoverer
+class FilesystemServiceDiscoverer implements ServiceDiscoverer
 {
     private $_serviceReflector;
     private $_folder;

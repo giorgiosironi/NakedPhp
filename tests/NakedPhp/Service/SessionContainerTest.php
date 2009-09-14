@@ -16,14 +16,19 @@
 namespace NakedPhp\Service;
 use NakedPhp\Metadata\NakedObject;
 
-class MethodMerger
+class SessionContainerTest extends \PHPUnit_Framework_TestCase
 {
-    public function __construct(ServiceCollection $serviceCollection = null)
+    private $_container;
+
+    public function setUp()
     {
+        $this->_container = new \NakedPhp\Service\SessionContainer();
     }
 
-    public function call(NakedObject $no, $method, array $parameters = array())
+    public function testAddsAnObjectAndReturnsKey()
     {
-        return call_user_func_array(array($no, $method), $parameters);
+        $no = new NakedObject(null);
+        $key = $this->_container->add($no);
+        $this->assertSame($no, $this->_container->get($key));
     }
 }

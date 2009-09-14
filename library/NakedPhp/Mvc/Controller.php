@@ -19,12 +19,14 @@ class Controller extends \Zend_Controller_Action
 {
     private $_factory;
     private $_sessionContainer;
-    private $_methodCaller;
+    private $_singletons;
+    private $_methodMerger;
 
     public final function preDispatch()
     {
-        $this->_factory = new NakedPhp\Factory();
+        $this->_factory = new \NakedPhp\Factory();
         $this->view->session = $this->_sessionContainer = $this->_factory->getSessionContainer();
+        $this->view->singletons = $this->_singletons = $this->_factory->getSingletons();
         $this->_methodMerger = $this->_factory->getMethodMerger();
     }
 
@@ -38,14 +40,14 @@ class Controller extends \Zend_Controller_Action
 
         if (!$this->_helper->ViewRenderer->getNoRender()) {
             $this->render(null, null, true);
-            $this->renderScript('segments/session.phtml', 'nakedphp_sessionContainer');
+            $this->renderScript('segments/session.phtml', 'nakedphp_session');
+            $this->renderScript('segments/singletons.phtml', 'nakedphp_singletons');
         }
     }
 
     public final function indexAction()
     {
         echo "Hello world from NakedPhp!";
-        $collection = new \Doctrine\Common\Collections\Collection();
     }
 
     public final function viewAction()
@@ -66,6 +68,11 @@ class Controller extends \Zend_Controller_Action
         $object = $this->_request->getParam('object');
         $method = $this->_request->getParam('method');
         $parameters = $this->_request->getPost();
-        $this->_methodCaller->call($object, $method, $parameters);
+        $this->_methodMerger->call($object, $method, $parameters);
+    }
+
+    protected function _redirect(NakedObject $no)
+    {
+        throw new Exception('Not yet implemented.');
     }
 }

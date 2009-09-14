@@ -15,7 +15,9 @@
 $library = realpath(__DIR__ . '/../library');
 ini_set('include_path', __DIR__ . PATH_SEPARATOR . $library . PATH_SEPARATOR . ini_get('include_path'));
 
+require_once 'NakedPhp/Loader.php';
+$loader = new NakedPhp\Loader();
 require_once 'Zend/Loader/Autoloader.php';
-$autoloader = Zend_Loader_Autoloader::getInstance();
-require_once 'Doctrine/Common/ClassLoader.php';
-$doctrineAutoloader = new \Doctrine\Common\ClassLoader();
+$zfLoader = Zend_Loader_Autoloader::getInstance();
+$zfLoader->pushAutoloader(array($loader, 'autoload'));
+

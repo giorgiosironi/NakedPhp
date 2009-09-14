@@ -23,6 +23,18 @@ class NakedObjectTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('cannedResponse', $no->dummyMethod());
     }
 
+    public function testDiscoversClassNameOfTheDomainObject()
+    {
+        $no = new NakedObject($this, null);
+        $this->assertEquals('NakedPhp\Metadata\NakedObjectTest', $no->getClassName());
+    }
+
+    public function testReturnsACommonStringRepresentationForUnconvertibleObjects()
+    {
+        $no = new NakedObject($this, null);
+        $this->assertEquals('OBJECT', (string) $no);
+    }
+
     public function dummyMethod()
     {
         return 'cannedResponse';

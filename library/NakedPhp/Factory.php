@@ -30,17 +30,27 @@ class Factory
     {
         $this->_sessionBridge = new \Zend_Session_Namespace('NakedPhp');
         if (!isset($this->_sessionBridge->sessionContainer)) {
-            $this->_sessionBridge->sessionContainer = new NakedPhp\Session\Container(array());
+            $this->_sessionBridge->sessionContainer = new Service\SessionContainer(array());
         }
         return $this->_sessionBridge->sessionContainer;
     }
 
+    public function getSingletons()
+    {
+        return new Service\ServiceIterator($this->_getServiceProvider());
+    }
+
     public function getMethodMerger()
     {
-        $reflector = $this->_reflectFactory->getServicesReflector();
-        $serviceDiscoverer = new \NakedPhp\Service\FilesystemServiceDiscoverer($reflector);
-        $serviceProvider = new \NakedPhp\Service\EmptyConstructorsServiceProvider($serviceDiscoverer->getList()(;
-        $serviceCollection = new \NakedPhp\Service\ServiceCollection($serviceProvider);
-        return new \NakedPhp\Service\MethodMerger($serviceCollection);
+        $serviceProvider = $this->_getServiceProvider();
+        $serviceCollection = new Service\ServiceCollection($serviceProvider);
+        return new Service\MethodMerger($serviceCollection);
+    }
+
+    protected function _getServiceProvider()
+    {
+        $reflector = $this->_reflectFactory->createServiceReflector();
+        $serviceDiscoverer = new Service\FilesystemServiceDiscoverer($reflector, __DIR__ . '/../../example/application/models/', 'Example_Model_');
+        return new Service\EmptyConstructorsServiceProvider($serviceDiscoverer);
     }
 }

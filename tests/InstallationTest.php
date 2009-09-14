@@ -25,13 +25,7 @@ class InstallationTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($form instanceof \Zend_Form);
     }
 
-    public function testDoctrineClassesAreAutoloaded()
-    {
-        $collection = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->assertTrue($collection instanceof \Doctrine\Common\Collections\Collection);
-    }
-
-    public function testNakedPHpClassesAreAutoloaded()
+    public function testNakedPhpClassesAreAutoloaded()
     {
         $reflector = new \NakedPhp\Reflect\DocblockParser();
         $this->assertTrue($reflector instanceof \NakedPhp\Reflect\DocblockParser);

@@ -14,12 +14,22 @@ set_include_path(implode(PATH_SEPARATOR, array(
     realpath(APPLICATION_PATH . '/../library'),
     get_include_path(),
 )));
-require_once 'Doctrine/Common/ClassLoader.php';
-$doctrineAutoloader = new \Doctrine\Common\ClassLoader();
-$doctrineAutoloader->setCheckFileExists(true);
 
 /** Zend_Application */
 require_once 'Zend/Application.php';  
+
+require_once 'NakedPhp/Loader.php';
+$loader = new NakedPhp\Loader();
+
+require_once 'Zend/Loader/Autoloader.php';
+$zfLoader = Zend_Loader_Autoloader::getInstance();
+$zfLoader->pushAutoloader(array($loader, 'autoload'));
+
+$resourceLoader = new Zend_Loader_Autoloader_Resource(array(
+    'basePath'  => APPLICATION_PATH,
+    'namespace' => 'Example'
+));
+$resourceLoader->addResourceType('model', 'models/', 'Model');
 
 // Create application, bootstrap, and run
 $application = new Zend_Application(

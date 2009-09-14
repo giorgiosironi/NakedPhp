@@ -1,0 +1,8 @@
+<?php
+$labels = array();
+foreach ($this->singletons as $index => $object) {
+    $label = $this->displayObject($object);
+    $url = $this->url(array('action' => 'view', 'type' => 'singleton', 'object' => $index));
+    $labels[] = "<a href=\"$url\">$label</a>";
+}
+echo implode('; ', $labels);

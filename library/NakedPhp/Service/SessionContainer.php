@@ -10,15 +10,16 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Session
+ * @package    NakedPhp_Service
  */
 
 namespace NakedPhp\Service;
+use NakedPhp\Metadata\NakedObject;
 
 /**
  * This class act as a small container for NakedObject instances.
  */
-class SessionContainer implements IteratorAggregate
+class SessionContainer implements \IteratorAggregate
 {
     private $_objects = array();
 
@@ -26,14 +27,16 @@ class SessionContainer implements IteratorAggregate
     {
     }
 
-    public function add($key, NakedObject $object)
+    public function add(NakedObject $object)
     {
+        $key = spl_object_hash($object);
         $this->_objects[$key] = $object;
+        return $key;
     }
 
     public function get($key)
     {
-        return $this->_objects;
+        return $this->_objects[$key];
     }
 
     public function getIterator()
