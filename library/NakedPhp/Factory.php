@@ -43,13 +43,19 @@ class Factory
     public function getMethodMerger()
     {
         $serviceProvider = $this->getServiceProvider();
-        return new Service\MethodMerger($serviceProvider);
+        return new Service\MethodMerger($serviceProvider, $this->getNakedFactory());
     }
 
     public function getServiceProvider()
     {
         $reflector = $this->_reflectFactory->createServiceReflector();
         $serviceDiscoverer = new Service\FilesystemServiceDiscoverer($reflector, __DIR__ . '/../../example/application/models/', 'Example_Model_');
-        return new Service\EmptyConstructorsServiceProvider($serviceDiscoverer, $reflector);
+        return new Service\EmptyConstructorsServiceProvider($serviceDiscoverer, $this->_reflectFactory->createServiceReflector());
+    }
+
+    public function getNakedFactory()
+    {
+        return new Service\NakedFactory($this->_reflectFactory->createEntityReflector(),
+                                        $this->_reflectFactory->createServiceReflector());
     }
 }

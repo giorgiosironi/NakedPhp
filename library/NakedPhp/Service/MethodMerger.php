@@ -19,13 +19,19 @@ use NakedPhp\Metadata\NakedEntityClass;
 
 class MethodMerger
 {
-    public function __construct(ServiceProvider $serviceProvider = null)
+    public function __construct(ServiceProvider $serviceProvider = null, NakedFactory $nakedFactory = null)
     {
+        $this->_nakedFactory = $nakedFactory;
     }
 
     public function call(NakedObject $no, $method, array $parameters = array())
     {
-        return call_user_func_array(array($no, $method), $parameters);
+        $result = call_user_func_array(array($no, $method), $parameters);
+        if (is_object($result)) {
+            return $this->_nakedFactory->create($result);
+        } else {
+            return $result;
+        }
     }
 
     /**

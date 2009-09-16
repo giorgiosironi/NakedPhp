@@ -1,8 +1,13 @@
 <project name="nakedphp" default="test">
     <property name="srcRoot" value="./" />
+    <property name="docRoot" value="/var/www/doc/nakedphp" />
 
     <target name="test">
         <exec command="phpunit --bootstrap tests/bootstrap.php --configuration tests/phpunit.xml" dir="${srcRoot}" passthru="true" />
+    </target>
+
+    <target name="doc">
+        <exec command="phpdoc -d library/NakedPhp/ -t ${docRoot} #TODO phpdoc phing task" dir="${srcRoot}" passthru="true" />
     </target>
 
     <target name="zf-import">

@@ -15,31 +15,69 @@
 
 namespace NakedPhp\Service;
 use NakedPhp\Metadata\NakedObject;
+use NakedPhp\Metadata\NakedEntity;
 use NakedPhp\Metadata\NakedEntityClass;
 use NakedPhp\Metadata\NakedMethod;
 
 class MethodMergerTest extends \PHPUnit_Framework_TestCase
 {
+    private $_factoryMock;
+    private $_methodMerger;
+
+    public function setUp()
+    {
+        /*
+        new \NakedPhp\Service\ServiceProvider();
+        $mock = $this->getMock('NakedPhp\Service\ServiceProvider', array('getServiceClasses', 'getService'), array(), '', false, false, false);
+        $mock->expects($this->any())
+             ->method('getServiceClasses')
+             ->will($this->returnValue(array()));
+        */
+        new \NakedPhp\Service\NakedFactory();
+        $this->_factoryMock = $this->getMock('NakedPhp\Service\NakedFactory', array('create'), array(), '', false, false, false);
+        $this->_methodMerger = new MethodMerger(null, $this->_factoryMock);
+    }
+
     public function testCallsAMethodOfTheObjectClass()
     {
-        $methodCaller = new MethodMerger();
         new \NakedPhp\Stubs\User();
         $mock = $this->getMock('NakedPhp\Stubs\User', array('sendMessage'), array(), '', false, false, false);
         $mock->expects($this->once())
              ->method('sendMessage')
              ->with('Title', 'text...');
-        $methodCaller->call(new NakedObject($mock), 'sendMessage', array('Title', 'text...'));
+        $this->_methodMerger->call(new NakedObject($mock), 'sendMessage', array('Title', 'text...'));
     }
 
     public function testListsMethodOfTheObjectClass()
     {
-        $mock = $this->getMock('NakedPhp\Service\ServiceProvider', array('getServiceClasses', 'getService'), array(), '', false, false, false);
-        $mock->expects($this->any())
-             ->method('getServiceClasses')
-             ->will($this->returnValue(array()));
-        $methodCaller = new MethodMerger($mock);
         $class = new NakedEntityClass(array('doSomething' => new NakedMethod('doSomething')));
-        $methods = $methodCaller->getApplicableMethods($class);
+        $methods = $this->_methodMerger->getApplicableMethods($class);
         $this->assertEquals(array('doSomething'), array_keys($methods));
+    }
+
+    public function testWrapsObjectResultUsingNakedFactory()
+    {
+        $expectedResult = new NakedEntity(new \stdClass);
+        $this->_factoryMock->expects($this->any())
+                           ->method('create')
+                           ->will($this->returnValue($expectedResult));
+        new \NakedPhp\Stubs\User();
+        $mock = $this->getMock('NakedPhp\Stubs\User', array('getStatus'), array(), '', false, false, false);
+        $mock->expects($this->once())
+             ->method('getStatus')
+             ->will($this->returnValue(new \stdClass));
+        $result = $this->_methodMerger->call(new NakedObject($mock), 'getStatus');
+        $this->assertSame($expectedResult, $result);
+    }
+
+    public function testDoesNotWrapScalarResult()
+    {
+        new \NakedPhp\Stubs\User();
+        $mock = $this->getMock('NakedPhp\Stubs\User', array('getStatus'), array(), '', false, false, false);
+        $mock->expects($this->once())
+             ->method('getStatus')
+             ->will($this->returnValue('foo'));
+        $result = $this->_methodMerger->call(new NakedObject($mock), 'getStatus');
+        $this->assertSame('foo', $result);
     }
 }

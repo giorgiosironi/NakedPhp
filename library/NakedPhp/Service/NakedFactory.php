@@ -24,7 +24,7 @@ class NakedFactory
     protected $_entityReflector;
     protected $_serviceReflector;
 
-    public function __construct(EntityReflector $entityReflector, ServiceReflector $serviceReflector)
+    public function __construct(EntityReflector $entityReflector = null, ServiceReflector $serviceReflector = null)
     {
         $this->_entityReflector  = $entityReflector;
         $this->_serviceReflector = $serviceReflector;

@@ -15,6 +15,6 @@
 
 namespace NakedPhp\Metadata;
 
-class Method
+class Field
 {
 }
