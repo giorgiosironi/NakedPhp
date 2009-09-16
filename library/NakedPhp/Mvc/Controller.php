@@ -14,6 +14,8 @@
  */
 
 namespace NakedPhp\Mvc;
+use NakedPhp\Metadata\NakedObject;
+use NakedPhp\Metadata\NakedEntity;
 
 class Controller extends \Zend_Controller_Action
 {
@@ -75,7 +77,9 @@ class Controller extends \Zend_Controller_Action
             $this->render(null, null, true);
             $this->renderScript('segments/session.phtml', 'nakedphp_session');
             $this->renderScript('segments/services.phtml', 'nakedphp_services');
-            $this->renderScript('segments/methods.phtml', 'nakedphp_methods');
+            if ($this->_object) {
+                $this->renderScript('segments/methods.phtml', 'nakedphp_methods');
+            }
         }
     }
 
@@ -97,11 +101,27 @@ class Controller extends \Zend_Controller_Action
     {
         $method = $this->_request->getParam('method');
         $parameters = $this->_request->getPost();
-        $this->_methodMerger->call($this->_object, $method, $parameters);
+        $result = $this->_methodMerger->call($this->_object, $method, $parameters);
+        if (is_object($result)) {
+            $this->_redirectToObject($result);
+        } else {
+            $this->view->result = $result;
+        }
     }
 
     protected function _redirectToObject(NakedObject $no)
     {
-        throw new Exception('Not yet implemented.');
+        if ($no instanceof NakedEntity) {
+            $index = $this->_sessionContainer->add($no);
+            $type = 'entity';
+        } else {
+            $index = $no->getClass();
+            $type = 'service';
+        }
+        $params = array(
+            'type' => $type,
+            'object' => $index
+        );
+        $this->_helper->Redirector('view', null, null, $params);
     }
 }

@@ -31,4 +31,12 @@ class SessionContainerTest extends \PHPUnit_Framework_TestCase
         $key = $this->_container->add($no);
         $this->assertSame($no, $this->_container->get($key));
     }
+
+    public function testAddsAnObjectIdempotently()
+    {
+        $no = new NakedObject(null);
+        $key = $this->_container->add($no);
+        $anotherKey = $this->_container->add($no);
+        $this->assertSame($key, $anotherKey);
+    }
 }

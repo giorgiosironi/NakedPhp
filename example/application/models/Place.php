@@ -15,7 +15,7 @@
 
 class Example_Model_Place
 {
-    private $_name;
+    private $_name = 'Default Name';
 
     /**
      * @param string $name  the name of pub, disco
@@ -29,7 +29,7 @@ class Example_Model_Place
 
     public function __toString()
     {
-        return $this->_name;
+        return (string) $this->_name;
     }
 }
 
