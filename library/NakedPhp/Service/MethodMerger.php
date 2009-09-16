@@ -24,9 +24,16 @@ class MethodMerger
         $this->_nakedFactory = $nakedFactory;
     }
 
+    /**
+     * @param NakedObject $no       object to search the method on
+     * @param string $methodName
+     * @param array $parameters
+     * @return NakedObject  if the result is an object it will be wrapped.
+     *                      Otherwise, it will be returned as-is.
+     */
     public function call(NakedObject $no, $method, array $parameters = array())
     {
-        $result = call_user_func_array(array($no, $method), $parameters);
+        $result = call_user_func_array(array($no, (string) $method), $parameters);
         if (is_object($result)) {
             return $this->_nakedFactory->create($result);
         } else {
@@ -41,5 +48,30 @@ class MethodMerger
     public function getApplicableMethods(NakedEntityClass $class)
     {
         return $class->getMethods();
+    }
+
+    /**
+     * @param NakedObject $no       object to search the method on
+     * @param string $methodName
+     * @return boolean
+     */
+    public function needArguments(NakedObject $no, $methodName)
+    {
+        $method = $this->getMethod($no, $methodName);
+        if (count($method->getParams())) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param NakedObject $no       object to search the method on
+     * @param string $methodName
+     * @return NakedMethod
+     */
+    public function getMethod(NakedObject $no, $methodName)
+    {
+        $methods = $no->getClass()->getMethods();
+        return $methods[$methodName];
     }
 }

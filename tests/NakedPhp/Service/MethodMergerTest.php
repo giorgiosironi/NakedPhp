@@ -48,6 +48,16 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         $this->_methodMerger->call(new NakedObject($mock), 'sendMessage', array('Title', 'text...'));
     }
 
+    public function testCallsAMethodOfTheObjectClassAlsoByPassingObject()
+    {
+        new \NakedPhp\Stubs\User();
+        $mock = $this->getMock('NakedPhp\Stubs\User', array('sendMessage'), array(), '', false, false, false);
+        $mock->expects($this->once())
+             ->method('sendMessage')
+             ->with('Title', 'text...');
+        $this->_methodMerger->call(new NakedObject($mock), new NakedMethod('sendMessage'), array('Title', 'text...'));
+    }
+
     public function testListsMethodOfTheObjectClass()
     {
         $class = new NakedEntityClass(array('doSomething' => new NakedMethod('doSomething')));
@@ -79,5 +89,37 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
              ->will($this->returnValue('foo'));
         $result = $this->_methodMerger->call(new NakedObject($mock), 'getStatus');
         $this->assertSame('foo', $result);
+    }
+
+    public function testRecognizeParametersNeed()
+    {
+        $no = $this->_createFakeEntity();
+        $this->assertTrue($this->_methodMerger->needArguments($no, 'doSomething'));
+    }
+
+    public function testRecognizeMethodsWithoutParameters()
+    {
+        $no = $this->_createFakeEntity();
+        $this->assertFalse($this->_methodMerger->needArguments($no, 'doAnything'));
+    }
+
+    protected function _createFakeEntity()
+    {
+        $methods = array(
+            'doSomething' => new NakedMethod('', array(null, null)),
+            'doAnything' => new NakedMethod('')
+        );
+        return new NakedEntity(new \stdClass, new NakedEntityClass($methods));
+    }
+
+    public function testExtractMetadataForAMethod()
+    {
+        $methods = array(
+            'doSomething' => $expectedMethod = new NakedMethod(''),
+        );
+        $no = new NakedEntity(new \stdClass, new NakedEntityClass($methods));
+
+        $this->assertSame($expectedMethod,
+                          $this->_methodMerger->getMethod($no, 'doSomething'));
     }
 }

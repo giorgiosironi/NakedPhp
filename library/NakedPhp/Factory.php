@@ -58,4 +58,9 @@ class Factory
         return new Service\NakedFactory($this->_reflectFactory->createEntityReflector(),
                                         $this->_reflectFactory->createServiceReflector());
     }
+
+    public function getFormBuilder()
+    {
+        return new Service\FormBuilder();
+    }
 }

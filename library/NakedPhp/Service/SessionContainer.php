@@ -22,6 +22,7 @@ use NakedPhp\Metadata\NakedObject;
 class SessionContainer implements \IteratorAggregate
 {
     private $_objects = array();
+    private $_counter = 0;
 
     public function __construct()
     {
@@ -29,14 +30,28 @@ class SessionContainer implements \IteratorAggregate
 
     public function add(NakedObject $object)
     {
-        $key = spl_object_hash($object);
-        $this->_objects[$key] = $object;
-        return $key;
+        $index = $this->contains($object);
+        if ($index) {
+            return $index;
+        }
+        $this->_counter++;
+        $this->_objects[$this->_counter] = $object;
+        return $this->_counter;
     }
 
     public function get($key)
     {
         return $this->_objects[$key];
+    }
+
+    public function contains(NakedObject $object)
+    {
+        foreach ($this->_objects as $index => $o) {
+            if ($o === $object) {
+                return $index;
+            }
+        }
+        return false;
     }
 
     public function getIterator()
