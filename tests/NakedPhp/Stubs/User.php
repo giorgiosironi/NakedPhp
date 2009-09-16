@@ -47,7 +47,7 @@ class User
     /**
      * @return boolean
      */
-    public function disactivate()
+    public function deactivate()
     {
         $this->_active = false;
     }

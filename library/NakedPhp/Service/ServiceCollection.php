@@ -17,7 +17,7 @@ namespace NakedPhp\Service;
 
 /*final*/ class ServiceCollection
 {
-    public function __construct(ServiceProvider $provider)
+    public function __construct(ServiceProvider $provider = null)
     {
     }
 

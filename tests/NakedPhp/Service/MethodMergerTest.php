@@ -15,6 +15,8 @@
 
 namespace NakedPhp\Service;
 use NakedPhp\Metadata\NakedObject;
+use NakedPhp\Metadata\NakedEntityClass;
+use NakedPhp\Metadata\NakedMethod;
 
 class MethodMergerTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,5 +29,17 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
              ->method('sendMessage')
              ->with('Title', 'text...');
         $methodCaller->call(new NakedObject($mock), 'sendMessage', array('Title', 'text...'));
+    }
+
+    public function testListsMethodOfTheObjectClass()
+    {
+        $mock = $this->getMock('NakedPhp\Service\ServiceProvider', array('getServiceClasses', 'getService'), array(), '', false, false, false);
+        $mock->expects($this->any())
+             ->method('getServiceClasses')
+             ->will($this->returnValue(array()));
+        $methodCaller = new MethodMerger($mock);
+        $class = new NakedEntityClass(array('doSomething' => new NakedMethod('doSomething')));
+        $methods = $methodCaller->getApplicableMethods($class);
+        $this->assertEquals(array('doSomething'), array_keys($methods));
     }
 }

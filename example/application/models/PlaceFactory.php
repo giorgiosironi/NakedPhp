@@ -20,7 +20,7 @@ class Example_Model_PlaceFactory
 {
     public function createPlace()
     {
-        return new Place();
+        return new Example_Model_Place();
     }
 }
 

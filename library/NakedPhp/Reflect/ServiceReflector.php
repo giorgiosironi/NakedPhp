@@ -47,7 +47,8 @@ class ServiceReflector
                     $return = $ann['type'];
                 }
             }
-            $methods[] = new NakedMethod($method->getName(), $params, $return);
+            $methodName = $method->getName();
+            $methods[$methodName] = new NakedMethod($methodName, $params, $return);
         }
 
         return new NakedServiceClass($methods);

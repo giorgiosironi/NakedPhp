@@ -26,11 +26,17 @@ class NakedClass
      */
     protected $_methods;
 
+    /**
+     * @param array $methods    NakedMethod instances; keys are method names
+     */
     public function __construct(array $methods = array())
     {
         $this->_methods = $methods;
     }
 
+    /**
+     * @return array $methods    NakedMethod instances; keys are method names
+     */
     public function getMethods()
     {
         return $this->_methods;

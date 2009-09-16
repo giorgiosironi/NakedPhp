@@ -15,15 +15,25 @@
 
 namespace NakedPhp\Service;
 use NakedPhp\Metadata\NakedObject;
+use NakedPhp\Metadata\NakedEntityClass;
 
 class MethodMerger
 {
-    public function __construct(ServiceCollection $serviceCollection = null)
+    public function __construct(ServiceProvider $serviceProvider = null)
     {
     }
 
     public function call(NakedObject $no, $method, array $parameters = array())
     {
         return call_user_func_array(array($no, $method), $parameters);
+    }
+
+    /**
+     * @param NakedEntityClass $class    the type of the entity considered
+     * @return array                     NakedMethod instances
+     */
+    public function getApplicableMethods(NakedEntityClass $class)
+    {
+        return $class->getMethods();
     }
 }

@@ -51,7 +51,8 @@ class ServiceReflectorTest extends \PHPUnit_Framework_TestCase
     public function testListBusinessMethodsOfAnEntityObject()
     {
         $methods = $this->_result->getMethods();
-        $this->assertEquals('createUser', (string) $methods[0]);
+        $this->assertEquals('createUser', (string) current($methods));
+        $this->assertTrue(isset($methods['createUser']));
         $this->assertEquals(1, count($methods));
     }
 }

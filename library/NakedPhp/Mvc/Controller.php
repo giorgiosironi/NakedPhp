@@ -17,17 +17,50 @@ namespace NakedPhp\Mvc;
 
 class Controller extends \Zend_Controller_Action
 {
+    /**
+     * @var NakedPhp\Factory    creates nakedphp object
+     */
     private $_factory;
+
+    /**
+     * @var NakedPhp\Service\SessionContainer   contains entity objects
+     */
     private $_sessionContainer;
-    private $_singletons;
+
+    /**
+     * @var NakedPhp\Service\ServiceIterator    lists services
+     */
+    private $_services;
+
+    /**
+     * @var NakedPhp\Service\MethodMerger   merges service methods in entities
+     */
     private $_methodMerger;
+
+    /**
+     * @var NakedObject     the current object
+     */
+    private $_object;
 
     public final function preDispatch()
     {
         $this->_factory = new \NakedPhp\Factory();
         $this->view->session = $this->_sessionContainer = $this->_factory->getSessionContainer();
-        $this->view->singletons = $this->_singletons = $this->_factory->getSingletons();
+        $this->view->services = $this->_services = $this->_factory->getServiceIterator();
         $this->_methodMerger = $this->_factory->getMethodMerger();
+
+        $objectKey = $this->_request->getParam('object');
+        if ($objectKey !== null) {
+            if ($this->_request->getParam('type') == 'service') {
+                $provider = $this->_factory->getServiceProvider();
+                $this->_object = $provider->getService($objectKey);
+                $this->view->methods = $this->_object->getClass()->getMethods();
+            } else {
+                $this->_object = $this->_sessionContainer->get($objectKey);
+                $this->view->methods = $this->_methodMerger->getApplicableMethods($this->_object->getClass());
+            }
+            $this->view->object = $this->_object;
+        }
     }
 
     public final function postDispatch()
@@ -41,7 +74,8 @@ class Controller extends \Zend_Controller_Action
         if (!$this->_helper->ViewRenderer->getNoRender()) {
             $this->render(null, null, true);
             $this->renderScript('segments/session.phtml', 'nakedphp_session');
-            $this->renderScript('segments/singletons.phtml', 'nakedphp_singletons');
+            $this->renderScript('segments/services.phtml', 'nakedphp_services');
+            $this->renderScript('segments/methods.phtml', 'nakedphp_methods');
         }
     }
 
@@ -52,26 +86,21 @@ class Controller extends \Zend_Controller_Action
 
     public final function viewAction()
     {
-        $objectKey = $this->_request->getParam('object');
-        $this->view->object = $this->_sessionContainer->get($objectKey);
-        throw new Exception('Not yet implemented.');
     }
 
     public final function editAction()
     {
-        throw new Exception('Not yet implemented.');
+        throw new \Exception('Not yet implemented.');
     }
 
     public final function callAction()
     {
-        throw new Exception('Not yet implemented.');
-        $object = $this->_request->getParam('object');
         $method = $this->_request->getParam('method');
         $parameters = $this->_request->getPost();
-        $this->_methodMerger->call($object, $method, $parameters);
+        $this->_methodMerger->call($this->_object, $method, $parameters);
     }
 
-    protected function _redirect(NakedObject $no)
+    protected function _redirectToObject(NakedObject $no)
     {
         throw new Exception('Not yet implemented.');
     }

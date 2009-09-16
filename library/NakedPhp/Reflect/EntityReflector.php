@@ -22,7 +22,7 @@ class EntityReflector
 {
     private $_parser;
 
-    public function __construct(DocblockParser $parser)
+    public function __construct(DocblockParser $parser = null)
     {
         $this->_parser = $parser;
     }
@@ -35,6 +35,7 @@ class EntityReflector
     {
         $reflector = new \ReflectionClass($className);
         $fields = array();
+        $methods = array();
         foreach ($reflector->getMethods() as $method) {
             $annotations = $this->_parser->parse($method->getDocComment());
             if (preg_match('/get[A-Za-z0-9]+/', $method->getName())) {
@@ -50,7 +51,8 @@ class EntityReflector
                         $return = $ann['type'];
                     }
                 }
-                $methods[] = new NakedMethod($method->getName(), $params, $return);
+                $methodName = $method->getName();
+                $methods[$methodName] = new NakedMethod($methodName, $params, $return);
             }
         }
 

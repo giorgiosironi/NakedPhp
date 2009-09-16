@@ -15,34 +15,54 @@
 
 namespace NakedPhp\Service;
 use NakedPhp\Metadata\NakedService;
+use NakedPhp\Metadata\NakedServiceClass;
 
 class EmptyConstructorsServiceProviderTest extends \PHPUnit_Framework_TestCase implements ServiceDiscoverer
 {
     private $_serviceClasses = array('stdClass', 'SplQueue');
 
+    /** @var NakedPhp\Metadata\NakedServiceClass */
+    private $_originalClass;
+
+    /**
+     * @var EmptyConstructorsServiceProvider
+     */
+    private $_provider;
+    
+    public function setUp()
+    {
+        $this->_originalClass = new NakedServiceClass();
+        $serviceReflectorMock = $this->getMock('NakedPhp\Reflect\ServiceReflector', array('analyze'), array(), '', false, false, false);
+        $serviceReflectorMock->expects($this->any())
+                             ->method('analyze')
+                             ->will($this->returnValue($this->_originalClass));
+        $this->_provider = new EmptyConstructorsServiceProvider($this, $serviceReflectorMock);
+    }
+
     public function testIteratesOverAllServices()
     {
-        $provider = new EmptyConstructorsServiceProvider($this);
-        $classes = $provider->getServiceClasses();
+        $classes = $this->_provider->getServiceClasses();
         $this->assertEquals($this->_serviceClasses, array_keys($classes));
     }
 
     public function testInstancesServices()
     {
-        $provider = new EmptyConstructorsServiceProvider($this);
-        $ns = $provider->getService('SplQueue');
+        $ns = $this->_provider->getService('SplQueue');
         $this->assertEquals('SplQueue', $ns->getClassName());
     }
 
     public function testProvidesServiceMetadata()
     {
-        $this->markTestIncomplete();
-        /*
-        $provider = new EmptyConstructorsServiceProvider($this, $reflector);
-        $classes = $provider->getServiceClasses();
-        foreach ($classes as ...) {
+        $classes = $this->_provider->getServiceClasses();
+        foreach ($classes as $serviceClass) {
+            $this->assertSame($this->_originalClass, $serviceClass);
         }
-        */
+    }
+
+    public function testInjectServiceMetadataIntoInstances()
+    {
+        $service = $this->_provider->getService('stdClass');
+        $this->assertSame($this->_originalClass, $service->getClass());
     }
     
     /* self-shunting */

@@ -18,10 +18,12 @@ namespace NakedPhp\Service;
 class EmptyConstructorsServiceProvider implements ServiceProvider
 {
     private $_discoverer;
+    private $_reflector;
 
-    public function __construct(ServiceDiscoverer $discoverer = null, $serviceReflector = null)
+    public function __construct(ServiceDiscoverer $discoverer = null, \NakedPhp\Reflect\ServiceReflector $serviceReflector = null)
     {
         $this->_discoverer = $discoverer;
+        $this->_reflector = $serviceReflector;
     }
 
     /**
@@ -29,7 +31,11 @@ class EmptyConstructorsServiceProvider implements ServiceProvider
      */
     public function getServiceClasses()
     {
-        return array_combine($this->_discoverer->getList(), $this->_discoverer->getList());
+        $array = array();
+        foreach ($this->_discoverer->getList() as $className) {
+            $array[$className] = $this->_reflector->analyze($className);
+        }
+        return $array;
     }
 
     /**
@@ -38,8 +44,9 @@ class EmptyConstructorsServiceProvider implements ServiceProvider
      */
     public function getService($className)
     {
-        $fullClassName = '\\' . $className;
+        $fullClassName = /*'\\' .*/ $className;
         $wrapped = new $fullClassName();
-        return new \NakedPhp\Metadata\NakedService($wrapped, null);
+        $nakedClass = $this->_reflector->analyze($className);
+        return new \NakedPhp\Metadata\NakedService($wrapped, $nakedClass);
     }
 }

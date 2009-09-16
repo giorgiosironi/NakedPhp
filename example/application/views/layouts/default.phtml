@@ -1,12 +1,28 @@
+<html>
+<head>
+    <style type="text/css">
+    table {
+        border-collapse: collapse;
+    }
+    td {
+        border: 1px solid black;
+    }
+    </style>
+</head>
+<body>
 <h1>My Layout</h1>
 <table>
 <tr>
-<td>Singletons:</td>
-<td><?php echo $this->layout()->nakedphp_singletons; ?></td>
+<td>Services:</td>
+<td><?php echo $this->layout()->nakedphp_services; ?></td>
 </tr>
 <tr>
 <td>Session bar:</td>
 <td><?php echo $this->layout()->nakedphp_session; ?></td>
+</tr>
+<tr>
+<td>Methods:</td>
+<td><?php echo $this->layout()->nakedphp_methods; ?></td>
 </tr>
 <!--
 <tr>
@@ -17,3 +33,6 @@
 </table>
 <?php
 echo $this->layout()->content;
+?>
+</body>
+</html>

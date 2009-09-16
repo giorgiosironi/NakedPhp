@@ -1,0 +1,8 @@
+List of methods:
+<?php
+$methods = array();
+foreach ($this->methods as $name => $method) {
+    $url = $this->url(array('action' => 'call', 'method' => $name));
+    $methods[] = "<a href=\"$url\">$name</a>";
+}
+echo implode(',', $methods);

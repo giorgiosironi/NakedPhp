@@ -35,22 +35,21 @@ class Factory
         return $this->_sessionBridge->sessionContainer;
     }
 
-    public function getSingletons()
+    public function getServiceIterator()
     {
-        return new Service\ServiceIterator($this->_getServiceProvider());
+        return new Service\ServiceIterator($this->getServiceProvider());
     }
 
     public function getMethodMerger()
     {
-        $serviceProvider = $this->_getServiceProvider();
-        $serviceCollection = new Service\ServiceCollection($serviceProvider);
-        return new Service\MethodMerger($serviceCollection);
+        $serviceProvider = $this->getServiceProvider();
+        return new Service\MethodMerger($serviceProvider);
     }
 
-    protected function _getServiceProvider()
+    public function getServiceProvider()
     {
         $reflector = $this->_reflectFactory->createServiceReflector();
         $serviceDiscoverer = new Service\FilesystemServiceDiscoverer($reflector, __DIR__ . '/../../example/application/models/', 'Example_Model_');
-        return new Service\EmptyConstructorsServiceProvider($serviceDiscoverer);
+        return new Service\EmptyConstructorsServiceProvider($serviceDiscoverer, $reflector);
     }
 }
