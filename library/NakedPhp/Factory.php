@@ -26,13 +26,13 @@ class Factory
         $this->_reflectFactory = new \NakedPhp\Reflect\ReflectFactory();
     }
 
-    public function getSessionContainer()
+    public function getEntityContainer()
     {
         $this->_sessionBridge = new \Zend_Session_Namespace('NakedPhp');
-        if (!isset($this->_sessionBridge->sessionContainer)) {
-            $this->_sessionBridge->sessionContainer = new Service\SessionContainer(array());
+        if (!isset($this->_sessionBridge->entityContainer)) {
+            $this->_sessionBridge->entityContainer = new Service\EntityContainer(array());
         }
-        return $this->_sessionBridge->sessionContainer;
+        return $this->_sessionBridge->entityContainer;
     }
 
     public function getServiceIterator()

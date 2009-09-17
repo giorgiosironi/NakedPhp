@@ -16,13 +16,13 @@
 namespace NakedPhp\Service;
 use NakedPhp\Metadata\NakedObject;
 
-class SessionContainerTest extends \PHPUnit_Framework_TestCase
+class EntityContainerTest extends \PHPUnit_Framework_TestCase
 {
     private $_container;
 
     public function setUp()
     {
-        $this->_container = new \NakedPhp\Service\SessionContainer();
+        $this->_container = new \NakedPhp\Service\EntityContainer();
     }
 
     public function testAddsAnObjectAndReturnsKey()

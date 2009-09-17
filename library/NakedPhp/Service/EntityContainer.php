@@ -19,7 +19,7 @@ use NakedPhp\Metadata\NakedObject;
 /**
  * This class act as a small container for NakedObject instances.
  */
-class SessionContainer implements \IteratorAggregate
+class EntityContainer implements \IteratorAggregate
 {
     private $_objects = array();
     private $_counter = 0;

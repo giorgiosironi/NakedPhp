@@ -25,9 +25,9 @@ class Controller extends \Zend_Controller_Action
     private $_factory;
 
     /**
-     * @var NakedPhp\Service\SessionContainer   contains entity objects
+     * @var NakedPhp\Service\EntityContainer   contains entity objects
      */
-    private $_sessionContainer;
+    private $_entityContainer;
 
     /**
      * @var NakedPhp\Service\ServiceIterator    lists services
@@ -47,7 +47,7 @@ class Controller extends \Zend_Controller_Action
     public final function preDispatch()
     {
         $this->_factory = new \NakedPhp\Factory();
-        $this->view->session = $this->_sessionContainer = $this->_factory->getSessionContainer();
+        $this->view->session = $this->_entityContainer = $this->_factory->getEntityContainer();
         $this->view->services = $this->_services = $this->_factory->getServiceIterator();
         $this->_methodMerger = $this->_factory->getMethodMerger();
 
@@ -58,7 +58,7 @@ class Controller extends \Zend_Controller_Action
                 $this->_object = $provider->getService($objectKey);
                 $this->view->methods = $this->_object->getClass()->getMethods();
             } else {
-                $this->_object = $this->_sessionContainer->get($objectKey);
+                $this->_object = $this->_entityContainer->get($objectKey);
                 $this->view->methods = $this->_methodMerger->getApplicableMethods($this->_object->getClass());
             }
             $this->view->object = $this->_object;
@@ -125,7 +125,7 @@ class Controller extends \Zend_Controller_Action
     protected function _redirectToObject(NakedObject $no)
     {
         if ($no instanceof NakedEntity) {
-            $index = $this->_sessionContainer->add($no);
+            $index = $this->_entityContainer->add($no);
             $type = 'entity';
         } else {
             $index = $no->getClass();
