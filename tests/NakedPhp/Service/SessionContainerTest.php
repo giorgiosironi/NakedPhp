@@ -53,6 +53,15 @@ class SessionContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($key, $anotherKey);
     }
 
+    public function testAddsAnEqualsObjectIdempotently()
+    {
+        $wrapped = new \stdClass;
+        $no = new NakedObject($wrapped);
+        $key = $this->_container->add($no);
+        $anotherKey = $this->_container->add(new NakedObject($wrapped));
+        $this->assertSame($key, $anotherKey);
+    }
+
     public function testSerializationMustNotAffectIdempotentAddition()
     {
         $no = new NakedObject(null);
@@ -61,7 +70,6 @@ class SessionContainerTest extends \PHPUnit_Framework_TestCase
         unset($this->_container);
         $container = unserialize($serialized);
         $no = $container->get($key);
- //       var_dump(spl_object_hash($no), $);
         $anotherKey = $container->add($no);
         $this->assertSame($key, $anotherKey);
     }

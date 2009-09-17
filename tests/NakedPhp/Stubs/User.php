@@ -56,4 +56,9 @@ class User
     {
         $this->_active = true;
     }
+
+    public function __toString()
+    {
+        return 'User: ' . $this->getName();
+    }
 }

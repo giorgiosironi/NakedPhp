@@ -15,6 +15,7 @@
 
 namespace NakedPhp\Reflect;
 use NakedPhp\Metadata\NakedClass;
+use NakedPhp\Metadata\NakedField;
 
 class EntityReflectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -43,22 +44,31 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
         $methods = $this->_result->getMethods();
         $this->assertEquals('sendMessage', (string) current($methods));
         $this->assertTrue(isset($methods['sendMessage']));
-        $this->assertEquals(3, count($methods));
+    }
+
+    public function testDoesNotListMagicMethods()
+    {
+        $methods = $this->_result->getMethods();
+        $this->assertFalse(isset($methods['__toString']));
     }
 
     public function testListFieldsOfAnEntityObjectThatHaveSetterAndGetter()
     {
         $fields = $this->_result->getFields();
-        $this->markTestSkipped();
-        // TODO: fields indexed by name
-        $this->assertEquals('name', (string) $fields[0]);
+        $this->assertTrue(isset($fields['name']));
     }
 
     public function testListFieldsOfAnEntityObjectThatHaveGetter()
     {
         $fields = $this->_result->getFields();
-        $this->markTestSkipped();
-        // TODO: fields indexed by name
-        $this->assertEquals('status', (string) $fields[1]);
+        $this->assertTrue(isset($fields['status']));
     }
+
+    public function testGathersMetadataOnTheField()
+    {
+        $fields = $this->_result->getFields();
+        $this->markTestSkipped();
+        $this->assertTrue($fields['status'] instanceof NakedField);
+    }
+
 }

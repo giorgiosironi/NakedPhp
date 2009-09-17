@@ -35,6 +35,21 @@ class NakedObjectTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('OBJECT', (string) $no);
     }
 
+    public function testIsEqualToAnotherOneWhichWrapTheSameObject()
+    {
+        $no = new NakedObject($this, null);
+        $another = new NakedObject($this, null);
+        $this->assertTrue($no->equals($another));
+    }
+
+    public function testIsNotEqualToAnotherOneWhichDoesNotWrapTheSameObject()
+    {
+        $no = new NakedObject($this, null);
+        $another = new NakedObject(new \stdClass, null);
+        $this->assertFalse($no->equals($another));
+    }
+
+    /** self-shunting */
     public function dummyMethod()
     {
         return 'cannedResponse';

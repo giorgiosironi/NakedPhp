@@ -7,6 +7,11 @@
     </target>
 
     <target name="doc">
+        <delete>
+            <fileset dir="${docRoot}">
+                <include name="**" />
+            </fileset>
+        </delete>
         <exec command="phpdoc -d library/NakedPhp/ -t ${docRoot} #TODO phpdoc phing task" dir="${srcRoot}" passthru="true" />
     </target>
 

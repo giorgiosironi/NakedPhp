@@ -40,20 +40,30 @@ class EntityReflector
             $annotations = $this->_parser->parse($method->getDocComment());
             if (preg_match('/get[A-Za-z0-9]+/', $method->getName())) {
                 $name = str_replace('get', '', $method->getName());
-                $fields[] = lcfirst($name);
-            } else if (!preg_match('/set[A-Za-z0-9]+/', $method->getName())) {
-                $params = array();
-                $return = 'void';
-                foreach ($annotations as $ann) {
-                    if ($ann['annotation'] == 'param') {
-                        $params[$ann['name']] = new NakedParam($ann['type'], $ann['name']);
-                    } else if ($ann['annotation'] == 'return') {
-                        $return = $ann['type'];
-                    }
-                }
-                $methodName = $method->getName();
-                $methods[$methodName] = new NakedMethod($methodName, $params, $return);
+                $fieldName = lcfirst($name);
+                $fields[$fieldName] = new \stdClass;
+                continue;
             }
+            if (preg_match('/set[A-Za-z0-9]+/', $method->getName())) {
+                continue;
+            }
+
+            $methodName = $method->getName();
+
+            if (substr($methodName, 0, 2) == '__') {
+                continue;
+            }
+
+            $params = array();
+            $return = 'void';
+            foreach ($annotations as $ann) {
+                if ($ann['annotation'] == 'param') {
+                    $params[$ann['name']] = new NakedParam($ann['type'], $ann['name']);
+                } else if ($ann['annotation'] == 'return') {
+                    $return = $ann['type'];
+                }
+            }
+            $methods[$methodName] = new NakedMethod($methodName, $params, $return);
         }
 
         return new NakedEntityClass($methods, $fields);

@@ -1,8 +1,7 @@
 <?php
 $labels = array();
 foreach ($this->services as $index => $object) {
-    $label = $this->displayObject($object);
     $url = $this->url(array('action' => 'view', 'type' => 'service', 'object' => $index));
-    $labels[] = "<a href=\"$url\">$label</a>";
+    $labels[] = "<a href=\"$url\">$object</a>";
 }
 echo implode('; ', $labels);

@@ -47,7 +47,7 @@ class SessionContainer implements \IteratorAggregate
     public function contains(NakedObject $object)
     {
         foreach ($this->_objects as $index => $o) {
-            if ($o === $object) {
+            if ($o->equals($object)) {
                 return $index;
             }
         }

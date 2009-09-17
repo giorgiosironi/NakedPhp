@@ -1,6 +1,7 @@
 <?php
 $labels = array();
-foreach ($this->session as $object) {
-    $labels[] = $this->displayObject($object);
+foreach ($this->session as $index => $object) {
+    $url = $this->url(array('action' => 'view', 'type' => 'entity', 'object' => $index));
+    $labels[] = "<a href=\"$url\">$object</a>";
 }
 echo implode('; ', $labels);

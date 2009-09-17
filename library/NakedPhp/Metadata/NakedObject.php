@@ -42,6 +42,14 @@ class NakedObject
         return call_user_func_array(array($this->_wrapped, $name), $args);
     }
 
+    public function equals(NakedObject $object)
+    {
+        if ($this->_wrapped === $object->_wrapped) {
+            return true;
+        }
+        return false;
+    }
+
     public function __toString()
     {
         if (method_exists($this->_wrapped, '__toString')) {
