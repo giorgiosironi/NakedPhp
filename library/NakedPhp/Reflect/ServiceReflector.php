@@ -18,7 +18,7 @@ use NakedPhp\Metadata\NakedServiceClass;
 use NakedPhp\Metadata\NakedMethod;
 use NakedPhp\Metadata\NakedParam;
 
-class ServiceReflector
+class ServiceReflector extends AbstractReflector
 {
     private $_parser;
 
@@ -37,6 +37,10 @@ class ServiceReflector
         $methods = array();
 
         foreach ($reflector->getMethods() as $method) {
+            $methodName = $method->getName();
+            if ($this->_isMagic($methodName)) {
+                continue;
+            }
             $annotations = $this->_parser->parse($method->getDocComment());
             $params = array();
             $return = 'void';
@@ -47,7 +51,6 @@ class ServiceReflector
                     $return = $ann['type'];
                 }
             }
-            $methodName = $method->getName();
             $methods[$methodName] = new NakedMethod($methodName, $params, $return);
         }
 

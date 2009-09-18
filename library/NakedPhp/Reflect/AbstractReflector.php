@@ -10,23 +10,15 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Stubs
+ * @package    NakedPhp_Reflect
  */
 
-namespace NakedPhp\Stubs;
+namespace NakedPhp\Reflect;
 
-/**
- * @Singleton
- */
-class UserFactory
+abstract class AbstractReflector
 {
-    public function createUser()
+    protected function _isMagic($methodName)
     {
-        return new User();
-    }
-
-    public function __toString()
-    {
-        return 'UserFactory';
+        return substr($methodName, 0, 2) == '__';
     }
 }

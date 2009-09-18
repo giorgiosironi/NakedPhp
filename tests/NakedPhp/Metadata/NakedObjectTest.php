@@ -23,6 +23,15 @@ class NakedObjectTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('cannedResponse', $no->dummyMethod());
     }
 
+    /**
+     * @expectedException NakedPhp\Metadata\Exception
+     */
+    public function testRaiseExceptionWhenUnexistentMethodIsCalled()
+    {
+        $no = new NakedObject($this, null);
+        $no->foobar();
+    }
+
     public function testDiscoversClassNameOfTheDomainObject()
     {
         $no = new NakedObject($this, null);

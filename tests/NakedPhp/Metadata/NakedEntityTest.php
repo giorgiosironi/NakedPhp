@@ -22,4 +22,16 @@ class NakedEntityTest extends \PHPUnit_Framework_TestCase
         $no = new NakedEntity($this, $class = new NakedEntityClass(array(), array('name')));
         $this->assertSame($class, $no->getClass());
     }
+
+    public function testReturnsTheStateOfTheObject()
+    {
+        $no = new NakedEntity($this, $class = new NakedEntityClass(array(), array('nickname' => null)));
+        $this->assertEquals(array('nickname' => 'dummy'), $no->getState());
+    }
+
+    /** self-shunting */
+    public function getNickname()
+    {
+        return 'dummy';
+    }
 }

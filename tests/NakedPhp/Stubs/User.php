@@ -20,6 +20,9 @@ class User
     private $_name;
     private $_active = true;
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->_name;
@@ -30,6 +33,9 @@ class User
         $this->_name = $name;
     }
 
+    /**
+     * @return string
+     */
     public function getStatus()
     {
         return 'guest';

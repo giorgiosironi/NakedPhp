@@ -10,23 +10,9 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Stubs
+ * @package    NakedPhp_Metadata
  */
 
-namespace NakedPhp\Stubs;
+namespace NakedPhp\Metadata;
 
-/**
- * @Singleton
- */
-class UserFactory
-{
-    public function createUser()
-    {
-        return new User();
-    }
-
-    public function __toString()
-    {
-        return 'UserFactory';
-    }
-}
+class Exception extends \Exception {}

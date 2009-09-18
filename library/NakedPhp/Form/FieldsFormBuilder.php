@@ -10,23 +10,24 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Service
+ * @package    NakedPhp_Form
  */
 
-namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedMethod;
+namespace NakedPhp\Form;
+use NakedPhp\Metadata\NakedField;
 
-class FormBuilder
+class FieldsFormBuilder
 {
-    public function createForm(NakedMethod $method)
+    public function createForm($fields)
     {
+        assert('is_array($fields) or $fields instanceof Traversable');
         $form = new \Zend_Form();
-        foreach ($method->getParams() as $name => $param) {
-            $input = new \Zend_Form_Element_Text($param->getName());
+        foreach ($fields as $name => $field) {
+            $input = new \Zend_Form_Element_Text($field->getName());
             $form->addElement($input);
         }
         $form->addElement(new \Zend_Form_Element_Submit('nakedphp_submit', array(
-                            'value' => 'Call',
+                            'value' => 'Edit',
                             'ignore' => 'true'
                          )));
         return $form;

@@ -35,4 +35,14 @@ class NakedEntity extends NakedObject
     {
         return $this->_class;
     }
+
+    public function getState()
+    {
+        $state = array();
+        foreach ($this->_class->getFields() as $name => $field) {
+            $getter = 'get' . ucfirst($name);
+            $state[$name] = $this->_wrapped->$getter();
+        }
+        return $state;
+    }
 }

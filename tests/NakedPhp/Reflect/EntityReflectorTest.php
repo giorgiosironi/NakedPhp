@@ -29,7 +29,14 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
         $parserMock = $this->getMock('NakedPhp\Reflect\DocblockParser', array('parse'), array(), '', false, false, false);
         $parserMock->expects($this->any())
                    ->method('parse')
-                   ->will($this->returnValue(array()));
+                   ->will($this->returnValue(array(
+                       array(
+                           'annotation' => 'return',
+                           'type' => 'string',
+                           'name' => 'status',
+                           'description' => 'The role of the user'
+                       )
+                   )));
         $this->_reflector = new EntityReflector($parserMock);
         $this->_result = $this->_reflector->analyze('NakedPhp\Stubs\User');
     }
@@ -67,8 +74,8 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
     public function testGathersMetadataOnTheField()
     {
         $fields = $this->_result->getFields();
-        $this->markTestSkipped();
         $this->assertTrue($fields['status'] instanceof NakedField);
+        $this->assertEquals('status', $fields['status']->getName());
+        $this->assertEquals('string', $fields['status']->getType());
     }
-
 }

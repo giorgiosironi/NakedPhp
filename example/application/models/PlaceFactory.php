@@ -22,5 +22,10 @@ class Example_Model_PlaceFactory
     {
         return new Example_Model_Place();
     }
+
+    public function __toString()
+    {
+        return 'PlaceFactory';
+    }
 }
 

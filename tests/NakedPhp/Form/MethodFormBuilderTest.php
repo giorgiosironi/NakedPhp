@@ -10,14 +10,14 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Service
+ * @package    NakedPhp_Form
  */
 
-namespace NakedPhp\Service;
+namespace NakedPhp\Form;
 use NakedPhp\Metadata\NakedMethod;
 use NakedPhp\Metadata\NakedParam;
 
-class FormBuilderTest extends \PHPUnit_Framework_TestCase
+class MethodFormBuilderTest extends \PHPUnit_Framework_TestCase
 {
     private $_formBuilder;
     private $_form;
@@ -26,7 +26,7 @@ class FormBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_formBuilder = new FormBuilder();
+        $this->_formBuilder = new MethodFormBuilder();
         $this->_params = array(
                       'first' => new NakedParam('string', 'TheFirstIsAString'),
                       'second' => new NakedParam('integer', 'TheInteger')

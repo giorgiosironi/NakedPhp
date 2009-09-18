@@ -42,4 +42,11 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array(), $deactivate->getParams());
         $this->assertEquals('boolean', $deactivate->getReturn());
     }
+
+    public function testGeneratesFieldsFromGetters()
+    {
+        $fields = $this->_result->getFields();
+        $status = $fields['status'];
+        $this->assertEquals('string', $status->getType());
+    }
 }

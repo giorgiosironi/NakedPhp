@@ -10,23 +10,39 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Stubs
+ * @package    NakedPhp_Metadata
  */
 
-namespace NakedPhp\Stubs;
+namespace NakedPhp\Metadata;
 
 /**
- * @Singleton
+ * Wraps info about a field of a NakedEntityClass.
  */
-class UserFactory
+final class NakedField
 {
-    public function createUser()
+    /**
+     * @var string
+     */
+    private $_type;
+
+    /**
+     * @var string
+     */
+    private $_name;
+
+    public function __construct($type, $name)
     {
-        return new User();
+        $this->_type = $type;
+        $this->_name = $name;
     }
 
-    public function __toString()
+    public function getType()
     {
-        return 'UserFactory';
+        return $this->_type;
+    }
+
+    public function getName()
+    {
+        return $this->_name;
     }
 }

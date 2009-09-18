@@ -39,7 +39,10 @@ class NakedObject
 
     public function __call($name, $args)
     {
-        return call_user_func_array(array($this->_wrapped, $name), $args);
+        if (method_exists($this->_wrapped, $name)) {
+            return call_user_func_array(array($this->_wrapped, $name), $args);
+        }
+        throw new Exception("Method $name does not exist.");
     }
 
     public function equals(NakedObject $object)

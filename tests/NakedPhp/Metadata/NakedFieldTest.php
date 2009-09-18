@@ -10,23 +10,25 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Stubs
+ * @package    NakedPhp_Metadata
  */
 
-namespace NakedPhp\Stubs;
+namespace NakedPhp\Metadata;
 
-/**
- * @Singleton
- */
-class UserFactory
+class NakedFieldTest extends \PHPUnit_Framework_TestCase
 {
-    public function createUser()
+    public function testRetainsTypeAndName()
     {
-        return new User();
+        $param = new NakedField('string', 'name');
+        $this->assertEquals('string', (string) $param->getType());
+        $this->assertEquals('name', $param->getName());
     }
 
-    public function __toString()
+    /*
+    public function testIsNotDefaultByDefault()
     {
-        return 'UserFactory';
+        $param = new NakedParam('array', 'info');
+        $this->assertFalse($param->getDefault());
     }
+    */
 }
