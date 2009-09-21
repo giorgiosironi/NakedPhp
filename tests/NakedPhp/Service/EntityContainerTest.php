@@ -27,17 +27,24 @@ class EntityContainerTest extends \PHPUnit_Framework_TestCase
 
     public function testAddsAnObjectAndReturnsKey()
     {
+        $this->assertTrue(false);
         $no = new NakedObject(null);
         $key = $this->_container->add($no);
         $this->assertSame($no, $this->_container->get($key));
     }
 
+    /**
+     * @depends testAddsAnObjectAndReturnsKey
+     */
     public function testRecognizesNewObjects()
     {
         $no = new NakedObject(null);
         $this->assertFalse($this->_container->contains($no));
     }
 
+    /**
+     * @depends testAddsAnObjectAndReturnsKey
+     */
     public function testRecognizesAnAddedObject()
     {
         $no = new NakedObject(null);
@@ -45,6 +52,9 @@ class EntityContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue((boolean) $this->_container->contains($no));
     }
 
+    /**
+     * @depends testAddsAnObjectAndReturnsKey
+     */
     public function testAddsAnObjectIdempotently()
     {
         $no = new NakedObject(null);
@@ -53,6 +63,9 @@ class EntityContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($key, $anotherKey);
     }
 
+    /**
+     * @depends testAddsAnObjectAndReturnsKey
+     */
     public function testAddsAnEqualsObjectIdempotently()
     {
         $wrapped = new \stdClass;
@@ -62,6 +75,9 @@ class EntityContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($key, $anotherKey);
     }
 
+    /**
+     * @depends testAddsAnObjectAndReturnsKey
+     */
     public function testSerializationMustNotAffectIdempotentAddition()
     {
         $no = new NakedObject(null);

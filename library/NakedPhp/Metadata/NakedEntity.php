@@ -18,7 +18,7 @@ namespace NakedPhp\Metadata;
 /**
  * Wraps an entity object.
  */
-class NakedEntity extends NakedObject
+class NakedEntity extends NakedObject implements \IteratorAggregate
 {
     protected $_class;
 
@@ -44,5 +44,10 @@ class NakedEntity extends NakedObject
             $state[$name] = $this->_wrapped->$getter();
         }
         return $state;
+    }
+
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->getState());
     }
 }

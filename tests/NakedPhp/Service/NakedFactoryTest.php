@@ -27,9 +27,8 @@ class NakedFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        new \NakedPhp\Reflect\EntityReflector();
-        $this->_entityReflectorMock = $this->getMock('NakedPhp\Reflect\EntityReflector', array('analyze'), array(), '', false, false, false);
-        $this->_serviceReflectorMock = $this->getMock('NakedPhp\Reflect\ServiceReflector', array('isService', 'analyze'), array(), '', false, false, false);
+        $this->_entityReflectorMock = $this->getMock('NakedPhp\Reflect\EntityReflector', array('analyze'));
+        $this->_serviceReflectorMock = $this->getMock('NakedPhp\Reflect\ServiceReflector', array('isService', 'analyze'));
         $this->_factory = new NakedFactory($this->_entityReflectorMock, $this->_serviceReflectorMock);
     }
 

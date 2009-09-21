@@ -29,6 +29,22 @@ class NakedEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('nickname' => 'dummy'), $no->getState());
     }
 
+    public function testIsTraversable()
+    {
+        $no = new NakedEntity(null, null);
+        $this->assertTrue($no instanceof \IteratorAggregate);
+    }
+
+    /**
+     * @depends testReturnsTheStateOfTheObject
+     */
+    public function testIsTraversableProxyingToTheEntityState()
+    {
+        $class = new NakedEntityClass(array(), array('nickname' => null));
+        $no = new NakedEntity($this, $class);
+        $this->assertEquals('dummy', $no->getIterator()->current());
+    }
+
     /** self-shunting */
     public function getNickname()
     {

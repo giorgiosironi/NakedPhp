@@ -32,7 +32,7 @@ class EmptyConstructorsServiceProviderTest extends \PHPUnit_Framework_TestCase i
     public function setUp()
     {
         $this->_originalClass = new NakedServiceClass();
-        $serviceReflectorMock = $this->getMock('NakedPhp\Reflect\ServiceReflector', array('analyze'), array(), '', false, false, false);
+        $serviceReflectorMock = $this->getMock('NakedPhp\Reflect\ServiceReflector', array('analyze'));
         $serviceReflectorMock->expects($this->any())
                              ->method('analyze')
                              ->will($this->returnValue($this->_originalClass));

@@ -24,9 +24,7 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        // TRICKY: activate autoload
-        new DocblockParser();
-        $parserMock = $this->getMock('NakedPhp\Reflect\DocblockParser', array('parse'), array(), '', false, false, false);
+        $parserMock = $this->getMock('NakedPhp\Reflect\DocblockParser', array('parse'));
         $parserMock->expects($this->any())
                    ->method('parse')
                    ->will($this->returnValue(array(

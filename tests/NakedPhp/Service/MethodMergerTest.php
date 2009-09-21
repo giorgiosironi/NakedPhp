@@ -27,21 +27,18 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         /*
-        new \NakedPhp\Service\ServiceProvider();
-        $mock = $this->getMock('NakedPhp\Service\ServiceProvider', array('getServiceClasses', 'getService'), array(), '', false, false, false);
+        $mock = $this->getMock('NakedPhp\Service\ServiceProvider', array('getServiceClasses', 'getService'));
         $mock->expects($this->any())
              ->method('getServiceClasses')
              ->will($this->returnValue(array()));
         */
-        new \NakedPhp\Service\NakedFactory();
-        $this->_factoryMock = $this->getMock('NakedPhp\Service\NakedFactory', array('create'), array(), '', false, false, false);
+        $this->_factoryMock = $this->getMock('NakedPhp\Service\NakedFactory', array('create'));
         $this->_methodMerger = new MethodMerger(null, $this->_factoryMock);
     }
 
     public function testCallsAMethodOfTheObjectClass()
     {
-        new \NakedPhp\Stubs\User();
-        $mock = $this->getMock('NakedPhp\Stubs\User', array('sendMessage'), array(), '', false, false, false);
+        $mock = $this->getMock('NakedPhp\Stubs\User', array('sendMessage'));
         $mock->expects($this->once())
              ->method('sendMessage')
              ->with('Title', 'text...');
@@ -50,8 +47,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
 
     public function testCallsAMethodOfTheObjectClassAlsoByPassingObject()
     {
-        new \NakedPhp\Stubs\User();
-        $mock = $this->getMock('NakedPhp\Stubs\User', array('sendMessage'), array(), '', false, false, false);
+        $mock = $this->getMock('NakedPhp\Stubs\User', array('sendMessage'));
         $mock->expects($this->once())
              ->method('sendMessage')
              ->with('Title', 'text...');
@@ -71,8 +67,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         $this->_factoryMock->expects($this->any())
                            ->method('create')
                            ->will($this->returnValue($expectedResult));
-        new \NakedPhp\Stubs\User();
-        $mock = $this->getMock('NakedPhp\Stubs\User', array('getStatus'), array(), '', false, false, false);
+        $mock = $this->getMock('NakedPhp\Stubs\User', array('getStatus'));
         $mock->expects($this->once())
              ->method('getStatus')
              ->will($this->returnValue(new \stdClass));
@@ -82,8 +77,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
 
     public function testDoesNotWrapScalarResult()
     {
-        new \NakedPhp\Stubs\User();
-        $mock = $this->getMock('NakedPhp\Stubs\User', array('getStatus'), array(), '', false, false, false);
+        $mock = $this->getMock('NakedPhp\Stubs\User', array('getStatus'));
         $mock->expects($this->once())
              ->method('getStatus')
              ->will($this->returnValue('foo'));
