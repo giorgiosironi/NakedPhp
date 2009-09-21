@@ -49,4 +49,11 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $status = $fields['status'];
         $this->assertEquals('string', $status->getType());
     }
+
+    public function testGeneratesStringFieldsFromGettersWithoutAnnotations()
+    {
+        $fields = $this->_result->getFields();
+        $status = $fields['password'];
+        $this->assertEquals('string', $status->getType());
+    }
 }

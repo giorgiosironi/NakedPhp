@@ -33,6 +33,11 @@ class User
         $this->_name = $name;
     }
 
+    public function getPassword()
+    {
+        return 'fake';
+    }
+
     /**
      * @return string
      */

@@ -49,6 +49,9 @@ class EntityReflector extends AbstractReflector
                         // $a['description']
                     }
                 }
+                if (!isset($fields[$fieldName])) {
+                    $fields[$fieldName] = new NakedField('string', $fieldName);
+                }
                 continue;
             }
             if ($this->_isSetter($methodName)) {
