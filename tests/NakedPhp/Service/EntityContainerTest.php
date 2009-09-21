@@ -27,7 +27,6 @@ class EntityContainerTest extends \PHPUnit_Framework_TestCase
 
     public function testAddsAnObjectAndReturnsKey()
     {
-        $this->assertTrue(false);
         $no = new NakedObject(null);
         $key = $this->_container->add($no);
         $this->assertSame($no, $this->_container->get($key));

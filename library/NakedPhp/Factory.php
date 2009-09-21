@@ -59,8 +59,8 @@ class Factory
                                         $this->_reflectFactory->createServiceReflector());
     }
 
-    public function getFormBuilder()
+    public function getMethodFormBuilder()
     {
-        return new Service\FormBuilder();
+        return new Form\MethodFormBuilder();
     }
 }

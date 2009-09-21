@@ -102,7 +102,7 @@ class Controller extends \Zend_Controller_Action
         $method = $this->_request->getParam('method');
         if ($this->_methodMerger->needArguments($this->_object, $method)) {
             $method = $this->_methodMerger->getMethod($this->_object, $method);
-            $formBuilder = $this->_factory->getFormBuilder();
+            $formBuilder = $this->_factory->getMethodFormBuilder();
             $form = $formBuilder->createForm($method);
             if ($this->_request->isPost() && $form->isValid($this->_request->getPost())) {
                 $parameters = $this->_request->getPost();

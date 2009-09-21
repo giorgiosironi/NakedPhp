@@ -18,6 +18,14 @@ class Example_Model_Place
     private $_name = 'Default Name';
 
     /**
+     * @return string   the name
+     */
+    public function getName()
+    {
+        return $this->_name;
+    }
+
+    /**
      * @param string $name  the name of pub, disco
      * @return Place        this object
      */
