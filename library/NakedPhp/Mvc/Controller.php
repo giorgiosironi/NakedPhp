@@ -94,7 +94,15 @@ class Controller extends \Zend_Controller_Action
 
     public final function editAction()
     {
-        throw new \Exception('Not yet implemented.');
+        $formBuilder = $this->_factory->getFieldsFormBuilder();
+        $form = $formBuilder->createForm($this->_object->getClass()->getFields());
+        $form->setDefaults($this->_object->getState());
+        if ($this->_request->isPost() && $form->isValid($this->_request->getPost())) {
+            $this->_object->setState($form->getValues());
+            $this->_redirectToObject($this->_object);
+        } else {
+            $this->view->form = $form;
+        }
     }
 
     public final function callAction()

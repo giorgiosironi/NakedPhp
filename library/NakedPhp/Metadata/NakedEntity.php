@@ -46,6 +46,14 @@ class NakedEntity extends NakedObject implements \IteratorAggregate
         return $state;
     }
 
+    public function setState(array $data)
+    {
+        foreach ($data as $fieldName => $value) {
+            $setter = 'set' . ucfirst($fieldName);
+            $this->_wrapped->$setter($value);
+        }
+    }
+
     public function getIterator()
     {
         return new \ArrayIterator($this->getState());

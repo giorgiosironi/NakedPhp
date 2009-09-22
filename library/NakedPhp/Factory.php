@@ -63,4 +63,10 @@ class Factory
     {
         return new Form\MethodFormBuilder();
     }
+
+    public function getFieldsFormBuilder()
+    {
+        return new Form\FieldsFormBuilder();
+    }
+
 }

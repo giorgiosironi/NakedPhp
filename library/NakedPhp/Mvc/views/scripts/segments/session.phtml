@@ -2,6 +2,10 @@
 $labels = array();
 foreach ($this->session as $index => $object) {
     $url = $this->url(array('action' => 'view', 'type' => 'entity', 'object' => $index));
-    $labels[] = "<a href=\"$url\">$object</a>";
+    $editUrl = $this->url(array('action' => 'edit', 'type' => 'entity', 'object' => $index));
+    $labels[] = "<div style=\"float: left; border: 1px solid black;\">
+    <a href=\"$url\">$object</a>
+    <a href=\"$editUrl\">[edit]</a>
+    </div>";
 }
 echo implode('; ', $labels);

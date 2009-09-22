@@ -25,6 +25,11 @@ class Example_Model_Place
         return $this->_name;
     }
 
+    public function setName($name)
+    {
+        $this->_name = $name;
+    }
+
     /**
      * @param string $name  the name of pub, disco
      * @return Place        this object

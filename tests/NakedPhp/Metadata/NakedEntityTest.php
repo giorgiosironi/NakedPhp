@@ -29,6 +29,17 @@ class NakedEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('nickname' => 'dummy'), $no->getState());
     }
 
+    public function testSetsTheStateOfTheObject()
+    {
+        $data = array('nickname' => 'dummy');
+        $user = $this->getMock('NakedPhp\Stubs\User', array('setNickname'));
+        $user->expects($this->once())
+             ->method('setNickname')
+             ->with('dummy');
+        $no = new NakedEntity($user, null);
+        $no->setState($data);
+    }
+
     public function testIsTraversable()
     {
         $no = new NakedEntity(null, null);
