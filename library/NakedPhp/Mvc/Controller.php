@@ -88,10 +88,16 @@ class Controller extends \Zend_Controller_Action
         echo "Hello world from NakedPhp!";
     }
 
+    /**
+     * This action shows a NakedEntity or NakedService object.
+     */
     public final function viewAction()
     {
     }
 
+    /**
+     * This action allows editing of a NakedEntity object.
+     */
     public final function editAction()
     {
         $formBuilder = $this->_factory->getFieldsFormBuilder();
@@ -108,6 +114,9 @@ class Controller extends \Zend_Controller_Action
         }
     }
 
+    /**
+     * This action allows to call a method on a NakedEntity or NakedService object.
+     */
     public final function callAction()
     {
         $method = $this->_request->getParam('method');
@@ -133,6 +142,10 @@ class Controller extends \Zend_Controller_Action
         }
     }
 
+    /**
+     * This method redirects to the view action of a NakedEntity or NakedService object.
+     * @param NakedObject $no
+     */
     protected function _redirectToObject(NakedObject $no)
     {
         if ($no instanceof NakedEntity) {
