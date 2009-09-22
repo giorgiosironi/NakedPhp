@@ -26,8 +26,9 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $this->_formBuilder = new FieldsFormBuilder();
         $this->_fields = array(
-            'first' => new NakedField('string', 'TheFirstIsAString'),
-            'second' => new NakedField('integer', 'TheInteger')
+            'first' => new NakedField('string', 'first'),
+            'second' => new NakedField('integer', 'second'),
+            'oneRelation' => new NakedField('NakedPhp\Stubs\User', 'oneRelation')
         );
         $this->_form = $this->_formBuilder->createForm($this->_fields);
     }
@@ -41,5 +42,17 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(count($this->_fields) + 1, count($this->_form));
     }
+
+    public function testCreatesSelectForOneTargetRelationships()
+    {
+        $this->assertTrue($this->_form->oneRelation instanceof \Zend_Form_Element_Select);
+    }
+
+    public function testNormalizesClassNameForRelationships()
+    {
+        $this->assertEquals('NakedPhp-Stubs-User',
+                            $this->_form->oneRelation->getAttrib('class'));
+    }
+
 }
 

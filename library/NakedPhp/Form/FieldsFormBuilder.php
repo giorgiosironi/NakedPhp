@@ -23,7 +23,8 @@ class FieldsFormBuilder
         assert('is_array($fields) or $fields instanceof Traversable');
         $form = new \Zend_Form();
         foreach ($fields as $name => $field) {
-            $input = new \Zend_Form_Element_Text($field->getName());
+            $input = $this->createElement($field);
+            $input->setAttrib('class', $this->_normalize($field->getType()));
             $form->addElement($input);
         }
         $form->addElement(new \Zend_Form_Element_Submit('nakedphp_submit', array(
@@ -31,5 +32,24 @@ class FieldsFormBuilder
                             'ignore' => 'true'
                          )));
         return $form;
+    }
+
+    public function createElement(NakedField $field)
+    {
+        if ($this->_isObjectField($field)) {
+            return new \Zend_Form_Element_Select($field->getName());
+        } else {
+            return new \Zend_Form_Element_Text($field->getName());
+        }
+    }
+
+    protected function _isObjectField(NakedField $field)
+    {
+        return ucfirst($field->getType()) == $field->getType();
+    }
+
+    protected function _normalize($className)
+    {
+        return strtr($className, array('_' => '-', '\\' => '-'));
     }
 }
