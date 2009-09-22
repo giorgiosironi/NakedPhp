@@ -36,6 +36,9 @@ class NakedEntity extends NakedObject implements \IteratorAggregate
         return $this->_class;
     }
 
+    /**
+     * @return array    field names are keys
+     */
     public function getState()
     {
         $state = array();
@@ -46,9 +49,16 @@ class NakedEntity extends NakedObject implements \IteratorAggregate
         return $state;
     }
 
+    /**
+     * @param array $data   field names are keys; works also with objects and
+     *                      objects wrapped in NakedEntity
+     */
     public function setState(array $data)
     {
         foreach ($data as $fieldName => $value) {
+            if ($value instanceof self) {
+                $value = $value->_wrapped;
+            }
             $setter = 'set' . ucfirst($fieldName);
             $this->_wrapped->$setter($value);
         }

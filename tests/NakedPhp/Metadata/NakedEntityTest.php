@@ -43,7 +43,7 @@ class NakedEntityTest extends \PHPUnit_Framework_TestCase
 
     public function testSetsTheStateOfTheObjectAlsoWithARelation()
     {
-        $data = array('phonenumber' => $phonenumber = new Phonenumber);
+        $data = array('phonenumber' => new NakedEntity($phonenumber = new Phonenumber));
         $user = $this->getMock('NakedPhp\Stubs\User', array('setPhonenumber'));
         $user->expects($this->once())
              ->method('setPhonenumber')

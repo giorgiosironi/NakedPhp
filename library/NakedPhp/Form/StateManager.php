@@ -28,6 +28,10 @@ class StateManager
         $this->_container = $entityContainer;    
     }
 
+    /**
+     * @param Zend_Form $form   form with select to populate with options from
+     *                          the container
+     */
     public function populateOptions(\Zend_Form $form)
     {
         foreach ($this->_getObjectElements($form) as $name => $element) {
@@ -41,7 +45,9 @@ class StateManager
     }
 
     /**
-     * @return array    
+     * @param Zend_Form $form   form to get values from
+     * @return array            transparent for scalar values, returns 
+     *                          NakedEntity instances instead of container keys
      */
     public function getState(\Zend_Form $form)
     {

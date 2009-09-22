@@ -18,6 +18,9 @@ use NakedPhp\Metadata\NakedField;
 
 class FieldsFormBuilder
 {
+    /**
+     * @param array $fields    NakedField instances
+     */
     public function createForm($fields)
     {
         assert('is_array($fields) or $fields instanceof Traversable');
@@ -34,6 +37,10 @@ class FieldsFormBuilder
         return $form;
     }
 
+    /**
+     * @param NakedField $field     single field
+     * @return Zend_Form_Element
+     */
     public function createElement(NakedField $field)
     {
         if ($this->_isObjectField($field)) {
