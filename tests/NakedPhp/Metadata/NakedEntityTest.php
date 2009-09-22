@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\Metadata;
+use NakedPhp\Stubs\Phonenumber;
 
 class NakedEntityTest extends \PHPUnit_Framework_TestCase
 {
@@ -36,6 +37,17 @@ class NakedEntityTest extends \PHPUnit_Framework_TestCase
         $user->expects($this->once())
              ->method('setNickname')
              ->with('dummy');
+        $no = new NakedEntity($user, null);
+        $no->setState($data);
+    }
+
+    public function testSetsTheStateOfTheObjectAlsoWithARelation()
+    {
+        $data = array('phonenumber' => $phonenumber = new Phonenumber);
+        $user = $this->getMock('NakedPhp\Stubs\User', array('setPhonenumber'));
+        $user->expects($this->once())
+             ->method('setPhonenumber')
+             ->with($phonenumber);
         $no = new NakedEntity($user, null);
         $no->setState($data);
     }

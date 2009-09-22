@@ -13,10 +13,9 @@
  * @package    Example_Model
  */
 
-class Example_Model_Place
+class Example_Model_City
 {
-    private $_name = 'Default Name';
-    private $_city;
+    private $_name = 'A city';
 
     /**
      * @return string   the name
@@ -29,29 +28,6 @@ class Example_Model_Place
     public function setName($name)
     {
         $this->_name = $name;
-    }
-
-    /**
-     * @return Example_Model_City
-     */
-    public function getCity()
-    {
-        return $this->_city;
-    }
-
-    public function setCity(Example_Model_City $city)
-    {
-        $this->_city = $city;
-    }
-
-    /**
-     * @param string $name              the name of pub, disco
-     * @return Example_Model_Place      this object
-     */
-    public function edit($name)
-    {
-        $this->_name = (string) $name;
-        return $this;
     }
 
     public function __toString()

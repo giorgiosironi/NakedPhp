@@ -19,6 +19,12 @@ class User
 {
     private $_name;
     private $_active = true;
+    private $_phonenumber;
+        
+    public function __construct($name = null)
+    {
+        $this->_name = $name;
+    }
 
     /**
      * @return string
@@ -36,6 +42,19 @@ class User
     public function getPassword()
     {
         return 'fake';
+    }
+
+    /**
+     * @return NakedPhp\Stubs\Phonenumber
+     */
+    public function getPhonenumber()
+    {
+        return $this->_phonenumber;
+    }
+
+    public function setPhonenumber(Phonenumber $phonenumber)
+    {
+        $this->_phonenumber = $phonenumber;
     }
 
     /**

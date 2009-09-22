@@ -69,4 +69,8 @@ class Factory
         return new Form\FieldsFormBuilder();
     }
 
+    public function getStateManager()
+    {
+        return new Form\StateManager($this->getEntityContainer());
+    }
 }
