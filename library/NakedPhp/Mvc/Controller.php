@@ -101,13 +101,12 @@ class Controller extends \Zend_Controller_Action
     public final function editAction()
     {
         $formBuilder = $this->_factory->getFieldsFormBuilder();
-        $stateManager = $this->_factory->getStateManager();
         $form = $formBuilder->createForm($this->_object->getClass()->getFields());
-        $stateManager->populateOptions($form);
-        $form->setDefaults($this->_object->getState());
+        $stateManager = $this->_factory->getStateManager()
+                                       ->populateOptions($form)
+                                       ->setFormState($form, $this->_object);
         if ($this->_request->isPost() && $form->isValid($this->_request->getPost())) {
-            $state = $stateManager->getState($form->getValues());
-            $this->_object->setState($state);
+            $state = $stateManager->setEntityState($this->_object, $form);
             $this->_redirectToObject($this->_object);
         } else {
             $this->view->form = $form;

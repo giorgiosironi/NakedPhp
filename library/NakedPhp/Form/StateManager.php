@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\Form;
+use NakedPhp\Metadata\NakedEntity;
 
 class StateManager
 {
@@ -23,6 +24,9 @@ class StateManager
         '\\' => '-'
     );
 
+    /**
+     * @param Traversable $entityContainer  a container of NakedEntity instances
+     */
     public function __construct(\Traversable $entityContainer)
     {
         $this->_container = $entityContainer;    
@@ -31,6 +35,7 @@ class StateManager
     /**
      * @param Zend_Form $form   form with select to populate with options from
      *                          the container
+     * @return StateManager     provides a fluent interface
      */
     public function populateOptions(\Zend_Form $form)
     {
@@ -42,18 +47,20 @@ class StateManager
                 }
             }
         }
+
+        return $this;
     }
 
     /**
+     * @param NakedEntity $entity
      * @param Zend_Form $form   form to get values from
-     * @return array            transparent for scalar values, returns 
-     *                          NakedEntity instances instead of container keys
+     * @return StateManager     provides a fluent interface
      */
-    public function getState(\Zend_Form $form)
+    public function setEntityState(NakedEntity $entity, \Zend_Form $form)
     {
         $state = array();
-        foreach ($form as $name => $element) {
-            $value = $element->getValue();
+        foreach ($form->getValues() as $name => $value) {
+            $element = $form->$name;
             if ($this->_isObjectElement($element)) {
                 foreach ($this->_container as $key => $object) {
                     if ($key == $value) {
@@ -64,9 +71,37 @@ class StateManager
                 $state[$name] = $value;
             }
         }
-        return $state;
+        $entity->setState($state);
+
+        return $this;
     }
 
+    /**
+     * @param Zend_Form $form
+     * @param NakedEntity $entity
+     * @return StateManager     provides a fluent interface
+     */
+    public function setFormState(\Zend_Form $form, NakedEntity $entity)
+    {
+        $state = $entity->getState();
+        foreach ($form as $name => $element) {
+            if ($this->_isObjectElement($element)) {
+                foreach ($this->_container as $key => $object) {
+                    if ($object->isWrapping($state[$name])) {
+                        $state[$name] = $key;
+                        break;
+                    }
+                }
+            }
+        }
+        $form->populate($state);
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
     protected function _getObjectElements(\Zend_Form $form)
     {
         $elements = array();
@@ -78,12 +113,20 @@ class StateManager
         return $elements;
     }
 
+    /**
+     * @return boolean
+     */
     protected function _isObjectElement(\Zend_Form_Element $element)
     {
         return $element instanceof \Zend_Form_Element_Multi;
     }
 
-    protected function _isOfNormalizedClassName($object, $normalizedClassName)
+    /**
+     * @param NakedEntity
+     * @param string
+     * @return boolean
+     */
+    protected function _isOfNormalizedClassName(NakedEntity $object, $normalizedClassName)
     {
         $objectClassName = $object->getClassName();
         return strtr($objectClassName, $this->_normalization) == $normalizedClassName;

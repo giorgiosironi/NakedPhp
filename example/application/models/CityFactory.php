@@ -13,31 +13,22 @@
  * @package    Example_Model
  */
 
-class Example_Model_City
+/**
+ * @NakedService
+ */
+class Example_Model_CityFactory
 {
-    private $_name;
-
-    public function __construct($name)
-    {
-        $this->setName($name);
-    }
-
     /**
-     * @return string   the name
+     * @param string $name  the city name
      */
-    public function getName()
+    public function createCity($name)
     {
-        return $this->_name;
-    }
-
-    public function setName($name)
-    {
-        $this->_name = $name;
+        return new Example_Model_City($name);
     }
 
     public function __toString()
     {
-        return (string) $this->_name;
+        return 'CityFactory';
     }
 }
 

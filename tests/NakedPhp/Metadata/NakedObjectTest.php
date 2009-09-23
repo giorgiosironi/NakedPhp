@@ -58,6 +58,13 @@ class NakedObjectTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($no->equals($another));
     }
 
+    public function testContainsItsWrappedObject()
+    {
+        $no = new NakedObject($this, null);
+        $this->assertFalse($no->isWrapping(new \stdClass));
+        $this->assertTrue($no->isWrapping($this));
+    }
+
     /** self-shunting */
     public function dummyMethod()
     {

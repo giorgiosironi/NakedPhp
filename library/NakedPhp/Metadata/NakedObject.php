@@ -27,16 +27,25 @@ class NakedObject
      */
     protected $_wrapped;
 
+    /**
+     * @param object $wrapped   domain object to wrap.
+     */
     public function __construct($wrapped)
     {
         $this->_wrapped = $wrapped;
     }
 
+    /**
+     * @return string   the class name of the wrapped object
+     */
     public function getClassName()
     {
         return get_class($this->_wrapped);
     }
 
+    /**
+     * implements decoration of wrapped object
+     */
     public function __call($name, $args)
     {
         if (method_exists($this->_wrapped, $name)) {
@@ -45,12 +54,24 @@ class NakedObject
         throw new Exception("Method $name does not exist.");
     }
 
+    /**
+     * @return boolean  true if the instance contains the same domain object
+     */
     public function equals(NakedObject $object)
     {
         if ($this->_wrapped === $object->_wrapped) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * @param object $object
+     * @return boolean  true if $object is the same domain object wrapped
+     */
+    public function isWrapping($object)
+    {
+        return $this->_wrapped === $object;
     }
 
     public function __toString()
