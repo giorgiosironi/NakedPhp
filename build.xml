@@ -4,6 +4,7 @@
 
     <target name="test">
         <exec command="phpunit --bootstrap tests/bootstrap.php --configuration tests/phpunit.xml" dir="${srcRoot}" passthru="true" />
+        <exec command="phpunit --bootstrap=example/application/bootstrap.php  --configuration example/application/tests/phpunit.xml" dir="${srcRoot}" passthru="true" />
     </target>
 
     <target name="doc">
