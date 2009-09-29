@@ -48,7 +48,7 @@ class EmptyConstructorsServiceProviderTest extends \PHPUnit_Framework_TestCase i
     public function testInstancesServices()
     {
         $ns = $this->_provider->getService('SplQueue');
-        $this->assertEquals('SplQueue', $ns->getClassName());
+        $ns->enqueue('foo');
     }
 
     public function testProvidesServiceMetadata()

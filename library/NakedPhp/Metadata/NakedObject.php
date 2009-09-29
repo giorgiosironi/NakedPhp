@@ -74,6 +74,23 @@ class NakedObject
         return $this->_wrapped === $object;
     }
 
+    /**
+     * @param string $methodName
+     * @return boolean
+     */
+    public function hasMethod($methodName)
+    {
+        return method_exists($this->_wrapped, $methodName);
+    }
+
+    /**
+     * @return object
+     */
+    public function unwrap()
+    {
+        return $this->_wrapped;
+    }
+
     public function __toString()
     {
         if (method_exists($this->_wrapped, '__toString')) {

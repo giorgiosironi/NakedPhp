@@ -19,7 +19,7 @@ class NakedServiceTest extends \PHPUnit_Framework_TestCase
 {
     public function testRetainsClassMetadata()
     {
-        $no = new NakedService($this, $class = new NakedServiceClass(array('doSomething')));
+        $no = new NakedService($this, $class = new NakedServiceClass('', array('doSomething')));
         $this->assertSame($class, $no->getClass());
     }
 }

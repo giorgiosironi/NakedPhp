@@ -65,6 +65,13 @@ class NakedObjectTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($no->isWrapping($this));
     }
 
+    public function testDiscoverIfAMethodExists()
+    {
+        $no = new NakedObject($this, null);
+        $this->assertTrue($no->hasMethod('dummyMethod'));
+        $this->assertFalse($no->hasMethod('methodThatDoesNotExist'));
+    }
+
     /** self-shunting */
     public function dummyMethod()
     {

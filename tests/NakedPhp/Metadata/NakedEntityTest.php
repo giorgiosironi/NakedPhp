@@ -20,13 +20,13 @@ class NakedEntityTest extends \PHPUnit_Framework_TestCase
 {
     public function testRetainsClassMetadata()
     {
-        $no = new NakedEntity($this, $class = new NakedEntityClass(array(), array('name')));
+        $no = new NakedEntity($this, $class = new NakedEntityClass('', array(), array('name')));
         $this->assertSame($class, $no->getClass());
     }
 
     public function testReturnsTheStateOfTheObject()
     {
-        $no = new NakedEntity($this, $class = new NakedEntityClass(array(), array('nickname' => null)));
+        $no = new NakedEntity($this, $class = new NakedEntityClass('', array(), array('nickname' => null)));
         $this->assertEquals(array('nickname' => 'dummy'), $no->getState());
     }
 
@@ -63,7 +63,7 @@ class NakedEntityTest extends \PHPUnit_Framework_TestCase
      */
     public function testIsTraversableProxyingToTheEntityState()
     {
-        $class = new NakedEntityClass(array(), array('nickname' => null));
+        $class = new NakedEntityClass('', array(), array('nickname' => null));
         $no = new NakedEntity($this, $class);
         $this->assertEquals('dummy', $no->getIterator()->current());
     }

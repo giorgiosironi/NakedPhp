@@ -54,7 +54,7 @@ class ServiceReflector extends AbstractReflector
             $methods[$methodName] = new NakedMethod($methodName, $params, $return);
         }
 
-        return new NakedServiceClass($methods);
+        return new NakedServiceClass($className, $methods);
     }
 
     public function isService($className)

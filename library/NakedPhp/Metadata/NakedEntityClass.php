@@ -26,14 +26,23 @@ class NakedEntityClass extends NakedClass
      */
     protected $_fields;
 
-    public function __construct(array $methods = array(), array $fields = array())
+    public function __construct($className = '', array $methods = array(), array $fields = array())
     {
-        parent::__construct($methods);
+        parent::__construct($className, $methods);
         $this->_fields = $fields;
     }
 
     public function getFields()
     {
         return $this->_fields;
+    }
+
+    /**
+     * @param string $name
+     * @return NakedField
+     */
+    public function getField($name)
+    {
+        return $this->_fields[$name];
     }
 }

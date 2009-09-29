@@ -19,7 +19,14 @@ class NakedEntityClassTest extends \PHPUnit_Framework_TestCase
 {
     public function testRetainsFieldsList()
     {
-        $nc = new NakedEntityClass(array(), $fields = array('Name', 'Role'));
+        $nc = new NakedEntityClass('', array(), $fields = array('Name', 'Role'));
         $this->assertEquals($fields, $nc->getFields());
     }
+
+    public function testGivesAccessToAFieldByName()
+    {
+        $nc = new NakedEntityClass('', array(), array('key' => 'Name', 'Role'));
+        $this->assertEquals('Name', $nc->getField('key'));
+    }
+
 }

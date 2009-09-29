@@ -74,7 +74,7 @@ class EntityReflector extends AbstractReflector
             $methods[$methodName] = new NakedMethod($methodName, $params, $return);
         }
 
-        return new NakedEntityClass($methods, $fields);
+        return new NakedEntityClass($className, $methods, $fields);
     }
 
     protected function _isGetter($methodName) 
