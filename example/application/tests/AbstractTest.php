@@ -13,13 +13,15 @@
  * @package    Example_Test
  */
 
-require_once 'AbstractTest.php';
-
-class Example_IndexTest extends Example_AbstractTest
+class Example_AbstractTest extends Zend_Test_PHPUnit_ControllerTestCase
 {
-    public function testIndexIsLoaded()
+    public function setUp()
     {
-        $this->dispatch('/naked-php');
-        $this->assertQueryContentContains('#nakedphp_services a', 'PlaceFactory');
+        $application = new Zend_Application(
+            'testing', 
+            APPLICATION_PATH . '/configs/application.ini'
+        );
+        $this->bootstrap = array($application, 'bootstrap');
+        parent::setUp();
     }
 }

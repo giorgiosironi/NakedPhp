@@ -17,6 +17,10 @@ class Example_Model_Place
 {
     private $_name = 'Default Name';
     private $_city;
+    private $_category;
+    private $_website;
+    private $_address;
+    private $_phone;
 
     /**
      * @return string   the name
@@ -42,6 +46,59 @@ class Example_Model_Place
     public function setCity(Example_Model_City $city)
     {
         $this->_city = $city;
+    }
+    
+    /**
+     * @return Example_Model_PlaceCategory
+     */
+    public function getCategory()
+    {
+        return $this->_category;
+    }
+
+    public function setCategory($category)
+    {
+        $this->_category = $category;
+    }
+
+
+    /**
+     * @return string
+     * */
+    public function getWebsite()
+    {
+        return $this->_website;
+    }
+
+    public function setWebsite($website)
+    {
+        $this->_website = $website;
+    }
+
+    /**
+     * @return string
+     * */
+    public function getAddress()
+    {
+        return $this->_address;
+    }
+
+    public function setAddress($address)
+    {
+        $this->_address = $address;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPhone()
+    {
+        return $this->_phone;
+    }
+
+    public function setPhone($phone)
+    {
+        $this->_phone = $phone;
     }
 
     /**

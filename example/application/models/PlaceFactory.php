@@ -23,6 +23,22 @@ class Example_Model_PlaceFactory
         return new Example_Model_Place();
     }
 
+    /**
+     * @param string $name  name of the category (disco, pub...)
+     */
+    public function createPlaceCategory($name)
+    {
+        return new Example_Model_PlaceCategory($name);
+    }
+
+    /**
+     * @param string $name  the city name
+     */
+    public function createCity($name)
+    {
+        return new Example_Model_City($name);
+    }
+
     public function __toString()
     {
         return 'PlaceFactory';
