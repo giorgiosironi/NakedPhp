@@ -133,7 +133,7 @@ class Controller extends \Zend_Controller_Action
             $parameters = array();
         }
 
-        $result = $this->_methodMerger->call($this->_object, $method, $parameters);
+        $result = $this->_methodMerger->call($this->_object, (string) $method, $parameters);
         if (is_object($result)) {
             $this->_redirectToObject($result);
         } else {

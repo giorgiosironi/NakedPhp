@@ -15,7 +15,7 @@
 
 namespace NakedPhp\Service;
 use NakedPhp\Metadata\NakedObject;
-use NakedPhp\Metadata\NakedEntityClass;
+use NakedPhp\Metadata\NakedClass;
 use NakedPhp\Metadata\NakedService;
 use NakedPhp\Metadata\NakedMethod;
 
@@ -91,10 +91,10 @@ class MethodMerger
     }
 
     /**
-     * @param NakedEntityClass $class    the type of the entity considered
+     * @param NakedClass $class    the type of the entity considered
      * @return array                     NakedMethod instances
      */
-    public function getApplicableMethods(NakedEntityClass $class)
+    public function getApplicableMethods(NakedClass $class)
     {
         $servicesMethods = array();
         foreach ($this->_getAllMethods() as $methodName => $method) {
@@ -141,7 +141,7 @@ class MethodMerger
      * Builds metadata for a method leaving out the $class parameter, which
      * will be automatically passed.
      */
-    protected function _buildFakeMethod(NakedMethod $method, NakedEntityClass $class)
+    protected function _buildFakeMethod(NakedMethod $method, NakedClass $class)
     {
         $newParams = array();
         foreach ($method->getParams() as $key => $param) {

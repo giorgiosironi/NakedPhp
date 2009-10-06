@@ -24,11 +24,14 @@ class DisplayObjectTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->_helper = new DisplayObject();
-        $this->_object = $this->getMock('NakedPhp\Metadata\NakedEntity', array('getState'), array(), '', false);
+        $this->_object = $this->getMock('NakedPhp\Metadata\NakedEntity', array('getClassName', 'getState'), array(), '', false);
         $state = array(
             'firstName' => 'Giorgio',
             'lastName' => 'Sironi'
         );
+        $this->_object->expects($this->any())
+                      ->method('getClassName')
+                      ->will($this->returnValue('DummyClass'));
         $this->_object->expects($this->any())
                       ->method('getState')
                       ->will($this->returnValue($state));
@@ -37,7 +40,7 @@ class DisplayObjectTest extends \PHPUnit_Framework_TestCase
 
     public function testReturnsATable()
     {
-        $this->assertQuery($this->_result, 'table');
+        $this->assertQuery($this->_result, 'table.nakedphp_entity.DummyClass');
     }
 
     public function testFillsTableWithRowsBasingOnFields()
