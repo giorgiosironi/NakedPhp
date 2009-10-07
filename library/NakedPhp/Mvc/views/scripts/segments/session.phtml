@@ -3,9 +3,14 @@ $labels = array();
 foreach ($this->session as $index => $object) {
     $url = $this->url(array('action' => 'view', 'type' => 'entity', 'object' => $index));
     $editUrl = $this->url(array('action' => 'edit', 'type' => 'entity', 'object' => $index));
-    $labels[] = "<div style=\"float: left; border: 1px solid black;\">
+    $class = $object->getClassName();
+    $this->iconLoader($class);
+    $labels[] = "<li class=\"$class\">
     <a href=\"$url\">$object</a>
     <a href=\"$editUrl\">[edit]</a>
-    </div>";
+    </li>
+    ";
 }
-echo implode('', $labels);
+if ($labels) {
+    echo "<ul>\n" . implode('', $labels) . "</ul>\n";
+}

@@ -1,6 +1,82 @@
 <html>
 <head>
+    <?php echo $this->headStyle(); ?>
     <style type="text/css">
+    /* layout */
+    body {
+        margin: 0px;
+        padding: 0px;
+    }
+    div#container {
+    }
+    div#header{
+        height: 150px;
+        border-bottom: 1px solid black;
+    }
+    div#methods {
+        float: left;
+        width: 25%;
+        height: 300px;
+    }
+    div#object {
+        margin-left: 25%;
+        width: 66%;
+    }
+    
+    /* lists */
+    div#header ul {
+        list-style-type: none;
+        padding: 0px;
+        margin: 0px;
+    }
+    div#header li {
+        float: left;
+        padding-top: 4px;
+        padding-bottom: 4px;
+        padding-right: 10px;
+        margin: 0px;
+    }
+
+    /* forms */
+    form {
+        background: white;
+        width: 460px;
+        margin: 5px auto;
+        padding: 0px;
+        overflow: auto;
+    }
+
+    form dt {
+        padding: 0px;
+        clear: both;
+        width: 30%;
+        float: left;
+        text-align: right;
+        margin: 5px 5px 5px 0px;
+    }
+
+    form dd {
+        padding: 0px;
+        float: left;
+        width: 68%;
+        margin: 5px 2px 5px 0px;
+    }
+
+    form input, form textarea, form select {
+        margin: 0px 0px 2px 0px;
+        padding: 0px;
+    }
+
+    form input[type="submit"] {
+    }
+
+    /*
+    .required:before{content:'* '}
+
+    .optional:before{content:'+ '}
+    */
+
+    /* tables */
     table {
         border-collapse: collapse;
     }
@@ -10,29 +86,33 @@
     </style>
 </head>
 <body>
-<h1>My Layout</h1>
-<table>
-<tr id="nakedphp_services">
-<td>Services:</td>
-<td><?php echo $this->layout()->nakedphp_services; ?></td>
-</tr>
-<tr id="nakedphp_session">
-<td>Session bar:</td>
-<td><?php echo $this->layout()->nakedphp_session; ?></td>
-</tr>
-<tr id="nakedphp_methods">
-<td>Methods:</td>
-<td><?php echo $this->layout()->nakedphp_methods; ?></td>
-</tr>
-<!--
-<tr>
-<td>History:</td>
-<td><?php echo $this->layout()->nakedphp_history; ?></td>
-</tr>
--->
-</table>
-<?php
-echo $this->layout()->content;
-?>
+<div id="container">
+    <div id="header">
+        <table>
+        <tr id="nakedphp_services">
+        <td>Services:</td>
+        <td><?php echo $this->layout()->nakedphp_services; ?></td>
+        </tr>
+        <tr id="nakedphp_session">
+        <td>Session bar:</td>
+        <td><?php echo $this->layout()->nakedphp_session; ?></td>
+        </tr>
+        <!--
+        <tr>
+        <td>History:</td>
+        <td><?php echo $this->layout()->nakedphp_history; ?></td>
+        </tr>
+        -->
+        </table>
+    </div>
+    <div id="methods">
+        <td><?php echo $this->layout()->nakedphp_methods; ?></td>
+    </div>
+    <div id="object">
+    <?php
+    echo $this->layout()->content;
+    ?>
+    </div>
+</div>
 </body>
 </html>

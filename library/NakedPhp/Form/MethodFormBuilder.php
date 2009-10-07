@@ -23,6 +23,7 @@ class MethodFormBuilder
         $form = new \Zend_Form();
         foreach ($method->getParams() as $name => $param) {
             $input = new \Zend_Form_Element_Text($param->getName());
+            $input->setLabel($name);
             $form->addElement($input);
         }
         $form->addElement(new \Zend_Form_Element_Submit('nakedphp_submit', array(

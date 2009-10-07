@@ -28,8 +28,8 @@ class MethodFormBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $this->_formBuilder = new MethodFormBuilder();
         $this->_params = array(
-                      'first' => new NakedParam('string', 'TheFirstIsAString'),
-                      'second' => new NakedParam('integer', 'TheInteger')
+                      'first' => new NakedParam('string', 'first'),
+                      'second' => new NakedParam('integer', 'second')
         );
         $this->_method = new NakedMethod('doSomething', $this->_params, 'boolean');
         $this->_form = $this->_formBuilder->createForm($this->_method);
@@ -43,6 +43,11 @@ class MethodFormBuilderTest extends \PHPUnit_Framework_TestCase
     public function testCreatesInputsForEveryParameterAndASubmit()
     {
         $this->assertEquals(count($this->_params) + 1, count($this->_form));
+    }
+
+    public function testCreatesALabelForEveryInput()
+    {
+        $this->assertEquals('first', $this->_form->first->getLabel());
     }
 }
 

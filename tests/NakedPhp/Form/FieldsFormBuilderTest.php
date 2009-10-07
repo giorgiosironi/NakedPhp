@@ -43,6 +43,11 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(count($this->_fields) + 1, count($this->_form));
     }
 
+    public function testCreatesALabelForEveryInput()
+    {
+        $this->assertEquals('first', $this->_form->first->getLabel());
+    }
+
     public function testCreatesSelectForOneTargetRelationships()
     {
         $this->assertTrue($this->_form->oneRelation instanceof \Zend_Form_Element_Select);

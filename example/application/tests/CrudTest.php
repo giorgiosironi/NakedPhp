@@ -20,9 +20,9 @@ class Example_CrudTest extends Example_AbstractTest
     public function testFactoryIsLoaded()
     {
         $this->dispatch('/naked-php/view/type/service/object/Example_Model_PlaceFactory');
-        $this->assertQueryContentContains('#nakedphp_methods a', 'createCity');
-        $this->assertQueryContentContains('#nakedphp_methods a', 'createPlaceCategory');
-        $this->assertQueryContentContains('#nakedphp_methods a', 'createPlace');
+        $this->assertQueryContentContains('#methods a', 'createCity');
+        $this->assertQueryContentContains('#methods a', 'createPlaceCategory');
+        $this->assertQueryContentContains('#methods a', 'createPlace');
     }
 
     /**

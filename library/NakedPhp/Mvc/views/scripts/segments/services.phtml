@@ -2,6 +2,8 @@
 $labels = array();
 foreach ($this->services as $index => $object) {
     $url = $this->url(array('action' => 'view', 'type' => 'service', 'object' => $index));
-    $labels[] = "<a href=\"$url\">$object</a>";
+    $labels[] = "<li><a href=\"$url\">$object</a></li>\n";
 }
-echo implode('; ', $labels);
+if ($labels) {
+    echo "<ul>\n" . implode('', $labels) . "</ul>\n";
+}

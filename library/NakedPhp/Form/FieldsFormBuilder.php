@@ -28,6 +28,7 @@ class FieldsFormBuilder
         foreach ($fields as $name => $field) {
             $input = $this->createElement($field);
             $input->setAttrib('class', $this->_normalize($field->getType()));
+            $input->setLabel($name);
             $form->addElement($input);
         }
         $form->addElement(new \Zend_Form_Element_Submit('nakedphp_submit', array(
