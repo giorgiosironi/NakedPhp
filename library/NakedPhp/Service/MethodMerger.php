@@ -42,6 +42,7 @@ class MethodMerger
         assert('is_string($methodName)');
 
         if ($no->hasMethod($methodName)) {
+            $parameters = $this->_addServices($no->getClass()->getMethod($methodName), $parameters);
             $result = call_user_func_array(array($no, $methodName), $parameters);
         } else {
             $service = $this->_findService($methodName);
@@ -54,26 +55,47 @@ class MethodMerger
     }
 
     /**
-     * merge $entity in $parameters according to $method metadata
+     * Automatically provides services to inject as method parameters, removing
+     * the need for the user to specify them.
+     * @param NakedMethod $method   the method on the entity class
+     * @param array $parameters     parameters passed by the user to complete
+     * @return array    full array of parameters
+     */
+    protected function _addServices(NakedMethod $method, array $parameters)
+    {
+        $completeParameters = Array(); 
+        $serviceClasses = $this->_serviceProvider->getServiceClasses();
+        foreach ($method->getParams() as $name => $param) {
+            $type = $param->getType();
+            if (isset($serviceClasses[$type])) {
+                $completeParameters[$name] = $this->_serviceProvider->getService($type);
+            } else {
+                $completeParameters[$name] = array_shift($parameters);
+            }
+        }
+        assert('$parameters == array()');
+        return $completeParameters;
+    }
+
+    /**
+     * Merges $entity in $parameters according to $method metadata.
+     * Used for providing a service method as if it were on an entity, 
+     * automatically injecting the latter.
+     * TODO: factoring out protected methods in a ParameterManager/Parameters class.
      */
     protected function _mergeParameters(NakedMethod $method, NakedObject $entity, array $parameters)
     {
-        $params = array();
+        $completeParameters = array();
         foreach ($method->getParams() as $param) {
             if ($param->getType() == $entity->getClassName()) {
-                break;
+                $completeParameters[] = $entity->unwrap();
             } else {
-                $params[] = array_shift($parameters);
+                $completeParameters[] = array_shift($parameters);
             }
         }
+        assert('$parameters == array()');
 
-        $params[] = $entity->unwrap();
-
-        foreach ($parameters as $param) {
-            $params[] = $param;
-        }
-
-        return $params;
+        return $completeParameters;
     }
 
     /**
@@ -105,7 +127,23 @@ class MethodMerger
                 }
             }
         }
-        return $class->getMethods() + $servicesMethods;
+
+        $classMethods = array();
+        $serviceClasses = $this->_serviceProvider->getServiceClasses();
+        foreach ($class->getMethods() as $methodName => $method) {
+            foreach ($method->getParams() as $param) {
+                $type = $param->getType();
+                if (isset($serviceClasses[$type])) {
+                    $classMethods[$methodName] = $this->_buildFakeMethod($method, $serviceClasses[$type]);
+                    break;
+                }
+            }
+            if (!isset($classMethods[$methodName])) {
+                $classMethods[$methodName] = $method;
+            }
+        }
+
+        return $classMethods + $servicesMethods;
     }
 
     /**
@@ -139,7 +177,7 @@ class MethodMerger
 
     /**
      * Builds metadata for a method leaving out the $class parameter, which
-     * will be automatically passed.
+     * will be then automatically passed.
      */
     protected function _buildFakeMethod(NakedMethod $method, NakedClass $class)
     {
@@ -150,20 +188,6 @@ class MethodMerger
             }
         }
         return new NakedMethod((string) $method, $newParams, $method->getReturn());
-    }
-
-    /**
-     * @param NakedObject $no       object to search the method on
-     * @param string $methodName
-     * @return boolean
-     */
-    public function needArguments(NakedObject $no, $methodName)
-    {
-        $method = $this->getMethod($no, $methodName);
-        if (count($method->getParams())) {
-            return true;
-        }
-        return false;
     }
 
     /**

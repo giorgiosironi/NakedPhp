@@ -118,9 +118,9 @@ class Controller extends \Zend_Controller_Action
      */
     public final function callAction()
     {
-        $method = $this->_request->getParam('method');
-        if ($this->_methodMerger->needArguments($this->_object, $method)) {
-            $method = $this->_methodMerger->getMethod($this->_object, $method);
+        $methodName = $this->_request->getParam('method');
+        $method = $this->_methodMerger->getMethod($this->_object, $methodName);
+        if (count($method->getParams())) {
             $formBuilder = $this->_factory->getMethodFormBuilder();
             $form = $formBuilder->createForm($method);
             if ($this->_request->isPost() && $form->isValid($this->_request->getPost())) {

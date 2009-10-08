@@ -38,6 +38,19 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         $this->_factoryMock = $this->getMock('NakedPhp\Service\NakedFactory', array('create'));
         $this->_methodMerger = new MethodMerger($this->_providerMock, $this->_factoryMock);
     }
+    
+    private function _wrapEntity($entityObject, $method = null)
+    {
+        if (is_null($method)) {
+            $methods = array();
+        } else if (is_string($method)) {
+            $methods[$method] = new NakedMethod($method);
+        } else {
+            $methodName = (string) $method;
+            $methods[$methodName] = $method;
+        }
+        return new NakedEntity($entityObject, new NakedEntityClass('', $methods));
+    }
 
     private function _setAvailableServiceClasses($services)
     {
@@ -52,7 +65,11 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         $mock->expects($this->once())
              ->method('sendMessage')
              ->with('Title', 'text...');
-        $this->_methodMerger->call(new NakedEntity($mock), 'sendMessage', array('Title', 'text...'));
+        $entity = $this->_wrapEntity($mock, new NakedMethod('sendMessage', array(
+            'title' => new NakedParam('string', 'title'),
+            'text' => new NakedParam('string', 'text')
+        )));
+        $this->_methodMerger->call($entity, 'sendMessage', array('Title', 'text...'));
     }
 
     public function testListsMethodOfTheObjectClass()
@@ -114,6 +131,43 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         ));
     }
 
+    public function testCallsAEntityMethodAutomaticallyInjectingServices()
+    {
+        $this->_setAvailableServiceClasses(array(
+            'NakedPhp\Stubs\UserFactory' => new NakedServiceClass('NakedPhp\Stubs\UserFactory')
+        ));
+        $service = new \NakedPhp\Stubs\UserFactory();
+        $this->_providerMock->expects($this->once())
+                            ->method('getService')
+                            ->with('NakedPhp\Stubs\UserFactory')
+                            ->will($this->returnValue($service));
+
+        $class = $this->_getEntityClassWithCreateNewMethod();
+        $no = new NakedEntity($this, $class);
+
+        $this->_called = false;
+        $this->_methodMerger->call($no, 'createNew', array('John Doe'));
+        $this->assertTrue($this->_called);
+    }
+
+    public function createNew(\NakedPhp\Stubs\UserFactory $factory, $name)
+    {
+        $this->assertEquals('John Doe', $name);
+        $this->_called = true;
+    }
+
+    private function _getEntityClassWithCreateNewMethod()
+    {
+        return new NakedEntityClass('NakedPhp\Stubs\User', array(
+            'createNew' => new NakedMethod('createNew', array(
+                'userFactory' => new NakedParam('NakedPhp\Stubs\UserFactory', 'userFactory'),
+                'name' => $name = new NakedParam('string', 'name')
+            ))
+        ));
+    }
+
+
+
     public function testWrapsObjectResultUsingNakedFactory()
     {
         $expectedResult = new NakedEntity(new \stdClass);
@@ -124,7 +178,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         $mock->expects($this->once())
              ->method('getStatus')
              ->will($this->returnValue(new \stdClass));
-        $result = $this->_methodMerger->call(new NakedEntity($mock), 'getStatus');
+        $result = $this->_methodMerger->call($this->_wrapEntity($mock, 'getStatus'), 'getStatus');
         $this->assertSame($expectedResult, $result);
     }
 
@@ -134,42 +188,23 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         $mock->expects($this->once())
              ->method('getStatus')
              ->will($this->returnValue('foo'));
-        $result = $this->_methodMerger->call(new NakedEntity($mock), 'getStatus');
+        $result = $this->_methodMerger->call($this->_wrapEntity($mock, 'getStatus'), 'getStatus');
         $this->assertSame('foo', $result);
-    }
-
-    public function testRecognizeParametersNeed()
-    {
-        $this->_setAvailableServiceClasses(array());
-        $no = $this->_createFakeEntity();
-        $this->assertTrue($this->_methodMerger->needArguments($no, 'doSomething'));
-    }
-
-    public function testRecognizeParametersNeedOnServiceMethods()
-    {
-        $this->_makeProcessMethodAvailable();
-        $class = new NakedEntityClass('NakedPhp\Stubs\User');
-        $no = new NakedEntity(new \NakedPhp\Stubs\User, $class);
-        $this->assertFalse($this->_methodMerger->needArguments($no, 'process'));
-    }
-
-    public function testRecognizeMethodsWithoutParameters()
-    {
-        $this->_setAvailableServiceClasses(array());
-        $no = $this->_createFakeEntity();
-        $this->assertFalse($this->_methodMerger->needArguments($no, 'doAnything'));
     }
 
     protected function _createFakeEntity()
     {
         $methods = array(
-            'doSomething' => new NakedMethod('', array(null, null)),
+            'doSomething' => new NakedMethod('', array(
+                'param1' => new NakedParam('integer', 'param1'),
+                'param2' => new NakedParam('string', 'param2')
+            )),
             'doAnything' => new NakedMethod('')
         );
         return new NakedEntity(new \stdClass, new NakedEntityClass('NakedPhp\Stubs\User', $methods));
     }
 
-    public function testExtractMetadataForAMethod()
+    public function testExtractsMetadataForAMethod()
     {
         $this->_setAvailableServiceClasses(array());
         $methods = array(
@@ -181,7 +216,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
                           $this->_methodMerger->getMethod($no, 'doSomething'));
     }
 
-    public function testExtractBuiltMetadataForAServiceMethod()
+    public function testExtractsBuiltMetadataForAServiceMethod()
     {
         $this->_serviceClass = new NakedServiceClass('', array(
             'block' => new NakedMethod('block', array(
@@ -198,5 +233,23 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
 
         $method = $this->_methodMerger->getMethod($no, 'block');
         $this->assertEquals(array('days' => $days), $method->getParams());
+    }
+
+    public function testExtractsBuiltMetadataForAEntityMethodWhichRequireAService()
+    {
+        $this->_setAvailableServiceClasses(array(
+            'NakedPhp\Stubs\UserFactory' => new NakedServiceClass('NakedPhp\Stubs\UserFactory')
+        ));
+
+        $class = $this->_getEntityClassWithCreateNewMethod();
+        $no = new NakedEntity(new \NakedPhp\Stubs\User, $class);
+
+        $method = $this->_methodMerger->getMethod($no, 'createNew');
+        $this->assertEquals(array('name' => new NakedParam('string', 'name')), $method->getParams());
+    }
+
+    public function testSupportsMetadataBuildingWhenMoreThanOneParameterIsAService()
+    {
+        $this->markTestIncomplete();
     }
 }
