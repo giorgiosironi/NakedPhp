@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\Mvc\View\Helper;
+use NakedPhp\Stubs\View;
 
 class IconLoaderTest extends \PHPUnit_Framework_TestCase
 {
@@ -23,11 +24,8 @@ class IconLoaderTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->_headStyleMock = $this->getMock('Zend_View_Helper_HeadStyle', array('appendStyle'));
-        // TODO: build a mock view for locating view helpers
-        $view = $this->getMock('Zend_View', array('__call'));
-        $view->expects($this->once())
-             ->method('__call')
-             ->will($this->returnValue($this->_headStyleMock));
+        $view = new View();
+        $view->setHelper('headStyle', $this->_headStyleMock);
         $this->_helper = new IconLoader();
         $this->_helper->setView($view);
     }
