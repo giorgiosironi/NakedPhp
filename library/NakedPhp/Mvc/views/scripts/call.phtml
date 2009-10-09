@@ -1,11 +1,9 @@
-<p>A method was called...</p>
-<p>
 <?php
+$this->headTitle($this->object);
+$this->headTitle($this->methodName);
 if ($this->result) {
-    echo "Result: $this->result";
+    echo "<p>Result: $this->result</p>";
 }
-?></p>
-<?
 if ($this->form) {
     echo $this->form;
 }

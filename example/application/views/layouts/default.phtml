@@ -1,6 +1,9 @@
 <html>
 <head>
-    <?php echo $this->headStyle(); ?>
+    <?php 
+    echo $this->headTitle()->setSeparator(' - ');
+    echo $this->headStyle();
+    ?>
     <style type="text/css">
     /* layout */
     body {
@@ -22,8 +25,24 @@
         margin-left: 25%;
         width: 66%;
     }
+
+    /* header */
+    #header table {
+        width: 90%;
+    }
+    #header tr#nakedphp_services {
+    }
+    #header tr#nakedphp_session {
+        height: 40px;
+    }
+    #header td.label {
+        width: 25%;
+    }
+    #header td.content {
+        width: 75%;
+    }
     
-    /* lists */
+    /* lists 
     div#header ul {
         list-style-type: none;
         padding: 0px;
@@ -35,7 +54,7 @@
         padding-bottom: 4px;
         padding-right: 10px;
         margin: 0px;
-    }
+    }*/
 
     /* forms */
     form {
@@ -83,6 +102,46 @@
     td {
         border: 1px solid black;
     }
+
+    /* hooks */
+    #header dt.icon {
+        float: left;
+    }
+    #header dt.icon a {
+        display: block;
+        height: 32px;
+        line-height: 32px;
+    }
+    #header dd.button {
+        float: left;
+        padding: 0px;
+        margin: 0px;
+    }
+
+    .icon {
+        height: 32px;
+    }
+
+    .button.edit {
+        height: 32px;
+        padding: 0px;
+    }
+    .button.edit a {
+        display: block;
+        height: 32px;
+        padding-left: 34px;
+        margin-left: 0px;
+        line-height: 32px;
+        background: url(/graphic/buttons/edit.png) no-repeat left 0%;
+    }
+    .button.edit a:link, .button.edit a:visited {
+        width: 0px;
+        overflow: hidden;
+    }
+    .button.edit a:hover, .button.edit a:active {
+        width: auto;
+    }
+
     </style>
 </head>
 <body>
@@ -90,12 +149,12 @@
     <div id="header">
         <table>
         <tr id="nakedphp_services">
-        <td>Services:</td>
-        <td><?php echo $this->layout()->nakedphp_services; ?></td>
+        <td class="label">Services:</td>
+        <td class="content"><?php echo $this->layout()->nakedphp_services; ?></td>
         </tr>
         <tr id="nakedphp_session">
-        <td>Session bar:</td>
-        <td><?php echo $this->layout()->nakedphp_session; ?></td>
+        <td class="label">Session bar:</td>
+        <td class="content"><?php echo $this->layout()->nakedphp_session; ?></td>
         </tr>
         <!--
         <tr>

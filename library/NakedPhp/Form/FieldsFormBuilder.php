@@ -32,7 +32,7 @@ class FieldsFormBuilder
             $form->addElement($input);
         }
         $form->addElement(new \Zend_Form_Element_Submit('nakedphp_submit', array(
-                            'value' => 'Edit',
+                            'label' => 'Edit',
                             'ignore' => 'true'
                          )));
         return $form;

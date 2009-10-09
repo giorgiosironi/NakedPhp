@@ -18,12 +18,12 @@ namespace NakedPhp\Mvc\View\Helper;
 class IconLoader extends \Zend_View_Helper_Abstract
 {
     /**
-     * TODO: try renaming to iconLoader()
+     * TODO: try renaming to loadIcon()
      */
     public function __call($name, $args)
     {
         list ($className, ) = $args;
-        $html = "li.$className {\nbackground: url(/graphic/icons/$className.png) no-repeat left 50%;\npadding-left: 32px;\n}\n";
+        $html = ".icon.$className {\nbackground: url(/graphic/icons/$className.png) no-repeat left 50%;\npadding-left: 32px;\n}\n";
         $this->view->headStyle()->appendStyle($html);
     }
 }

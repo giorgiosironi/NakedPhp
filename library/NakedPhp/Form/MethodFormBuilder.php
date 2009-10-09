@@ -27,7 +27,7 @@ class MethodFormBuilder
             $form->addElement($input);
         }
         $form->addElement(new \Zend_Form_Element_Submit('nakedphp_submit', array(
-                            'value' => 'Call',
+                            'label' => 'Call',
                             'ignore' => 'true'
                          )));
         return $form;

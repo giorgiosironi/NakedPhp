@@ -1,3 +1,8 @@
-Object selected:<br />
+<?php
+$this->headTitle((string) $this->object);
+?>
+<h1 class="icon <?php echo $this->object->getClassName(); ?>"><?php echo $this->object; ?></h1>
 <?php
 echo $this->displayObject($this->object);
+?>
+<p class="button edit"><a href="<?php echo $this->url(array('action' => 'edit')); ?>">Edit</a></p>

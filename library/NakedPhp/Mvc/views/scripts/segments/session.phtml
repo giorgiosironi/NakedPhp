@@ -5,12 +5,10 @@ foreach ($this->session as $index => $object) {
     $editUrl = $this->url(array('action' => 'edit', 'type' => 'entity', 'object' => $index));
     $class = $object->getClassName();
     $this->iconLoader($class);
-    $labels[] = "<li class=\"$class\">
-    <a href=\"$url\">$object</a>
-    <a href=\"$editUrl\">[edit]</a>
-    </li>
+    $labels[] = "<dt class=\"icon $class\"><a href=\"$url\">$object</a></dt>
+    <dd class=\"button edit\"><a href=\"$editUrl\">(edit)</a></dd>
     ";
 }
 if ($labels) {
-    echo "<ul>\n" . implode('', $labels) . "</ul>\n";
+    echo "<dl>\n" . implode('', $labels) . "</dl>\n";
 }
