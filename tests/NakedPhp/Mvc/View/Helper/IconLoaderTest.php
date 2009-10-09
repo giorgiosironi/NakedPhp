@@ -33,10 +33,10 @@ class IconLoaderTest extends \PHPUnit_Framework_TestCase
     public function testGeneratesCssCodeForIconInclusion()
     {
         // TODO: expectation with regular expression
-        $code = "li.Example_Class {\nbackground: url(/graphic/icons/Example_Class.png) no-repeat left 50%;\npadding-left: 32px;\n}\n";
+        $code = "/(.*)\.Example_Class(.*){[^{}]*background: url\(\/graphic\/icons\/Example_Class\.png\) no-repeat left[^{}]*padding-left: 32px;[^{}]*}\n/";
         $this->_headStyleMock->expects($this->once())
                              ->method('appendStyle')
-                             ->with($code);
+                             ->with($this->matchesRegularExpression($code));
         $this->_helper->iconLoader('Example_Class');
     }
 
