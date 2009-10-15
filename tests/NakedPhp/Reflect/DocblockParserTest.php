@@ -33,6 +33,8 @@ class DocblockParserTest extends \PHPUnit_Framework_TestCase
          */
 EOT;
         $this->assertTrue($this->_parser->contains('NakedDummyAnn', $docblock));
+        $this->assertTrue($this->_parser->contains('OtherAnn', $docblock));
+        $this->assertFalse($this->_parser->contains('NotContained', $docblock));
     }
 
     public function testListsDocblockParamAnnotations()

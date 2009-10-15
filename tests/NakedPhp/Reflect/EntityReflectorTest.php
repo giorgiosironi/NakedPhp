@@ -19,13 +19,14 @@ use NakedPhp\Metadata\NakedField;
 
 class EntityReflectorTest extends \PHPUnit_Framework_TestCase
 {
+    private $_parserMock;
     private $_reflector;
     private $_result;
 
     public function setUp()
     {
-        $parserMock = $this->getMock('NakedPhp\Reflect\DocblockParser', array('parse'));
-        $parserMock->expects($this->any())
+        $this->_parserMock = $this->getMock('NakedPhp\Reflect\DocblockParser', array('parse', 'contains'));
+        $this->_parserMock->expects($this->any())
                    ->method('parse')
                    ->will($this->returnValue(array(
                        array(
@@ -35,45 +36,61 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
                            'description' => 'The role of the user'
                        )
                    )));
-        $this->_reflector = new EntityReflector($parserMock);
-        $this->_result = $this->_reflector->analyze('NakedPhp\Stubs\User');
+        $this->_reflector = new EntityReflector($this->_parserMock);
     }
 
     public function testCreatesAClassMetadataObject()
     {
-        $this->assertTrue($this->_result instanceof NakedClass);
+        $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
+        $this->assertTrue($result instanceof NakedClass);
     }
 
     public function testListBusinessMethodsOfAnEntityObject()
     {
-        $methods = $this->_result->getMethods();
+        $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
+        $methods = $result->getMethods();
         $this->assertEquals('sendMessage', (string) current($methods));
         $this->assertTrue(isset($methods['sendMessage']));
     }
 
     public function testDoesNotListMagicMethods()
     {
-        $methods = $this->_result->getMethods();
+        $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
+        $methods = $result->getMethods();
         $this->assertFalse(isset($methods['__toString']));
     }
 
     public function testListFieldsOfAnEntityObjectThatHaveSetterAndGetter()
     {
-        $fields = $this->_result->getFields();
+        $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
+        $fields = $result->getFields();
         $this->assertTrue(isset($fields['name']));
     }
 
     public function testListFieldsOfAnEntityObjectThatHaveGetter()
     {
-        $fields = $this->_result->getFields();
+        $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
+        $fields = $result->getFields();
         $this->assertTrue(isset($fields['status']));
     }
 
     public function testGathersMetadataOnTheField()
     {
-        $fields = $this->_result->getFields();
+        $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
+        $fields = $result->getFields();
         $this->assertTrue($fields['status'] instanceof NakedField);
         $this->assertEquals('status', $fields['status']->getName());
         $this->assertEquals('string', $fields['status']->getType());
+    }
+
+    public function testDoesNotListHiddenFields()
+    {
+        $this->_parserMock->expects($this->any())
+                          ->method('contains')
+                          ->with('Hidden', $this->anything())
+                          ->will($this->returnValue(true));
+        $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
+        $fields = $result->getFields();
+        $this->assertEquals(0, count($fields));
     }
 }

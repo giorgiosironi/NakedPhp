@@ -41,6 +41,9 @@ class EntityReflector extends AbstractReflector
             $methodName = $method->getName();
             $annotations = $this->_parser->parse($method->getDocComment());
             if ($this->_isGetter($methodName)) {
+                if ($this->_isHidden($method->getDocComment())) {
+                    continue;
+                }
                 $name = str_replace('get', '', $method->getName());
                 $fieldName = lcfirst($name);
                 foreach ($annotations as $a) {
@@ -85,5 +88,10 @@ class EntityReflector extends AbstractReflector
     protected function _isSetter($methodName) 
     {
         return preg_match('/set[A-Za-z0-9]+/', $methodName);
+    }
+
+    protected function _isHidden($docblock)
+    {
+        return $this->_parser->contains('Hidden', $docblock);
     }
 }
