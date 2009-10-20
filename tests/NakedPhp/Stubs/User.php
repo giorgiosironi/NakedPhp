@@ -65,6 +65,11 @@ class User
         return 'guest';
     }
 
+    public function choicesStatus()
+    {
+        return array('guest', 'user', 'admin');
+    }
+
     /**
      * @param string $title     subject of message
      * @param string $text      html text

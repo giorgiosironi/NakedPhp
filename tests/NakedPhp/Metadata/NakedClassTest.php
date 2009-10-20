@@ -25,8 +25,10 @@ class NakedClassTest extends \PHPUnit_Framework_TestCase
 
     public function testRetainsMethodsList()
     {
-        $nc = new NakedClass('', $methods = array('doThis', 'doThat'));
+        $nc = new NakedClass('', $methods = array('doThis' => 'doThis', 'doThat'));
         $this->assertEquals($methods, $nc->getMethods());
+        $this->assertTrue($nc->hasMethod('doThis'));
+        $this->assertFalse($nc->hasMethod('doAnything'));
     }
 
     public function testGivesAccessToAMethodByName()

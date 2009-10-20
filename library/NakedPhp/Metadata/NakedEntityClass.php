@@ -22,16 +22,26 @@ namespace NakedPhp\Metadata;
 class NakedEntityClass extends NakedClass
 {
     /**
-     * @var array names of properties
+     * @var array of NakedField instances
      */
     protected $_fields;
 
-    public function __construct($className = '', array $methods = array(), array $fields = array())
+    /**
+     * @param string $className
+     * @param array $methods
+     * @param array $fields
+     * @param array $hiddenMethods  methods not visible to the user but useful
+     *                              for the framework
+     */
+    public function __construct($className = '', array $methods = array(), array $fields = array(), $hiddenMethods = array())
     {
-        parent::__construct($className, $methods);
+        parent::__construct($className, $methods, $hiddenMethods);
         $this->_fields = $fields;
     }
 
+    /**
+     * @return array of @see NakedField instances
+     */
     public function getFields()
     {
         return $this->_fields;

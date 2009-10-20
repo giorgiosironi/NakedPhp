@@ -44,6 +44,11 @@ class Controller extends \Zend_Controller_Action
      */
     private $_object;
 
+    /**
+     * @var NakedClass      the class of the current object
+     */
+    private $_class;
+
     public final function preDispatch()
     {
         $this->_factory = new \NakedPhp\Factory();
@@ -61,6 +66,7 @@ class Controller extends \Zend_Controller_Action
                 $this->_object = $this->_entityContainer->get($objectKey);
                 $this->view->methods = $this->_methodMerger->getApplicableMethods($this->_object->getClass());
             }
+            $this->_class = $this->_object->getClass();
             $this->view->object = $this->_object;
         }
     }
@@ -120,7 +126,7 @@ class Controller extends \Zend_Controller_Action
     {
         $methodName = $this->_request->getParam('method');
         $this->view->methodName = $methodName;
-        $method = $this->_methodMerger->getMethod($this->_object, $methodName);
+        $method = $this->_methodMerger->getMethod($this->_class, $methodName);
         if (count($method->getParams())) {
             $formBuilder = $this->_factory->getMethodFormBuilder();
             $form = $formBuilder->createForm($method);

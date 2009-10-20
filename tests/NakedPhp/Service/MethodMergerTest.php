@@ -72,12 +72,33 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         $this->_methodMerger->call($entity, 'sendMessage', array('Title', 'text...'));
     }
 
+    public function testCallsAHiddenMethodOfTheObjectClass()
+    {
+        $class = new NakedEntityClass('NakedPhp\Stubs\User', array(), array(), array('iAmHidden' => new NakedMethod('iAmHidden', array('first' => new NakedParam('string', 'first')))));
+        $mock = $this->getMock('NakedPhp\Stubs\User', array('iAmHidden'));
+        $mock->expects($this->once())
+             ->method('iAmHidden')
+             ->with('foo');
+        $entity = new NakedEntity($mock, $class);
+        $this->_methodMerger->call($entity, 'iAmHidden', array('foo'));
+    }
+
     public function testListsMethodOfTheObjectClass()
     {
         $this->_setAvailableServiceClasses(array());
         $class = new NakedEntityClass('NakedPhp\Stubs\User', array('doSomething' => new NakedMethod('doSomething')));
         $methods = $this->_methodMerger->getApplicableMethods($class);
         $this->assertTrue(isset($methods['doSomething']));
+        $this->assertTrue($this->_methodMerger->hasMethod($class, 'doSomething'));
+        $this->assertFalse($this->_methodMerger->hasMethod($class, 'doSomethingWhichDoesNotExist'));
+    }
+
+    public function testDoesNotListHiddenMethods()
+    {
+        $this->_setAvailableServiceClasses(array());
+        $class = new NakedEntityClass('NakedPhp\Stubs\User', array(), array(), array('iAmHidden' => new NakedMethod('iAmHidden')));
+        $methods = $this->_methodMerger->getApplicableMethods($class);
+        $this->assertEquals(array(), $methods);
     }
 
     public function testListsMethodOfTheServiceClassesWhichTakesEntityAsAnArgument()
@@ -166,8 +187,6 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         ));
     }
 
-
-
     public function testWrapsObjectResultUsingNakedFactory()
     {
         $expectedResult = new NakedEntity(new \stdClass);
@@ -210,10 +229,24 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         $methods = array(
             'doSomething' => $expectedMethod = new NakedMethod(''),
         );
-        $no = new NakedEntity(new \stdClass, new NakedEntityClass('NakedPhp\Stubs\User', $methods));
+        $class = new NakedEntityClass('NakedPhp\Stubs\User', $methods);
 
+        $this->assertTrue($this->_methodMerger->hasMethod($class, 'doSomething'));
         $this->assertSame($expectedMethod,
-                          $this->_methodMerger->getMethod($no, 'doSomething'));
+                          $this->_methodMerger->getMethod($class, 'doSomething'));
+    }
+
+    public function testExtractsMetadataForAHiddenMethod()
+    {
+        $this->_setAvailableServiceClasses(array());
+        $methods = array(
+            'doSomething' => $expectedMethod = new NakedMethod(''),
+        );
+        $class = new NakedEntityClass('NakedPhp\Stubs\User', array(), array(), $methods);
+
+        $this->assertTrue($this->_methodMerger->hasMethod($class, 'doSomething'));
+        $this->assertSame($expectedMethod,
+                          $this->_methodMerger->getMethod($class, 'doSomething'));
     }
 
     public function testExtractsBuiltMetadataForAServiceMethod()
@@ -229,9 +262,9 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         ));
 
         $class = new NakedEntityClass('NakedPhp\Stubs\User');
-        $no = new NakedEntity(new \NakedPhp\Stubs\User, $class);
 
-        $method = $this->_methodMerger->getMethod($no, 'block');
+        $this->assertTrue($this->_methodMerger->hasMethod($class, 'block'));
+        $method = $this->_methodMerger->getMethod($class, 'block');
         $this->assertEquals(array('days' => $days), $method->getParams());
     }
 
@@ -242,9 +275,9 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         ));
 
         $class = $this->_getEntityClassWithCreateNewMethod();
-        $no = new NakedEntity(new \NakedPhp\Stubs\User, $class);
 
-        $method = $this->_methodMerger->getMethod($no, 'createNew');
+        $this->assertTrue($this->_methodMerger->hasMethod($class, 'createNew'));
+        $method = $this->_methodMerger->getMethod($class, 'createNew');
         $this->assertEquals(array('name' => new NakedParam('string', 'name')), $method->getParams());
     }
 

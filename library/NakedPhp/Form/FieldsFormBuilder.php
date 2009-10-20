@@ -14,22 +14,35 @@
  */
 
 namespace NakedPhp\Form;
+use NakedPhp\Metadata\NakedEntity;
 use NakedPhp\Metadata\NakedField;
+use NakedPhp\Service\MethodCaller;
 
 class FieldsFormBuilder
 {
+    protected $_caller;
+
     /**
-     * @param array $fields    NakedField instances
+     * @param MethodCaller $caller
      */
-    public function createForm($fields)
+    public function __construct(MethodCaller $caller)
+    {
+        $this->_caller = $caller;
+    }
+
+    /**
+     * @param NakedEntity $entity
+     * @param array $fields         NakedField instances
+     */
+    public function createForm(NakedEntity $entity, $fields)
     {
         assert('is_array($fields) or $fields instanceof Traversable');
         $form = new \Zend_Form();
         foreach ($fields as $name => $field) {
-            $input = $this->createElement($field);
-            $input->setAttrib('class', $this->_normalize($field->getType()));
-            $input->setLabel($name);
-            $form->addElement($input);
+            $element = $this->createElement($entity, $field);
+            $element->setAttrib('class', $this->_normalize($field->getType()));
+            $element->setLabel($name);
+            $form->addElement($element);
         }
         $form->addElement(new \Zend_Form_Element_Submit('nakedphp_submit', array(
                             'label' => 'Edit',
@@ -42,12 +55,19 @@ class FieldsFormBuilder
      * @param NakedField $field     single field
      * @return Zend_Form_Element
      */
-    public function createElement(NakedField $field)
+    public function createElement(NakedEntity $entity, NakedField $field)
     {
         if ($this->_isObjectField($field)) {
             return new \Zend_Form_Element_Select($field->getName());
         } else {
-            return new \Zend_Form_Element_Text($field->getName());
+            $methodName = 'choices' . ucfirst($field->getName());
+            if ($this->_caller->hasMethod($entity->getClass(), $methodName)) {
+                $choices = $this->_caller->call($entity, $methodName); 
+                return new \Zend_Form_Element_Select($field->getName());
+                $element->setMultiOptions($choices);
+            } else {
+                return new \Zend_Form_Element_Text($field->getName());
+            }
         }
     }
 

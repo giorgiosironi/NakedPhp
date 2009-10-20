@@ -45,7 +45,7 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($result instanceof NakedClass);
     }
 
-    public function testListBusinessMethodsOfAnEntityObject()
+    public function testListsBusinessMethodsOfAnEntityObject()
     {
         $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
         $methods = $result->getMethods();
@@ -60,14 +60,21 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(isset($methods['__toString']));
     }
 
-    public function testListFieldsOfAnEntityObjectThatHaveSetterAndGetter()
+    public function testListsHiddenMethodsInASpecialList()
+    {
+        $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
+        $hiddenMethods = $result->getHiddenMethods();
+        $this->assertEquals('choicesStatus', (string) $hiddenMethods['choicesStatus']);
+    }
+
+    public function testListsFieldsOfAnEntityObjectThatHaveSetterAndGetter()
     {
         $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
         $fields = $result->getFields();
         $this->assertTrue(isset($fields['name']));
     }
 
-    public function testListFieldsOfAnEntityObjectThatHaveGetter()
+    public function testListsFieldsOfAnEntityObjectThatHaveGetter()
     {
         $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
         $fields = $result->getFields();
@@ -83,7 +90,7 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('string', $fields['status']->getType());
     }
 
-    public function testDoesNotListHiddenFields()
+    public function testDoesNotListFieldsWhichGetterIsAnnotatedWithHidden()
     {
         $this->_parserMock->expects($this->any())
                           ->method('contains')

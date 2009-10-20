@@ -77,21 +77,59 @@ class EntityReflector extends AbstractReflector
             $methods[$methodName] = new NakedMethod($methodName, $params, $return);
         }
 
-        return new NakedEntityClass($className, $methods, $fields);
+        list($userMethods, $hiddenMethods) = $this->_separateMethods($methods, $fields);
+        return new NakedEntityClass($className, $userMethods, $fields, $hiddenMethods);
     }
 
+    /**
+     * @param string $methodName
+     * @return boolean
+     */
     protected function _isGetter($methodName) 
     {
         return preg_match('/get[A-Za-z0-9]+/', $methodName);
     }
 
+    /**
+     * @param string $methodName
+     * @return boolean
+     */
     protected function _isSetter($methodName) 
     {
         return preg_match('/set[A-Za-z0-9]+/', $methodName);
     }
 
+    /**
+     * @param string $docblock  documentation block of a method or property
+     * @return boolean
+     */
     protected function _isHidden($docblock)
     {
         return $this->_parser->contains('Hidden', $docblock);
+    }
+
+    /**
+     * Defines user visible methods, according to which are not used for
+     * metadata on $fields.
+     * @param array $methods    NakedMethod instances indexed by name
+     * @param array $fields     NakedField instances indexed by name
+     * @return array            first element is array of user methods,
+     *                          second is array of hidden methods.
+     */
+    protected function _separateMethods(array $methods, array $fields)
+    {
+        $userMethods = $hiddenMethods = array();
+        foreach ($methods as $methodName => $method) {
+            foreach ($fields as $fieldName => $field) {
+                $pattern = '/[a-z]{1,}' . ucfirst($fieldName) . '/';
+                if (preg_match($pattern, $methodName)) {
+                    $hiddenMethods[$methodName] = $method;
+                }
+            }
+            if (!isset($hiddenMethods[$methodName])) {
+                $userMethods[$methodName] = $method;
+            }
+        }
+        return array($userMethods, $hiddenMethods);
     }
 }

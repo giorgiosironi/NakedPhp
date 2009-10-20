@@ -21,20 +21,31 @@ namespace NakedPhp\Metadata;
  */
 class NakedClass
 {
+    /**
+     * @var string
+     */
     protected $_className;
 
     /**
-     * @var array available methods
+     * @var array of NakedMethod instances
      */
     protected $_methods;
 
     /**
-     * @param array $methods    NakedMethod instances; keys are method names
+     * @var array of NakedMethod instances
      */
-    public function __construct($className = '', array $methods = array())
+    protected $_hiddenMethods;
+
+    /**
+     * @param string $className
+     * @param array $methods        NakedMethod instances; keys are method names
+     * @param array $hiddenMethods
+     */
+    public function __construct($className = '', array $methods = array(), $hiddenMethods = array())
     {
         $this->_className = $className;
         $this->_methods = $methods;
+        $this->_hiddenMethods = $hiddenMethods;
     }
 
     /**
@@ -55,10 +66,36 @@ class NakedClass
     }
 
     /**
+     * @param string $name
+     * @return boolean
+     */
+    public function hasMethod($name)
+    {
+        return isset($this->_methods[$name]);
+    }
+
+    /**
      * @return string   the fully qualified class name
      */
     public function getClassName()
     {
         return $this->_className;
+    }
+
+    /**
+     * @return array of @see NakedMethod instances
+     */
+    public function getHiddenMethods()
+    {
+        return $this->_hiddenMethods;
+    }
+
+    /**
+     * @param string $name
+     * @return NakedMethod
+     */
+    public function getHiddenMethod($name)
+    {
+        return $this->_hiddenMethods[$name];
     }
 }

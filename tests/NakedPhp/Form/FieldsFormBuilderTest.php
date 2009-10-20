@@ -14,50 +14,79 @@
  */
 
 namespace NakedPhp\Form;
+use NakedPhp\Metadata\NakedEntity;
+use NakedPhp\Metadata\NakedEntityClass;
 use NakedPhp\Metadata\NakedField;
+use NakedPhp\Metadata\NakedMethod;
+use NakedPhp\Stubs\TransparentMethodCaller;
 
 class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
 {
+    private $_methodCaller;
     private $_formBuilder;
     private $_form;
     private $_fields;
 
     public function setUp()
     {
-        $this->_formBuilder = new FieldsFormBuilder();
+        $this->_methodCaller = new TransparentMethodCaller();
+        $this->_formBuilder = new FieldsFormBuilder($this->_methodCaller);
         $this->_fields = array(
             'first' => new NakedField('string', 'first'),
             'second' => new NakedField('integer', 'second'),
-            'oneRelation' => new NakedField('NakedPhp\Stubs\User', 'oneRelation')
+            'oneRelation' => new NakedField('NakedPhp\Stubs\User', 'oneRelation'),
         );
-        $this->_form = $this->_formBuilder->createForm($this->_fields);
+    }
+
+    private function _getForm()
+    {
+        $entity = new NakedEntity($this, new NakedEntityClass());
+        return $this->_formBuilder->createForm($entity, $this->_fields);
     }
 
     public function testCreatesAZendForm()
     {
-        $this->assertTrue($this->_form instanceof \Zend_Form);
+        $form = $this->_getForm();
+        $this->assertTrue($form instanceof \Zend_Form);
     }
 
     public function testCreatesInputsForEveryFieldAndASubmit()
     {
-        $this->assertEquals(count($this->_fields) + 1, count($this->_form));
+        $form = $this->_getForm();
+        $this->assertEquals(count($this->_fields) + 1, count($form));
     }
 
     public function testCreatesALabelForEveryInput()
     {
-        $this->assertEquals('first', $this->_form->first->getLabel());
+        $form = $this->_getForm();
+        $this->assertEquals('first', $form->first->getLabel());
     }
 
     public function testCreatesSelectForOneTargetRelationships()
     {
-        $this->assertTrue($this->_form->oneRelation instanceof \Zend_Form_Element_Select);
+        $form = $this->_getForm();
+        $this->assertTrue($form->oneRelation instanceof \Zend_Form_Element_Select);
+    }
+
+    public function testCreatesSelectForLimitedChoices()
+    {
+        $entity = new NakedEntity($this, new NakedEntityClass('', array(), array(), array('choicesLimitedField' => new NakedMethod('choicesLimitedField', array()))));
+        $element = $this->_formBuilder->createElement($entity, new NakedField('string', 'limitedField'));
+        $this->assertTrue($element instanceof \Zend_Form_Element_Select);
+        $expected = array('foo' => 'Foo', 'bar' => 'Bar');
+        //$this->assertEquals($expected, $element->getMultiOptions());
+    }
+
+    public function choicesLimitedField()
+    {
+        return array('foo' => 'Foo', 'bar' => 'Bar');
     }
 
     public function testNormalizesClassNameForRelationships()
     {
+        $form = $this->_getForm();
         $this->assertEquals('NakedPhp-Stubs-User',
-                            $this->_form->oneRelation->getAttrib('class'));
+                            $form->oneRelation->getAttrib('class'));
     }
-
 }
 

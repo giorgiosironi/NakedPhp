@@ -19,7 +19,7 @@ use NakedPhp\Metadata\NakedClass;
 use NakedPhp\Metadata\NakedService;
 use NakedPhp\Metadata\NakedMethod;
 
-class MethodMerger
+class MethodMerger implements MethodCaller
 {
     protected $_nakedFactory;
     protected $_serviceProvider;
@@ -31,9 +31,7 @@ class MethodMerger
     }
 
     /**
-     * @param NakedObject $no       object to search the method on
-     * @param string $methodName
-     * @param array $parameters
+     * {@inheritdoc}
      * @return NakedObject  if the result is an object it will be wrapped.
      *                      Otherwise, it will be returned as-is.
      */
@@ -41,8 +39,14 @@ class MethodMerger
     {
         assert('is_string($methodName)');
 
-        if ($no->hasMethod($methodName)) {
-            $parameters = $this->_addServices($no->getClass()->getMethod($methodName), $parameters);
+        $class = $no->getClass();
+        $hiddenMethods = $class->getHiddenMethods();
+
+        if ($class->hasMethod($methodName)) {
+            $parameters = $this->_addServices($class->getMethod($methodName), $parameters);
+            $result = call_user_func_array(array($no, $methodName), $parameters);
+        } else if (isset($hiddenMethods[$methodName])) {
+            $parameters = $this->_addServices($class->getHiddenMethod($methodName), $parameters);
             $result = call_user_func_array(array($no, $methodName), $parameters);
         } else {
             $service = $this->_findService($methodName);
@@ -113,13 +117,12 @@ class MethodMerger
     }
 
     /**
-     * @param NakedClass $class    the type of the entity considered
-     * @return array                     NakedMethod instances
+     * {@inheritdoc}
      */
     public function getApplicableMethods(NakedClass $class)
     {
         $servicesMethods = array();
-        foreach ($this->_getAllMethods() as $methodName => $method) {
+        foreach ($this->_getAllServicesMethods() as $methodName => $method) {
             foreach ($method->getParams() as $param) {
                 if ($param->getType() == $class->getClassName()) {
                     $servicesMethods[$methodName] = $this->_buildFakeMethod($method, $class);
@@ -149,7 +152,7 @@ class MethodMerger
     /**
      * @return array    all methods from services indexed by name
      */
-    protected function _getAllMethods()
+    protected function _getAllServicesMethods()
     {
         $methods = array();
         foreach ($this->_serviceProvider->getServiceClasses() as $serviceClass) {
@@ -191,13 +194,31 @@ class MethodMerger
     }
 
     /**
-     * @param NakedObject $no       object to search the method on
-     * @param string $methodName
-     * @return NakedMethod
+     * {@inheritdoc}
      */
-    public function getMethod(NakedObject $no, $methodName)
+    public function getMethod(NakedClass $class, $methodName)
     {
-        $methods = $this->getApplicableMethods($no->getClass());
+        $methods = $this->_getAllMethods($class);
         return $methods[$methodName];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasMethod(NakedClass $class, $methodName)
+    {
+        $methods = $this->_getAllMethods($class);
+        return isset($methods[$methodName]);
+    }
+
+    /**
+     * Returns all methods, visible and hidden ones. To use internally.
+     * @return array NakedMethod instances
+     */
+    protected function _getAllMethods(NakedClass $class)
+    {
+        $methods = $this->getApplicableMethods($class);
+        $methods += $class->getHiddenMethods();
+        return $methods;
     }
 }
