@@ -66,7 +66,7 @@ class Factory
 
     public function getFieldsFormBuilder()
     {
-        return new Form\FieldsFormBuilder();
+        return new Form\FieldsFormBuilder($this->getMethodMerger());
     }
 
     public function getStateManager()

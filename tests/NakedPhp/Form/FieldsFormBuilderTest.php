@@ -65,7 +65,7 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
     public function testCreatesSelectForOneTargetRelationships()
     {
         $form = $this->_getForm();
-        $this->assertTrue($form->oneRelation instanceof \Zend_Form_Element_Select);
+        $this->assertTrue($form->oneRelation instanceof \NakedPhp\Form\ObjectSelect);
     }
 
     public function testCreatesSelectForLimitedChoices()
@@ -74,7 +74,7 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
         $element = $this->_formBuilder->createElement($entity, new NakedField('string', 'limitedField'));
         $this->assertTrue($element instanceof \Zend_Form_Element_Select);
         $expected = array('foo' => 'Foo', 'bar' => 'Bar');
-        //$this->assertEquals($expected, $element->getMultiOptions());
+        $this->assertEquals($expected, $element->getMultiOptions());
     }
 
     public function choicesLimitedField()

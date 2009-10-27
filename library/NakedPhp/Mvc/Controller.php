@@ -107,7 +107,7 @@ class Controller extends \Zend_Controller_Action
     public final function editAction()
     {
         $formBuilder = $this->_factory->getFieldsFormBuilder();
-        $form = $formBuilder->createForm($this->_object->getClass()->getFields());
+        $form = $formBuilder->createForm($this->_object, $this->_class->getFields());
         $stateManager = $this->_factory->getStateManager()
                                        ->populateOptions($form)
                                        ->setFormState($form, $this->_object);

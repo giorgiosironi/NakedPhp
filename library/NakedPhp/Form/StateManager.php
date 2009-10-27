@@ -118,7 +118,7 @@ class StateManager
      */
     protected function _isObjectElement(\Zend_Form_Element $element)
     {
-        return $element instanceof \Zend_Form_Element_Multi;
+        return $element instanceof ObjectSelect;
     }
 
     /**

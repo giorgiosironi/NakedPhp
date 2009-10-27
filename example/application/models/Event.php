@@ -17,6 +17,7 @@ class Example_Model_Event
 {
     private $_name;
     private $_description;
+    private $_type;
     private $_place;
     private $_startTime;
     private $_endTime;
@@ -45,6 +46,24 @@ class Example_Model_Event
     public function setDescription($description)
     {
         $this->_description = $description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->_type;
+    }
+
+    public function setType($type)
+    {
+        $this->_type = $type;
+    }
+
+    public function choicesType()
+    {
+        return array('party' => 'Party', 'causes' => 'Causes', 'education' => 'Education', 'meeting' => 'Meeting', 'sports' => 'Sports');
     }
 
     /**

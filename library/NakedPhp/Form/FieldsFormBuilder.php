@@ -58,13 +58,14 @@ class FieldsFormBuilder
     public function createElement(NakedEntity $entity, NakedField $field)
     {
         if ($this->_isObjectField($field)) {
-            return new \Zend_Form_Element_Select($field->getName());
+            return new ObjectSelect($field->getName());
         } else {
             $methodName = 'choices' . ucfirst($field->getName());
             if ($this->_caller->hasMethod($entity->getClass(), $methodName)) {
                 $choices = $this->_caller->call($entity, $methodName); 
-                return new \Zend_Form_Element_Select($field->getName());
+                $element = new \Zend_Form_Element_Select($field->getName());
                 $element->setMultiOptions($choices);
+                return $element;
             } else {
                 return new \Zend_Form_Element_Text($field->getName());
             }

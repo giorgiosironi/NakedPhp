@@ -41,7 +41,8 @@ class StateManagerTest extends \PHPUnit_Framework_TestCase
     public function testPopulatesSelectAccordingToEntitiesAvailable()
     {
         $form = new \Zend_Form();
-        $form->addElement('select', 'testingField', array('class' => 'NakedPhp-Stubs-User'));
+        $select = new \NakedPhp\Form\ObjectSelect('testingField', array('class' => 'NakedPhp-Stubs-User'));
+        $form->addElement($select);
         $this->_manager->populateOptions($form);
         $options = $form->testingField->getMultiOptions();
         $this->assertEquals(2, count($options));
@@ -78,6 +79,16 @@ class StateManagerTest extends \PHPUnit_Framework_TestCase
         $form = new \Zend_Form();
         $form->addElement('text', 'email');
         $form->populate(array('email' => 'piccoloprincipeazzurro@...'));
+        $this->_manager->setEntityState($entity, $form);
+    }
+
+    public function testIsTransparentToScalarSelectElements()
+    {
+        $entity = $this->_getMockEntity(array('type' => 'thisType'));
+        $form = new \Zend_Form();
+        $form->addElement('Select', 'type');
+        $form->type->setMultiOptions(array('thisType' => 'A', 'otherType' => 'B'));
+        $form->type->setValue('thisType');
         $this->_manager->setEntityState($entity, $form);
     }
 
