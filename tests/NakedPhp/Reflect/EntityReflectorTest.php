@@ -65,6 +65,7 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
         $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
         $hiddenMethods = $result->getHiddenMethods();
         $this->assertEquals('choicesStatus', (string) $hiddenMethods['choicesStatus']);
+        $this->assertEquals('disableStatus', (string) $hiddenMethods['disableStatus']);
     }
 
     public function testListsFieldsOfAnEntityObjectThatHaveSetterAndGetter()

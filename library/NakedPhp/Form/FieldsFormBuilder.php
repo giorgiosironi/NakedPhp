@@ -58,18 +58,44 @@ class FieldsFormBuilder
     public function createElement(NakedEntity $entity, NakedField $field)
     {
         if ($this->_isObjectField($field)) {
-            return new ObjectSelect($field->getName());
+            $element =  new ObjectSelect($field->getName());
         } else {
             $methodName = 'choices' . ucfirst($field->getName());
             if ($this->_caller->hasMethod($entity->getClass(), $methodName)) {
                 $choices = $this->_caller->call($entity, $methodName); 
                 $element = new \Zend_Form_Element_Select($field->getName());
                 $element->setMultiOptions($choices);
-                return $element;
             } else {
-                return new \Zend_Form_Element_Text($field->getName());
+                $element = new \Zend_Form_Element_Text($field->getName());
             }
         }
+
+        $element->clearDecorators();
+        $element->addDecorator('ViewHelper')
+                ->addDecorator('Errors')
+                ->addDecorator('Description', array('tag' => 'p', 'class' => 'description'))
+                ->addDecorator(array('Tooltip' => 'HtmlTag'), array('tag' => 'div'))
+                ->addDecorator('HtmlTag', array('tag' => 'dd',
+                                                'id'  => $element->getName() . '-element'))
+                ->addDecorator('Label', array('tag' => 'dt'));
+ 
+
+        $methodName = 'disable' . ucfirst($field->getName());
+        if ($this->_caller->hasMethod($entity->getClass(), $methodName)) {
+            $disabled = $this->_caller->call($entity, $methodName); 
+            if ($disabled) {
+                $element->setAttrib('disabled', 'disabled');
+                if (is_string($disabled)) {
+                    $decorators = $element->getDecorators();
+                    $tooltipDecorator = $decorators['Tooltip'];
+                    $labelDecorator = $decorators['Zend_Form_Decorator_Label'];
+                    $tooltipDecorator->setOption('title', $disabled);
+                    $labelDecorator->setOption('title', $disabled);
+                }
+            }
+        }
+
+        return $element;
     }
 
     protected function _isObjectField(NakedField $field)

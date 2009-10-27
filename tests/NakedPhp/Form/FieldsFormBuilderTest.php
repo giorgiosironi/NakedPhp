@@ -82,6 +82,34 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
         return array('foo' => 'Foo', 'bar' => 'Bar');
     }
 
+    public function testDisablesInputProgrammatically()
+    {
+        $entity = new NakedEntity($this, new NakedEntityClass('', array(), array(), array('disableMyField' => new NakedMethod('disableMyField', array()))));
+        $element = $this->_formBuilder->createElement($entity, new NakedField('string', 'myField'));
+        $this->assertEquals('disabled', $element->getAttrib('disabled'));
+    }
+
+    public function disableMyField()
+    {
+        return true;
+    }
+
+    public function testShowsTooltipOnDisabledInputs()
+    {
+        $entity = new NakedEntity($this, new NakedEntityClass('', array(), array(), array('disableMyOtherField' => new NakedMethod('disableMyOtherField', array()))));
+        $element = $this->_formBuilder->createElement($entity, new NakedField('string', 'myOtherField'));
+        $decorators = $element->getDecorators();
+        $tooltipDecoratorOptions = $decorators['Tooltip']->getOptions();
+        $labelDecoratorOptions = $decorators['Zend_Form_Decorator_Label']->getOptions();
+        $this->assertEquals('You cannot edit this.', $tooltipDecoratorOptions['title']);
+        $this->assertEquals('You cannot edit this.', $labelDecoratorOptions['title']);
+    }
+
+    public function disableMyOtherField()
+    {
+        return 'You cannot edit this.';
+    }
+
     public function testNormalizesClassNameForRelationships()
     {
         $form = $this->_getForm();

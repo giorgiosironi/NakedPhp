@@ -66,6 +66,14 @@ class Example_Model_Event
         return array('party' => 'Party', 'causes' => 'Causes', 'education' => 'Education', 'meeting' => 'Meeting', 'sports' => 'Sports');
     }
 
+    public function disableType()
+    {
+        if ($this->_type) {
+            return 'Type has already been chosen.';
+        }
+        return false;
+    }
+
     /**
      * @return Example_Model_Place
      */

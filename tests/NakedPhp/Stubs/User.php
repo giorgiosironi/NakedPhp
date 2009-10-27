@@ -70,6 +70,11 @@ class User
         return array('guest', 'user', 'admin');
     }
 
+    public function disableStatus()
+    {
+        return false;
+    }
+
     /**
      * @param string $title     subject of message
      * @param string $text      html text

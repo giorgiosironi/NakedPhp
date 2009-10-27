@@ -111,7 +111,7 @@ class Controller extends \Zend_Controller_Action
         $stateManager = $this->_factory->getStateManager()
                                        ->populateOptions($form)
                                        ->setFormState($form, $this->_object);
-        if ($this->_request->isPost() && $form->isValid($this->_request->getPost())) {
+        if ($this->_request->isPost() && $form->isValidPartial($this->_request->getPost())) {
             $state = $stateManager->setEntityState($this->_object, $form);
             $this->_redirectToObject($this->_object);
         } else {
