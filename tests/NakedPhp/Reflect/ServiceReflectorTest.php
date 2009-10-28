@@ -18,36 +18,37 @@ use NakedPhp\Metadata\NakedServiceClass;
 
 class ServiceReflectorTest extends \PHPUnit_Framework_TestCase
 {
+    private $_parserMock;
     private $_reflector;
     private $_result;
 
     public function setUp()
     {
-        $parserMock = $this->getMock('NakedPhp\Reflect\DocblockParser', array('parse'));
-        $parserMock->expects($this->any())
+        $this->_parserMock = $this->getMock('NakedPhp\Reflect\DocblockParser', array('parse', 'contains'));
+        $this->_parserMock->expects($this->any())
                    ->method('parse')
                    ->will($this->returnValue(array()));
-        $this->_reflector = new ServiceReflector($parserMock);
-        $this->_result = $this->_reflector->analyze('NakedPhp\Stubs\UserFactory');
+        $this->_reflector = new ServiceReflector($this->_parserMock);
     }
 
     public function testRecognizesAnAnnotatedClass()
     {
-        $parserMock = $this->getMock('NakedPhp\Reflect\DocblockParser', array('contains'), array(), '', false, false, false);
-        $parserMock->expects($this->any())
+        $this->_parserMock->expects($this->any())
                    ->method('contains')
                    ->will($this->returnValue(true));
-        $this->_reflector = new ServiceReflector($parserMock);
+        $this->_result = $this->_reflector->analyze('NakedPhp\Stubs\UserFactory');
         $this->assertTrue($this->_reflector->isService('NakedPhp\Stubs\UserFactory'));
     }
 
     public function testCreatesAClassMetadataObject()
     {
+        $this->_result = $this->_reflector->analyze('NakedPhp\Stubs\UserFactory');
         $this->assertTrue($this->_result instanceof NakedServiceClass);
     }
 
     public function testListBusinessMethodsOfAnEntityObject()
     {
+        $this->_result = $this->_reflector->analyze('NakedPhp\Stubs\UserFactory');
         $methods = $this->_result->getMethods();
         $this->assertEquals('createUser', (string) current($methods));
         $this->assertTrue(isset($methods['createUser']));
@@ -55,7 +56,19 @@ class ServiceReflectorTest extends \PHPUnit_Framework_TestCase
 
     public function testDoesNotListMagicMethods()
     {
+        $this->_result = $this->_reflector->analyze('NakedPhp\Stubs\UserFactory');
         $methods = $this->_result->getMethods();
         $this->assertFalse(isset($methods['__toString']));
+    }
+
+    public function testSkipsMethodsHiddenVoluntarily()
+    {
+        $this->_parserMock->expects($this->any())
+                          ->method('contains')
+    /*                      ->with('Hidden', $this->anything())*/
+                          ->will($this->returnValue(true));
+        $this->_result = $this->_reflector->analyze('NakedPhp\Stubs\UserFactory');
+        $methods = $this->_result->getMethods();
+        $this->assertFalse(isset($methods['mySkippedMethod']));
     }
 }

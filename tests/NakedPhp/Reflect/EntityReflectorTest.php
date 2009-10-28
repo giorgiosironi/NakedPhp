@@ -68,6 +68,17 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('disableStatus', (string) $hiddenMethods['disableStatus']);
     }
 
+    public function testSkipsMethodsHiddenVoluntarily()
+    {
+        $this->_parserMock->expects($this->any())
+                          ->method('contains')
+                          ->with('Hidden', $this->anything())
+                          ->will($this->returnValue(true));
+        $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
+        $methods = $result->getMethods();
+        $this->assertFalse(isset($methods['mySkippedMethod']));
+    }
+
     public function testListsFieldsOfAnEntityObjectThatHaveSetterAndGetter()
     {
         $result = $this->_reflector->analyze('NakedPhp\Stubs\User');

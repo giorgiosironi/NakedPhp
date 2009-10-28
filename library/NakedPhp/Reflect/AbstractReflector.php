@@ -17,6 +17,21 @@ namespace NakedPhp\Reflect;
 
 abstract class AbstractReflector
 {
+    protected $_parser;
+
+    public function __construct(DocblockParser $parser = null)
+    {
+        $this->_parser = $parser;
+    }
+    /**
+     * @param string $docblock  documentation block of a method or property
+     * @return boolean
+     */
+    protected function _isHidden($docblock)
+    {
+        return $this->_parser->contains('Hidden', $docblock);
+    }
+
     protected function _isMagic($methodName)
     {
         return substr($methodName, 0, 2) == '__';

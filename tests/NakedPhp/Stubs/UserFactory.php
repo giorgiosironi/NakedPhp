@@ -25,6 +25,13 @@ class UserFactory
         return new User();
     }
 
+    /**
+     * @Hidden
+     */
+    public function mySkippedMethod()
+    {
+    }
+
     public function __toString()
     {
         return 'UserFactory';

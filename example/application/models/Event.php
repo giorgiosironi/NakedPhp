@@ -17,6 +17,7 @@ class Example_Model_Event
 {
     private $_name;
     private $_description;
+    private $_user;
     private $_type;
     private $_place;
     private $_startTime;
@@ -46,6 +47,20 @@ class Example_Model_Event
     public function setDescription($description)
     {
         $this->_description = $description;
+    }
+
+    /**
+     * @Hidden
+     * @return string
+     */
+    public function getUser()
+    {
+        return $this->_user;
+    }
+
+    public function setUser($user)
+    {
+        $this->_user = $user;
     }
 
     /**
@@ -111,6 +126,18 @@ class Example_Model_Event
     public function setEndTime($endTime)
     {
         $this->_endTime = $endTime;
+    }
+
+    public function hideEndTime()
+    {
+        return isset($this->_startTime);
+    }
+
+    /**
+     * @Hidden
+     */
+    public function myServiceMethodWhichIsHidden()
+    {
     }
 
     public function __toString()

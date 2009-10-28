@@ -20,13 +20,6 @@ use NakedPhp\Metadata\NakedParam;
 
 class ServiceReflector extends AbstractReflector
 {
-    private $_parser;
-
-    public function __construct(DocblockParser $parser = null)
-    {
-        $this->_parser = $parser;
-    }
-
     /**
      * @param string $className
      * @return NakedServiceClass
@@ -38,6 +31,9 @@ class ServiceReflector extends AbstractReflector
 
         foreach ($reflector->getMethods() as $method) {
             $methodName = $method->getName();
+            if ($this->_isHidden($method->getDocComment())) {
+                continue;
+            }
             if ($this->_isMagic($methodName)) {
                 continue;
             }

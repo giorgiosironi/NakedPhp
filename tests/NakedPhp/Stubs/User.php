@@ -97,6 +97,13 @@ class User
         $this->_active = true;
     }
 
+    /**
+     * @Hidden
+     */
+    public function mySkippedMethod()
+    {
+    }
+
     public function __toString()
     {
         return 'User: ' . $this->getName();
