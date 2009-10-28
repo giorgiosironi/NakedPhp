@@ -71,4 +71,36 @@ EOT;
                             ), 
                             $result[0]);
     }
+
+    public function testFindsProperAnnotationsWhichAreNotMeantForPhpDocumentor()
+    {
+        $docblock = <<<EOT
+        /**
+         * @NakedDummyAnn
+         * @OtherAnn
+         */
+EOT;
+        $annotations = $this->_parser->getAnnotations($docblock);
+        $this->assertEquals(array('NakedDummyAnn' => true, 'OtherAnn' => true),
+                            $annotations);
+    }
+
+    public function testFindsProperAnnotationsWhichAreNotMeantForPhpDocumentorAndSavesTheirParameters()
+    {
+        $docblock = <<<EOT
+        /**
+         * @NakedDummyAnn(paramOne=20)
+         * @OtherAnn
+         */
+EOT;
+        $annotations = $this->_parser->getAnnotations($docblock);
+        $this->assertEquals(array(
+                                'NakedDummyAnn' => array(
+                                    'paramOne' => 20
+                                ),
+                                'OtherAnn' => true
+                            ),
+                            $annotations);
+    }
+
 }

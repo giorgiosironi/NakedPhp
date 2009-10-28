@@ -18,15 +18,53 @@ namespace NakedPhp\Reflect;
 class DocblockParser
 {
     /**
-     * Search for '@' . $annotation in $classDocBlock
+     * Search for '@' . $annotation in $classDocblock
      * @return boolean
      */
-    public function contains($annotation, $classDocBlock)
+    public function contains($annotation, $classDocblock)
     {
-        return (bool) strstr($classDocBlock, $annotation);
+        return (bool) strstr($classDocblock, $annotation);
     }
 
-    public function foo() {}
+    public function getAnnotations($docblock)
+    {
+        $lines = explode("\n", $docblock);
+        $result = array();
+        foreach ($lines as $line) {
+            $matches = array();
+            if (preg_match('/@([A-Z]{1}[A-Za-z0-9]*)(.*)/', $line, $matches)) {
+                $annotationName = $matches[1];
+                $parameters = $this->_extractAnnotationParams($matches[2]);
+                if ($parameters) {
+                    $result[$annotationName] = $parameters;
+                } else {
+                    $result[$annotationName] = true;
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * @param string $parametersString  such as '(paramOne=20, paramTwo=4)'
+     * @return array                    pairs of names and values of parameters
+     */
+    protected function _extractAnnotationParams($parametersString)
+    {
+        $result = array();
+        $parametersMatches = array();
+        if (preg_match('/\((.*)\)/', $parametersString, $parametersMatches)) {
+            $parameters = preg_split('/[ ,]/', $parametersMatches[1]);
+            foreach ($parameters as $param) {
+                $valuesMatches = array();
+                if (preg_match('/([A-Za-z0-9]*)=([0-9]*)/', $param, $valuesMatches)) {
+                    $result[$valuesMatches[1]] = $valuesMatches[2];
+                }
+            }
+        }
+        return $result;
+    }
+
     /**
      * @param string $functionDocblock
      * @return array info on the @param and @return annotations contained
@@ -39,16 +77,16 @@ class DocblockParser
             if (strstr($line, '* @')) {
                 $line = ltrim($line, ' *');
                 if (strstr($line, '@param')) {
-                    $result[] = $this->_extractParam($line);
+                    $result[] = $this->_extractDocblockParam($line);
                 } else if (strstr($line, '@return')) {
-                    $result[] = $this->_extractReturn($line);
+                    $result[] = $this->_extractDocblockReturn($line);
                 }
             }
         }
         return $result;
     }
     
-    protected function _extractParam($line)
+    protected function _extractDocblockParam($line)
     {
         list ($annotation, $type, $name, $description) = preg_split('/[ ]/', $line, 4);
         return array(
@@ -59,7 +97,7 @@ class DocblockParser
         );
     }
 
-    protected function _extractReturn($line)
+    protected function _extractDocblockReturn($line)
     {
         $pieces = preg_split('/[ ]/', $line, 3);
         if (count($pieces) == 3) {
