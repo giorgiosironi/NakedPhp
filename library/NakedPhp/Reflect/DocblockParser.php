@@ -21,9 +21,10 @@ class DocblockParser
      * Search for '@' . $annotation in $classDocblock
      * @return boolean
      */
-    public function contains($annotation, $classDocblock)
+    public function contains($annotationName, $classDocblock)
     {
-        return (bool) strstr($classDocblock, $annotation);
+        $annotations = $this->getAnnotations($classDocblock);
+        return isset($annotations[$annotationName]);
     }
 
     public function getAnnotations($docblock)
