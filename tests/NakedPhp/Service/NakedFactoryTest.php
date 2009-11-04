@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedEntity;
+use NakedPhp\Metadata\NakedBareEntity;
 use NakedPhp\Metadata\NakedEntityClass;
 use NakedPhp\Metadata\NakedService;
 use NakedPhp\Metadata\NakedServiceClass;
@@ -32,13 +32,13 @@ class NakedFactoryTest extends \PHPUnit_Framework_TestCase
         $this->_factory = new NakedFactory($this->_entityReflectorMock, $this->_serviceReflectorMock);
     }
 
-    public function testWrapsAnEntityInANakedEntityInstance()
+    public function testWrapsAnEntityInANakedBareEntityInstance()
     {
         $this->_serviceReflectorMock->expects($this->any())
                                     ->method('isService')
                                     ->will($this->returnValue(false));
         $no = $this->_factory->create(new \stdClass);
-        $this->assertTrue($no instanceof NakedEntity);
+        $this->assertTrue($no instanceof NakedBareEntity);
     }
 
     public function testGeneratesMetadataForEntities()

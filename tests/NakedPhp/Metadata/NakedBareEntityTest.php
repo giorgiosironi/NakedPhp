@@ -16,17 +16,17 @@
 namespace NakedPhp\Metadata;
 use NakedPhp\Stubs\Phonenumber;
 
-class NakedEntityTest extends \PHPUnit_Framework_TestCase
+class NakedBareEntityTest extends \PHPUnit_Framework_TestCase
 {
     public function testRetainsClassMetadata()
     {
-        $no = new NakedEntity($this, $class = new NakedEntityClass('', array(), array('name')));
+        $no = new NakedBareEntity($this, $class = new NakedEntityClass('', array(), array('name')));
         $this->assertSame($class, $no->getClass());
     }
 
     public function testReturnsTheStateOfTheObject()
     {
-        $no = new NakedEntity($this, $class = new NakedEntityClass('', array(), array('nickname' => null)));
+        $no = new NakedBareEntity($this, $class = new NakedEntityClass('', array(), array('nickname' => null)));
         $this->assertEquals(array('nickname' => 'dummy'), $no->getState());
     }
 
@@ -37,25 +37,52 @@ class NakedEntityTest extends \PHPUnit_Framework_TestCase
         $user->expects($this->once())
              ->method('setNickname')
              ->with('dummy');
-        $no = new NakedEntity($user, null);
+        $no = new NakedBareEntity($user, null);
         $no->setState($data);
     }
 
     public function testSetsTheStateOfTheObjectAlsoWithARelation()
     {
-        $data = array('phonenumber' => new NakedEntity($phonenumber = new Phonenumber));
+        $data = array('phonenumber' => new NakedBareEntity($phonenumber = new Phonenumber));
         $user = $this->getMock('NakedPhp\Stubs\User', array('setPhonenumber'));
         $user->expects($this->once())
              ->method('setPhonenumber')
              ->with($phonenumber);
-        $no = new NakedEntity($user, null);
+        $no = new NakedBareEntity($user, null);
         $no->setState($data);
     }
 
+    public function testProxiesToTheClassForObtainingApplicableMethods()
+    {
+        $class = $this->getMock('NakedPhp\Metadata\NakedEntityClass', array('getMethods'));
+        $class->expects($this->any())
+             ->method('getMethods')
+             ->will($this->returnValue(array('dummy' => 'DummyMethod')));
+
+        $no = new NakedBareEntity($this, $class);
+        $this->assertEquals(array('dummy' => 'DummyMethod'), $no->getMethods());
+        $this->assertEquals('DummyMethod', $no->getMethod('dummy'));
+        $this->assertTrue($no->hasMethod('dummy'));
+        $this->assertFalse($no->hasMethod('notExistentMethodName'));
+    }
+
+    public function testProxiesToTheClassForObtainingTemplateMethods()
+    {
+        $class = $this->getMock('NakedPhp\Metadata\NakedEntityClass', array('getHiddenMethods'));
+        $class->expects($this->any())
+             ->method('getHiddenMethods')
+             ->will($this->returnValue(array('dummy' => 'DummyMethod')));
+
+        $no = new NakedBareEntity($this, $class);
+        $this->assertTrue($no->hasHiddenMethod('dummy'));
+        $this->assertFalse($no->hasHiddenMethod('notExistentMethodName'));
+    }
+
+
     public function testIsTraversable()
     {
-        $no = new NakedEntity(null, null);
-        $this->assertTrue($no instanceof \IteratorAggregate);
+        $no = new NakedBareEntity(null, null);
+        $this->assertTrue($no instanceof \Traversable);
     }
 
     /**
@@ -64,7 +91,7 @@ class NakedEntityTest extends \PHPUnit_Framework_TestCase
     public function testIsTraversableProxyingToTheEntityState()
     {
         $class = new NakedEntityClass('', array(), array('nickname' => null));
-        $no = new NakedEntity($this, $class);
+        $no = new NakedBareEntity($this, $class);
         $this->assertEquals('dummy', $no->getIterator()->current());
     }
 

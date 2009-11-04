@@ -30,7 +30,7 @@ namespace NakedPhp\Service;
         return array();
     }
 
-    public function call(NakedMethod $method, NakedEntity $entity, array $parameters = array())
+    public function call(NakedMethod $method, NakedBareEntity $entity, array $parameters = array())
     {
         return $entity;
     }

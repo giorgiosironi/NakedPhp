@@ -35,4 +35,20 @@ class NakedService extends NakedObject
     {
         return $this->_class;
     }
+
+    public function getMethods()
+    {
+        return $this->_class->getMethods();
+    }
+
+    /**
+     * Convenience method.
+     */
+    public function getMethod($methodName)
+    {
+        $methods = $this->getMethods();
+        return $methods[$methodName];
+    }
+
 }
+

@@ -14,11 +14,10 @@
  */
 
 namespace NakedPhp\Form;
-use NakedPhp\Metadata\NakedEntity;
+use NakedPhp\Metadata\NakedBareEntity;
 use NakedPhp\Metadata\NakedEntityClass;
 use NakedPhp\Metadata\NakedField;
 use NakedPhp\Metadata\NakedMethod;
-use NakedPhp\Stubs\TransparentMethodCaller;
 
 class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
 {
@@ -29,8 +28,7 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_methodCaller = new TransparentMethodCaller();
-        $this->_formBuilder = new FieldsFormBuilder($this->_methodCaller);
+        $this->_formBuilder = new FieldsFormBuilder();
         $this->_fields = array(
             'first' => new NakedField('string', 'first'),
             'second' => new NakedField('integer', 'second'),
@@ -40,7 +38,7 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
 
     private function _getForm()
     {
-        $entity = new NakedEntity($this, new NakedEntityClass());
+        $entity = new NakedBareEntity($this, new NakedEntityClass());
         return $this->_formBuilder->createForm($entity, $this->_fields);
     }
 
@@ -70,7 +68,7 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function testCreatesSelectForLimitedChoices()
     {
-        $entity = new NakedEntity($this, new NakedEntityClass('', array(), array(), array('choicesLimitedField' => new NakedMethod('choicesLimitedField', array()))));
+        $entity = new NakedBareEntity($this, new NakedEntityClass('', array(), array(), array('choicesLimitedField' => new NakedMethod('choicesLimitedField', array()))));
         $element = $this->_formBuilder->createElement($entity, new NakedField('string', 'limitedField'));
         $this->assertTrue($element instanceof \Zend_Form_Element_Select);
         $expected = array('foo' => 'Foo', 'bar' => 'Bar');
@@ -84,7 +82,7 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function testDisablesInputProgrammatically()
     {
-        $entity = new NakedEntity($this, new NakedEntityClass('', array(), array(), array('disableMyField' => new NakedMethod('disableMyField', array()))));
+        $entity = new NakedBareEntity($this, new NakedEntityClass('', array(), array(), array('disableMyField' => new NakedMethod('disableMyField', array()))));
         $element = $this->_formBuilder->createElement($entity, new NakedField('string', 'myField'));
         $this->assertEquals('disabled', $element->getAttrib('disabled'));
     }
@@ -96,7 +94,7 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function testShowsTooltipOnDisabledInputs()
     {
-        $entity = new NakedEntity($this, new NakedEntityClass('', array(), array(), array('disableMyOtherField' => new NakedMethod('disableMyOtherField', array()))));
+        $entity = new NakedBareEntity($this, new NakedEntityClass('', array(), array(), array('disableMyOtherField' => new NakedMethod('disableMyOtherField', array()))));
         $element = $this->_formBuilder->createElement($entity, new NakedField('string', 'myOtherField'));
         $decorators = $element->getDecorators();
         $tooltipDecoratorOptions = $decorators['Tooltip']->getOptions();

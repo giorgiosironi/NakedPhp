@@ -24,7 +24,7 @@ class DisplayObjectTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->_helper = new DisplayObject();
-        $this->_object = $this->getMock('NakedPhp\Metadata\NakedEntity', array('getClassName', 'getState'), array(), '', false);
+        $this->_object = $this->getMock('NakedPhp\Metadata\NakedBareEntity', array('getClassName', 'getState'), array(), '', false);
         $state = array(
             'firstName' => 'Giorgio',
             'lastName' => 'Sironi'

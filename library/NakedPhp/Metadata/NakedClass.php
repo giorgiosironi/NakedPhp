@@ -57,21 +57,25 @@ class NakedClass
     }
 
     /**
+     * Convenience method.
      * @param string $name
      * @return NakedMethod
      */
     public function getMethod($name)
     {
-        return $this->_methods[$name];
+        $methods = $this->getMethods();
+        return $methods[$name];
     }
 
     /**
+     * Convenience method.
      * @param string $name
      * @return boolean
      */
     public function hasMethod($name)
     {
-        return isset($this->_methods[$name]);
+        $methods = $this->getMethods();
+        return isset($methods[$name]);
     }
 
     /**
@@ -80,6 +84,11 @@ class NakedClass
     public function getClassName()
     {
         return $this->_className;
+    }
+
+    public function __toString()
+    {
+        return $this->getClassName();
     }
 
     /**
@@ -91,11 +100,25 @@ class NakedClass
     }
 
     /**
+     * Convenience method.
      * @param string $name
      * @return NakedMethod
      */
     public function getHiddenMethod($name)
     {
-        return $this->_hiddenMethods[$name];
+        $methods = $this->getHiddenMethods();
+        return $methods[$name];
     }
+
+    /**
+     * Convenience method.
+     * @param string $name
+     * @return boolean
+     */
+    public function hasHiddenMethod($name)
+    {
+        $methods = $this->getHiddenMethods();
+        return isset($methods[$name]);
+    }
+
 }

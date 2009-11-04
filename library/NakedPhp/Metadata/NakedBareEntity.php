@@ -18,11 +18,11 @@ namespace NakedPhp\Metadata;
 /**
  * Wraps an entity object.
  */
-class NakedEntity extends NakedObject implements \IteratorAggregate
+class NakedBareEntity extends NakedObject implements NakedEntity
 {
     protected $_class;
 
-    public function __construct($entity, NakedEntityClass $class = null)
+    public function __construct($entity = null, NakedEntityClass $class = null)
     {
         parent::__construct($entity);
         $this->_class = $class;
@@ -51,7 +51,7 @@ class NakedEntity extends NakedObject implements \IteratorAggregate
 
     /**
      * @param array $data   field names are keys; works also with objects and
-     *                      objects wrapped in NakedEntity
+     *                      objects wrapped in NakedBareEntity
      */
     public function setState(array $data)
     {
@@ -62,6 +62,34 @@ class NakedEntity extends NakedObject implements \IteratorAggregate
             $setter = 'set' . ucfirst($fieldName);
             $this->_wrapped->$setter($value);
         }
+    }
+
+    public function getMethods()
+    {
+        return $this->_class->getMethods(); 
+    }
+
+    /**
+     * Convenience method.
+     */
+    public function getMethod($methodName)
+    {
+        $methods = $this->getMethods();
+        return $methods[$methodName];
+    }
+
+    /**
+     * Convenience method.
+     */
+    public function hasMethod($methodName)
+    {
+        $methods = $this->getMethods();
+        return isset($methods[$methodName]);
+    }
+
+    public function hasHiddenMethod($methodName)
+    {
+        return $this->_class->hasHiddenMethod($methodName);
     }
 
     public function getIterator()

@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedEntity;
+use NakedPhp\Metadata\NakedBareEntity;
 
 class EntityContainerTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,7 +27,7 @@ class EntityContainerTest extends \PHPUnit_Framework_TestCase
 
     public function testAddsAnObjectAndReturnsKey()
     {
-        $no = new NakedEntity(null);
+        $no = new NakedBareEntity(null);
         $key = $this->_container->add($no);
         $this->assertSame($no, $this->_container->get($key));
     }
@@ -37,7 +37,7 @@ class EntityContainerTest extends \PHPUnit_Framework_TestCase
      */
     public function testRecognizesNewObjects()
     {
-        $no = new NakedEntity(null);
+        $no = new NakedBareEntity(null);
         $this->assertFalse($this->_container->contains($no));
     }
 
@@ -46,7 +46,7 @@ class EntityContainerTest extends \PHPUnit_Framework_TestCase
      */
     public function testRecognizesAnAddedObject()
     {
-        $no = new NakedEntity(null);
+        $no = new NakedBareEntity(null);
         $key = $this->_container->add($no);
         $this->assertTrue((boolean) $this->_container->contains($no));
     }
@@ -56,7 +56,7 @@ class EntityContainerTest extends \PHPUnit_Framework_TestCase
      */
     public function testAddsAnObjectIdempotently()
     {
-        $no = new NakedEntity(null);
+        $no = new NakedBareEntity(null);
         $key = $this->_container->add($no);
         $anotherKey = $this->_container->add($no);
         $this->assertSame($key, $anotherKey);
@@ -68,9 +68,9 @@ class EntityContainerTest extends \PHPUnit_Framework_TestCase
     public function testAddsAnEqualsObjectIdempotently()
     {
         $wrapped = new \stdClass;
-        $no = new NakedEntity($wrapped);
+        $no = new NakedBareEntity($wrapped);
         $key = $this->_container->add($no);
-        $anotherKey = $this->_container->add(new NakedEntity($wrapped));
+        $anotherKey = $this->_container->add(new NakedBareEntity($wrapped));
         $this->assertSame($key, $anotherKey);
     }
 
@@ -79,7 +79,7 @@ class EntityContainerTest extends \PHPUnit_Framework_TestCase
      */
     public function testSerializationMustNotAffectIdempotentAddition()
     {
-        $no = new NakedEntity(null);
+        $no = new NakedBareEntity(null);
         $key = $this->_container->add($no);
         $serialized = serialize($this->_container);
         unset($this->_container);

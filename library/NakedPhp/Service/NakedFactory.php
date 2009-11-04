@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedEntity;
+use NakedPhp\Metadata\NakedBareEntity;
 use NakedPhp\Metadata\NakedService;
 use NakedPhp\Reflect\EntityReflector;
 use NakedPhp\Reflect\ServiceReflector;
@@ -38,7 +38,7 @@ class NakedFactory
             return new NakedService($object, $class);
         } else {
             $class = $this->_entityReflector->analyze($className);
-            return new NakedEntity($object, $class);
+            return new NakedBareEntity($object, $class);
         }
     }
 }

@@ -28,6 +28,8 @@ class NakedEntityClassTest extends \PHPUnit_Framework_TestCase
         $nc = new NakedEntityClass('', array(), array(), $hiddenMethods = array('key' => 'choicesField', 'validateMethod'));
         $this->assertEquals($hiddenMethods, $nc->getHiddenMethods());
         $this->assertEquals('choicesField', $nc->getHiddenMethod('key'));
+        $this->assertTrue($nc->hasHiddenMethod('key'));
+        $this->assertFalse($nc->hasHiddenMethod('notExistent'));
     }
 
     public function testGivesAccessToAFieldByName()

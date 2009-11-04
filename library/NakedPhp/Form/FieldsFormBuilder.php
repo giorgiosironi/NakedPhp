@@ -16,20 +16,9 @@
 namespace NakedPhp\Form;
 use NakedPhp\Metadata\NakedEntity;
 use NakedPhp\Metadata\NakedField;
-use NakedPhp\Service\MethodCaller;
 
 class FieldsFormBuilder
 {
-    protected $_caller;
-
-    /**
-     * @param MethodCaller $caller
-     */
-    public function __construct(MethodCaller $caller)
-    {
-        $this->_caller = $caller;
-    }
-
     /**
      * @param NakedEntity $entity
      * @param array $fields         NakedField instances
@@ -61,8 +50,8 @@ class FieldsFormBuilder
             $element =  new ObjectSelect($field->getName());
         } else {
             $methodName = 'choices' . ucfirst($field->getName());
-            if ($this->_caller->hasMethod($entity->getClass(), $methodName)) {
-                $choices = $this->_caller->call($entity, $methodName); 
+            if ($entity->hasHiddenMethod($methodName)) {
+                $choices = $entity->__call($methodName); 
                 $element = new \Zend_Form_Element_Select($field->getName());
                 $element->setMultiOptions($choices);
             } else {
@@ -81,8 +70,8 @@ class FieldsFormBuilder
  
 
         $methodName = 'disable' . ucfirst($field->getName());
-        if ($this->_caller->hasMethod($entity->getClass(), $methodName)) {
-            $disabled = $this->_caller->call($entity, $methodName); 
+        if ($entity->hasHiddenMethod($methodName)) {
+            $disabled = $entity->__call($methodName); 
             if ($disabled) {
                 $element->setAttrib('disabled', 'disabled');
                 if (is_string($disabled)) {

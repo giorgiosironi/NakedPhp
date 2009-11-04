@@ -14,10 +14,10 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedEntity;
+use NakedPhp\Metadata\NakedBareEntity;
 
 /**
- * This class act as a small container for NakedEntity instances.
+ * This class act as a small container for NakedBareEntity instances.
  * Its goal is to be kept in a php session for working on the objects contained.
  * Then the result can be saved by a DataMapper.
  */
@@ -31,10 +31,10 @@ class EntityContainer implements \IteratorAggregate
     }
 
     /**
-     * @param NakedEntity $object   object to be added idempotently
+     * @param NakedBareEntity $object   object to be added idempotently
      * @return integer  the key of the object in this container
      */
-    public function add(NakedEntity $object)
+    public function add(NakedBareEntity $object)
     {
         $index = $this->contains($object);
         if ($index) {
@@ -47,7 +47,7 @@ class EntityContainer implements \IteratorAggregate
 
     /**
      * @param integer $key  key for the object
-     * @return NakedEntity
+     * @return NakedBareEntity
      */
     public function get($key)
     {
@@ -55,10 +55,10 @@ class EntityContainer implements \IteratorAggregate
     }
 
     /**
-     * @param NakedEntity $object
+     * @param NakedBareEntity $object
      * @return integer      the object key; false if it's not contained
      */
-    public function contains(NakedEntity $object)
+    public function contains(NakedBareEntity $object)
     {
         foreach ($this->_objects as $index => $o) {
             if ($o->equals($object)) {

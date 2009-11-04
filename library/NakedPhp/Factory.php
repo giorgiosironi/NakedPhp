@@ -73,4 +73,12 @@ class Factory
     {
         return new Form\StateManager($this->getEntityContainer());
     }
+
+    /**
+     * @return NakedCompleteEntity
+     */
+    public function createCompleteEntity(Metadata\NakedBareEntity $entity)
+    {
+        return new Metadata\NakedCompleteEntity($entity, $this->getMethodMerger());
+    }
 }

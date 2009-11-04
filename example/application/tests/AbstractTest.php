@@ -23,5 +23,6 @@ class Example_AbstractTest extends Zend_Test_PHPUnit_ControllerTestCase
         );
         $this->bootstrap = array($application, 'bootstrap');
         parent::setUp();
+        $this->frontController->throwExceptions(true);
     }
 }

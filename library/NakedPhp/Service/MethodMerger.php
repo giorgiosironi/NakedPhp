@@ -195,6 +195,7 @@ class MethodMerger implements MethodCaller
 
     /**
      * {@inheritdoc}
+     * Convenience method.
      */
     public function getMethod(NakedClass $class, $methodName)
     {
@@ -204,11 +205,20 @@ class MethodMerger implements MethodCaller
 
     /**
      * {@inheritdoc}
+     * Convenience method.
      */
     public function hasMethod(NakedClass $class, $methodName)
     {
         $methods = $this->_getAllMethods($class);
         return isset($methods[$methodName]);
+    }
+
+    /**
+     * TODO: refactor to separate visible and hidden methods
+     */
+    public function hasHiddenMethod(NakedClass $class, $methodName)
+    {
+        return $this->hasMethod($class, $methodName);
     }
 
     /**

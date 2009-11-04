@@ -22,4 +22,11 @@ class NakedServiceTest extends \PHPUnit_Framework_TestCase
         $no = new NakedService($this, $class = new NakedServiceClass('', array('doSomething')));
         $this->assertSame($class, $no->getClass());
     }
+
+    public function testProxiesToClassForMethodsMetadata()
+    {
+        $no = new NakedService($this, $class = new NakedServiceClass('', array('key' => 'doSomething')));
+        $this->assertEquals(array('key' => 'doSomething'), $no->getMethods());
+        $this->assertEquals('doSomething', $no->getMethod('key'));
+    }
 }
