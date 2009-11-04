@@ -14,46 +14,55 @@
  */
 
 namespace NakedPhp\Mvc\View\Helper;
+use NakedPhp\Stubs\NakedEntityStub;
+use NakedPhp\Metadata\NakedEntityClass;
+use NakedPhp\Metadata\NakedMethod;
 
 class DisplayObjectTest extends \PHPUnit_Framework_TestCase
 {
     private $_helper;
     private $_object;
-    private $_result;
 
     public function setUp()
     {
-        $this->_helper = new DisplayObject();
-        $this->_object = $this->getMock('NakedPhp\Metadata\NakedBareEntity', array('getClassName', 'getState'), array(), '', false);
-        $state = array(
+        $this->_object = new NakedEntityStub($this);
+        $this->_object->setState(array(
             'firstName' => 'Giorgio',
             'lastName' => 'Sironi'
-        );
-        $this->_object->expects($this->any())
-                      ->method('getClassName')
-                      ->will($this->returnValue('DummyClass'));
-        $this->_object->expects($this->any())
-                      ->method('getState')
-                      ->will($this->returnValue($state));
-        $this->_result = $this->_helper->displayObject($this->_object);
+        ));
+        $this->_helper = new DisplayObject();
     }
 
-    public function testReturnsATable()
+    public function testProducesHtmlTable()
     {
-        $this->assertQuery($this->_result, 'table.nakedphp_entity.DummyClass');
+        $this->_object->setClassName('DummyClass');
+        $result = $this->_helper->displayObject($this->_object);
+        $this->assertQuery($result, 'table.nakedphp_entity.DummyClass');
+        $this->assertQuery($result, 'table tr');
+
+        $this->assertQueryContentContains($result, 'table tr td', 'firstName');
+        $this->assertQueryContentContains($result, 'table tr td', 'Giorgio');
+        $this->assertQueryContentContains($result, 'table tr td', 'lastName');
+        $this->assertQueryContentContains($result, 'table tr td', 'Sironi');
     }
 
-    public function testFillsTableWithRowsBasingOnFields()
+    public function testHidesFieldsProgrammatically()
     {
-        $this->assertQuery($this->_result, 'table tr');
+        $object = new NakedEntityStub($this);
+        $object->setState(array(
+            'firstName' => 'Giorgio',
+            'lastName' => 'Sironi'
+        ));
+        $object->addHiddenMethod('hideFirstName');
+
+        $result = $this->_helper->displayObject($object);
+
+        $this->assertQueryContentNotContains($result, 'table tr td', 'firstName');
     }
 
-    public function testFillsCellsWithFieldsValues()
+    public function hideFirstName()
     {
-        $this->assertQueryContentContains($this->_result, 'table tr td', 'firstName');
-        $this->assertQueryContentContains($this->_result, 'table tr td', 'Giorgio');
-        $this->assertQueryContentContains($this->_result, 'table tr td', 'lastName');
-        $this->assertQueryContentContains($this->_result, 'table tr td', 'Sironi');
+        return true;
     }
 
     /**
@@ -66,9 +75,7 @@ class DisplayObjectTest extends \PHPUnit_Framework_TestCase
     public function assertQuery($content, $path, $message = '')
     {
         $constraint = new \Zend_Test_PHPUnit_Constraint_DomQuery($path);
-        if (!$constraint->evaluate($content, __FUNCTION__)) {
-            $constraint->fail($path, $message);
-        }
+        $this->assertTrue($constraint->evaluate($content, __FUNCTION__));
     }
 
     /**
@@ -82,8 +89,12 @@ class DisplayObjectTest extends \PHPUnit_Framework_TestCase
     public function assertQueryContentContains($content, $path, $match, $message = '')
     {
         $constraint = new \Zend_Test_PHPUnit_Constraint_DomQuery($path);
-        if (!$constraint->evaluate($content, __FUNCTION__, $match)) {
-            $constraint->fail($path, $message);
-        }
+        $this->assertTrue($constraint->evaluate($content, __FUNCTION__, $match));
+    }
+
+    public function assertQueryContentNotContains($content, $path, $match, $message = '')
+    {
+        $constraint = new \Zend_Test_PHPUnit_Constraint_DomQuery($path);
+        $this->assertTrue($constraint->evaluate($content, __FUNCTION__, $match));
     }
 }

@@ -32,7 +32,7 @@ final class NakedMethod
      */
     private $_returnType;
 
-    public function __construct($name, array $params = array(), $return = 'void')
+    public function __construct($name = '', array $params = array(), $return = 'void')
     {
         $this->_name = $name;
         $this->_params = $params;

@@ -18,7 +18,7 @@ use NakedPhp\Service\MethodCaller;
 
 /**
  * Wraps a NakedBareEntity object, providing automatic injection of services
- * as methods parameters.
+ * as methods parameters (Decorator pattern).
  * Should not be serialized. Store the inner object instead (@see getBareEntity()).
  */
 class NakedCompleteEntity implements NakedEntity
@@ -45,7 +45,7 @@ class NakedCompleteEntity implements NakedEntity
      */
     public function getClassName()
     {
-        return (string) $this->_entity->getClass();
+        return $this->_entity->getClassName();
     }
 
     /**

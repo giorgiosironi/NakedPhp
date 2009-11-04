@@ -24,6 +24,12 @@ class DisplayObject extends \Zend_View_Helper_Abstract
         $className = $no->getClassName();
         $html = "<table class=\"nakedphp_entity $className\">";
         foreach ($no as $fieldName => $value) {
+            $methodName = 'hide' . ucfirst($fieldName);
+            if ($no->hasHiddenMethod($methodName)) {
+                if ($no->__call($methodName)) {
+                    continue;
+                }
+            }
             $html .= "<tr class=\"$fieldName\">
             <td class=\"fieldName\">$fieldName</td>
             <td class=\"value\">$value</td>

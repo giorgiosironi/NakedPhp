@@ -26,6 +26,11 @@ interface NakedEntity extends \IteratorAggregate
     public function getClass();
 
     /**
+     * @return string
+     */
+    public function getClassName();
+
+    /**
      * @return array    field names are keys
      */
     public function getState();
