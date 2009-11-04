@@ -17,6 +17,7 @@ namespace NakedPhp\Mvc;
 use NakedPhp\Metadata\NakedObject;
 use NakedPhp\Metadata\NakedEntity;
 use NakedPhp\Metadata\NakedBareEntity;
+use NakedPhp\Metadata\NakedCompleteEntity;
 
 class Controller extends \Zend_Controller_Action
 {
@@ -150,7 +151,7 @@ class Controller extends \Zend_Controller_Action
      */
     protected function _redirectToObject($no)
     {
-        if (!($no instanceof NakedObject)) {
+        if (!($no instanceof NakedObject or $no instanceof NakedEntity)) {
             $factory = $this->_factory->getNakedFactory();
             $no = $factory->create($no);
         }

@@ -70,7 +70,19 @@ class NakedCompleteEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($no->hasMethod('notExistentMethodName'));
     }
 
-    public function testProxiesToTheMergerForObtainingTemplateMethods()
+    public function testProxiesToTheMergerForCallingMethods()
+    {
+        $bareNo = new NakedBareEntity();
+        $merger = $this->getMock('NakedPhp\Service\MethodMerger', array('call'));
+        $merger->expects($this->once())
+             ->method('call')
+             ->with($bareNo, 'methodName', array('foo', 'bar'))
+             ->will($this->returnValue('dummy'));
+        $no = new NakedCompleteEntity($bareNo, $merger);
+        $this->assertEquals('dummy', $no->__call('methodName', array('foo', 'bar')));
+    }
+
+    public function testProxiesToTheMergerForSearchingTemplateMethods()
     {
         $class = new NakedEntityClass('DummyClass');
         $bareNo = new NakedBareEntity($this, $class);

@@ -106,6 +106,11 @@ class NakedCompleteEntity implements NakedEntity
         return $this->_merger->hasHiddenMethod($this->_entity->getClass(), $methodName);
     }
 
+    public function __call($methodName, array $arguments = array())
+    {
+        return $this->_merger->call($this->_entity, $methodName, $arguments);
+    }
+
     public function getIterator()
     {
         return $this->_entity->getIterator();

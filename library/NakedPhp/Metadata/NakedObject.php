@@ -46,7 +46,7 @@ class NakedObject
     /**
      * implements decoration of wrapped object
      */
-    public function __call($name, $args = array())
+    public function __call($name, array $args = array())
     {
         if (method_exists($this->_wrapped, $name)) {
             return call_user_func_array(array($this->_wrapped, $name), $args);

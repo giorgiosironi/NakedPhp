@@ -108,6 +108,18 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
         return 'You cannot edit this.';
     }
 
+    public function testValidatesInputProgrammatically()
+    {
+        $entity = new NakedBareEntity($this, new NakedEntityClass('', array(), array(), array('validateMyField' => new NakedMethod('validateMyField', array()))));
+        $element = $this->_formBuilder->createElement($entity, new NakedField('string', 'myField'));
+        $this->assertFalse($element->isValid('foo'));
+    }
+
+    public function validateMyField()
+    {
+        return false;
+    }
+
     public function testNormalizesClassNameForRelationships()
     {
         $form = $this->_getForm();
