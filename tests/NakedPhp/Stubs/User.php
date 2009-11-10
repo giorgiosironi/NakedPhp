@@ -57,6 +57,11 @@ class User
         $this->_phonenumber = $phonenumber;
     }
 
+    public function validatePhonenumber($phonenumber)
+    {
+        return true;
+    }
+
     /**
      * @return string
      */

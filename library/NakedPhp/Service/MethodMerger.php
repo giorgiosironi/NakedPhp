@@ -67,7 +67,7 @@ class MethodMerger implements MethodCaller
      */
     protected function _addServices(NakedMethod $method, array $parameters)
     {
-        $completeParameters = Array(); 
+        $completeParameters = array(); 
         $serviceClasses = $this->_serviceProvider->getServiceClasses();
         foreach ($method->getParams() as $name => $param) {
             $type = $param->getType();
@@ -77,6 +77,7 @@ class MethodMerger implements MethodCaller
                 $completeParameters[$name] = array_shift($parameters);
             }
         }
+
         assert('$parameters == array()');
         return $completeParameters;
     }

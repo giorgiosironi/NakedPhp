@@ -68,6 +68,14 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('disableStatus', (string) $hiddenMethods['disableStatus']);
     }
 
+    public function testAssumesTheDefaultParametersTypeAsString()
+    {
+        $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
+        $hiddenMethods = $result->getHiddenMethods();
+        $params = $hiddenMethods['validatePhonenumber']->getParams();
+        $this->assertEquals('string', $params['phonenumber']->getType());
+    }
+
     public function testSkipsMethodsHiddenVoluntarily()
     {
         $this->_parserMock->expects($this->any())

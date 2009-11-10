@@ -61,11 +61,19 @@ class EntityReflector extends AbstractReflector
 
             $params = array();
             $return = 'void';
+            $parametersAnnotationsFound = false;
             foreach ($annotations as $ann) {
                 if ($ann['annotation'] == 'param') {
                     $params[$ann['name']] = new NakedParam($ann['type'], $ann['name']);
+                    $parametersAnnotationsFound = true;
                 } else if ($ann['annotation'] == 'return') {
                     $return = $ann['type'];
+                }
+            }
+            if (!$parametersAnnotationsFound) {
+                foreach ($method->getParameters() as $param) {
+                    $name = $param->getName();
+                    $params[$name] = new NakedParam('string', $name);
                 }
             }
             $methods[$methodName] = new NakedMethod($methodName, $params, $return);
