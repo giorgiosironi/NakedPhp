@@ -15,20 +15,25 @@
 
 namespace NakedPhp\Reflect;
 use NakedPhp\Metadata\NakedServiceClass;
+use NakedPhp\Metadata\NakedMethod;
 
 class ServiceReflectorTest extends \PHPUnit_Framework_TestCase
 {
     private $_parserMock;
+    private $_methodsReflectorMock;
     private $_reflector;
-    private $_result;
 
     public function setUp()
     {
-        $this->_parserMock = $this->getMock('NakedPhp\Reflect\DocblockParser', array('parse', 'contains'));
-        $this->_parserMock->expects($this->any())
-                   ->method('parse')
-                   ->will($this->returnValue(array()));
-        $this->_reflector = new ServiceReflector($this->_parserMock);
+        $this->_parserMock = $this->getMock('NakedPhp\Reflect\DocblockParser', array('contains'));
+        $this->_methodsReflectorMock = $this->getMock('NakedPhp\Reflect\MethodsReflector', array('analyze'));
+        $methods = array(
+            'createUser' => new NakedMethod('createUser', array(), 'UserClass')
+        );
+        $this->_methodsReflectorMock->expects($this->any())
+                                    ->method('analyze')
+                                    ->will($this->returnValue($methods));
+        $this->_reflector = new ServiceReflector($this->_parserMock, $this->_methodsReflectorMock);
     }
 
     public function testRecognizesAnAnnotatedClass()
@@ -46,29 +51,11 @@ class ServiceReflectorTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->_result instanceof NakedServiceClass);
     }
 
-    public function testListBusinessMethodsOfAnEntityObject()
+    public function testListBusinessMethodsOfAServiceObjectViaDelegationToTheMethodsReflector()
     {
         $this->_result = $this->_reflector->analyze('NakedPhp\Stubs\UserFactory');
         $methods = $this->_result->getMethods();
         $this->assertEquals('createUser', (string) current($methods));
         $this->assertTrue(isset($methods['createUser']));
-    }
-
-    public function testDoesNotListMagicMethods()
-    {
-        $this->_result = $this->_reflector->analyze('NakedPhp\Stubs\UserFactory');
-        $methods = $this->_result->getMethods();
-        $this->assertFalse(isset($methods['__toString']));
-    }
-
-    public function testSkipsMethodsHiddenVoluntarily()
-    {
-        $this->_parserMock->expects($this->any())
-                          ->method('contains')
-    /*                      ->with('Hidden', $this->anything())*/
-                          ->will($this->returnValue(true));
-        $this->_result = $this->_reflector->analyze('NakedPhp\Stubs\UserFactory');
-        $methods = $this->_result->getMethods();
-        $this->assertFalse(isset($methods['mySkippedMethod']));
     }
 }

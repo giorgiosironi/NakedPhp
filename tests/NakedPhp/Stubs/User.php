@@ -83,6 +83,7 @@ class User
     /**
      * @param string $title     subject of message
      * @param string $text      html text
+     * @return void
      */
     public function sendMessage($title, $text)
     {

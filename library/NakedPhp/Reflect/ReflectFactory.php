@@ -22,8 +22,8 @@ class ReflectFactory
      */
     public function createEntityReflector()
     {
-        $parser = new DocblockParser();
-        return new EntityReflector($parser);
+        $methodsReflector = $this->_createMethodsReflector();
+        return new EntityReflector($methodsReflector);
     }
 
     /**
@@ -32,6 +32,12 @@ class ReflectFactory
     public function createServiceReflector()
     {
         $parser = new DocblockParser();
-        return new ServiceReflector($parser);
+        $methodsReflector = $this->_createMethodsReflector();
+        return new ServiceReflector($parser, $methodsReflector);
+    }
+
+    protected function _createMethodsReflector()
+    {
+        return new MethodsReflector(new DocblockParser());
     }
 }

@@ -18,37 +18,24 @@ use NakedPhp\Metadata\NakedServiceClass;
 use NakedPhp\Metadata\NakedMethod;
 use NakedPhp\Metadata\NakedParam;
 
-class ServiceReflector extends AbstractReflector
+class ServiceReflector
 {
+    private $_parser;
+    private $_methodsReflector;
+
+    public function __construct(DocblockParser $parser = null, MethodsReflector $methodsReflector = null)
+    {
+        $this->_parser = $parser;
+        $this->_methodsReflector = $methodsReflector;
+    }
+
     /**
      * @param string $className
      * @return NakedServiceClass
      */
     public function analyze($className)
     {
-        $reflector = new \ReflectionClass($className);
-        $methods = array();
-
-        foreach ($reflector->getMethods() as $method) {
-            $methodName = $method->getName();
-            if ($this->_isHidden($method->getDocComment())) {
-                continue;
-            }
-            if ($this->_isMagic($methodName)) {
-                continue;
-            }
-            $annotations = $this->_parser->parse($method->getDocComment());
-            $params = array();
-            $return = 'void';
-            foreach ($annotations as $ann) {
-                if ($ann['annotation'] == 'param') {
-                    $params[$ann['name']] = new NakedParam($ann['type'], $ann['name']);
-                } else if ($ann['annotation'] == 'return') {
-                    $return = $ann['type'];
-                }
-            }
-            $methods[$methodName] = new NakedMethod($methodName, $params, $return);
-        }
+        $methods = $this->_methodsReflector->analyze($className);
 
         return new NakedServiceClass($className, $methods);
     }

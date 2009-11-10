@@ -18,18 +18,8 @@ namespace NakedPhp\Metadata;
 /**
  * Interface for classes that wrap an entity object.
  */
-interface NakedEntity extends \IteratorAggregate
+interface NakedEntity extends NakedObject, \IteratorAggregate
 {
-    /**
-     * @return NakedEntityClass
-     */
-    public function getClass();
-
-    /**
-     * @return string
-     */
-    public function getClassName();
-
     /**
      * @return array    field names are keys
      */
@@ -42,31 +32,9 @@ interface NakedEntity extends \IteratorAggregate
     public function setState(array $data);
 
     /**
-     * Builds the list of all methods visible to the end user.
-     * @return array                     NakedMethod instances
-     */
-    public function getMethods();
-
-    /**
-     * Returns metadata about a visible method.
-     * @param string $methodName
-     * @return NakedMethod          or null if not found
-     */
-    public function getMethod($methodName);
-
-    /**
-     * Finds out if a visible method exists.
-     * @param string $methodName
-     * @return boolean
-     */
-    public function hasMethod($methodName);
-
-    /**
      * Finds out if a template method exists.
      * @param string $methodName
      * @return boolean
      */
     public function hasHiddenMethod($methodName);
-
-    public function __call($methodName, array $arguments = array());
 }

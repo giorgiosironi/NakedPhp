@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedObject;
+use NakedPhp\Metadata\NakedObjectAbstract;
 use NakedPhp\Metadata\NakedClass;
 use NakedPhp\Metadata\NakedService;
 use NakedPhp\Metadata\NakedMethod;
@@ -22,14 +22,14 @@ use NakedPhp\Metadata\NakedMethod;
 interface MethodCaller
 {
     /**
-     * Call a method on a NakedObject.
-     * @param NakedObject $no       object to search the method on
+     * Call a method on a NakedObjectAbstract.
+     * @param NakedObjectAbstract $no       object to search the method on
      * @param string $methodName
      * @param array $parameters
-     * @return NakedObject  if the result is an object it will be wrapped.
+     * @return NakedObjectAbstract  if the result is an object it will be wrapped.
      *                      Otherwise, it will be returned as-is.
      */
-    public function call(NakedObject $no, $methodName, array $parameters = array());
+    public function call(NakedObjectAbstract $no, $methodName, array $parameters = array());
 
     /**
      * Builds the list of all methods visible to the end user.

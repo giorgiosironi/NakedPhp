@@ -18,7 +18,7 @@ namespace NakedPhp\Metadata;
 /**
  * Wraps a service object.
  */
-class NakedService extends NakedObject
+class NakedService extends NakedObjectAbstract
 {
     protected $_class;
 

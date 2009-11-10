@@ -18,7 +18,7 @@ namespace NakedPhp\Metadata;
 /**
  * Wraps an entity object.
  */
-class NakedBareEntity extends NakedObject implements NakedEntity
+class NakedBareEntity extends NakedObjectAbstract implements NakedEntity
 {
     protected $_class;
 

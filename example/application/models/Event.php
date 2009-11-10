@@ -117,7 +117,7 @@ class Example_Model_Event
 
     public function validateStartTime($startTime)
     {
-        if (preg_match('/[0-9]{1,2}:[0-0]{1,2}/', $startTime)) {
+        if (preg_match('/[0-9]{1,2}:[0-9]{1,2}/', $startTime)) {
             return true;
         } else {
             return false;

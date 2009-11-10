@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedObject;
+use NakedPhp\Metadata\NakedObjectAbstract;
 use NakedPhp\Metadata\NakedBareEntity;
 use NakedPhp\Metadata\NakedEntityClass;
 use NakedPhp\Metadata\NakedService;

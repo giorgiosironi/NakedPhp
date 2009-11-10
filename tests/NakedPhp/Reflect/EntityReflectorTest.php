@@ -14,77 +14,43 @@
  */
 
 namespace NakedPhp\Reflect;
-use NakedPhp\Metadata\NakedClass;
+use NakedPhp\Metadata\NakedEntityClass;
 use NakedPhp\Metadata\NakedField;
+use NakedPhp\Metadata\NakedMethod;
 
 class EntityReflectorTest extends \PHPUnit_Framework_TestCase
 {
-    private $_parserMock;
+    private $_methodsReflector;
     private $_reflector;
-    private $_result;
 
     public function setUp()
     {
-        $this->_parserMock = $this->getMock('NakedPhp\Reflect\DocblockParser', array('parse', 'contains'));
-        $this->_parserMock->expects($this->any())
-                   ->method('parse')
-                   ->will($this->returnValue(array(
-                       array(
-                           'annotation' => 'return',
-                           'type' => 'string',
-                           'name' => 'status',
-                           'description' => 'The role of the user'
-                       )
-                   )));
-        $this->_reflector = new EntityReflector($this->_parserMock);
+        $this->_methodsReflector = $this->getMock('NakedPhp\Reflect\MethodsReflector', array('analyze'));
+        $methods = array(
+            'sendMessage' => new NakedMethod('sendMessage'),
+            'getName' => new NakedMethod('getName'),
+            'setName' => new NakedMethod('setName'),
+            'getStatus' => new NakedMethod('getStatus', array(), 'string'),
+            'choicesStatus' => new NakedMethod('choicesStatus', array(), 'array')
+        );
+        $this->_methodsReflector->expects($this->once())
+                                ->method('analyze')
+                                ->will($this->returnValue($methods));
+
+        $this->_reflector = new EntityReflector($this->_methodsReflector);
     }
 
     public function testCreatesAClassMetadataObject()
     {
         $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $this->assertTrue($result instanceof NakedClass);
+        $this->assertTrue($result instanceof NakedEntityClass);
     }
 
-    public function testListsBusinessMethodsOfAnEntityObject()
+    public function testListsBusinessMethodsOfAnEntityObjectViaDelegationToMethodsReflector()
     {
         $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
         $methods = $result->getMethods();
-        $this->assertEquals('sendMessage', (string) current($methods));
         $this->assertTrue(isset($methods['sendMessage']));
-    }
-
-    public function testDoesNotListMagicMethods()
-    {
-        $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $methods = $result->getMethods();
-        $this->assertFalse(isset($methods['__toString']));
-    }
-
-    public function testListsHiddenMethodsInASpecialList()
-    {
-        $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $hiddenMethods = $result->getHiddenMethods();
-        $this->assertEquals('choicesStatus', (string) $hiddenMethods['choicesStatus']);
-        $this->assertEquals('disableStatus', (string) $hiddenMethods['disableStatus']);
-    }
-
-    public function testAssumesTheDefaultParametersTypeAsString()
-    {
-        $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $hiddenMethods = $result->getHiddenMethods();
-        $params = $hiddenMethods['validatePhonenumber']->getParams();
-        $this->assertEquals('string', $params['phonenumber']->getType());
-    }
-
-    public function testSkipsMethodsHiddenVoluntarily()
-    {
-        $this->_parserMock->expects($this->any())
-                          ->method('contains')
-                          ->with('Hidden', $this->anything())
-                          ->will($this->returnValue(true));
-        $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $methods = $result->getMethods();
-        $this->assertFalse(isset($methods['mySkippedMethod']));
     }
 
     public function testListsFieldsOfAnEntityObjectThatHaveSetterAndGetter()
@@ -110,14 +76,10 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('string', $fields['status']->getType());
     }
 
-    public function testDoesNotListFieldsWhichGetterIsAnnotatedWithHidden()
+    public function testListsHiddenMethodsInASpecialList()
     {
-        $this->_parserMock->expects($this->any())
-                          ->method('contains')
-                          ->with('Hidden', $this->anything())
-                          ->will($this->returnValue(true));
         $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $fields = $result->getFields();
-        $this->assertEquals(0, count($fields));
+        $hiddenMethods = $result->getHiddenMethods();
+        $this->assertEquals('choicesStatus', (string) $hiddenMethods['choicesStatus']);
     }
 }

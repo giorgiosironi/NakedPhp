@@ -19,64 +19,34 @@ use NakedPhp\Metadata\NakedMethod;
 use NakedPhp\Metadata\NakedParam;
 use NakedPhp\Metadata\NakedField;
 
-class EntityReflector extends AbstractReflector
+class EntityReflector
 {
+    private $_methodsReflector;
+    
+    public function __construct(MethodsReflector $methodsReflector = null)
+    {
+        $this->_methodsReflector = $methodsReflector;
+    }
+        
     /**
      * @param string $className
      * @return NakedEntityClass
      */
     public function analyze($className)
     {
-        $reflector = new \ReflectionClass($className);
+        $methods = $this->_methodsReflector->analyze($className);
         $fields = array();
-        $methods = array();
-        foreach ($reflector->getMethods() as $method) {
-            if ($this->_isHidden($method->getDocComment())) {
-                continue;
-            }
-
+        foreach ($methods as $method) {
             $methodName = $method->getName();
-            $annotations = $this->_parser->parse($method->getDocComment());
             if ($this->_isGetter($methodName)) {
                 $name = str_replace('get', '', $method->getName());
                 $fieldName = lcfirst($name);
-                foreach ($annotations as $a) {
-                    if ($a['annotation'] == 'return') {
-                        $fields[$fieldName] = new NakedField($a['type'], $fieldName);
-                        // $a['description']
-                    }
-                }
-                if (!isset($fields[$fieldName])) {
-                    $fields[$fieldName] = new NakedField('string', $fieldName);
-                }
+                $fields[$fieldName] = new NakedField($method->getReturn(), $fieldName);
                 continue;
             }
             if ($this->_isSetter($methodName)) {
                 continue;
             }
-
-            if ($this->_isMagic($methodName)) {
-                continue;
-            }
-
-            $params = array();
-            $return = 'void';
-            $parametersAnnotationsFound = false;
-            foreach ($annotations as $ann) {
-                if ($ann['annotation'] == 'param') {
-                    $params[$ann['name']] = new NakedParam($ann['type'], $ann['name']);
-                    $parametersAnnotationsFound = true;
-                } else if ($ann['annotation'] == 'return') {
-                    $return = $ann['type'];
-                }
-            }
-            if (!$parametersAnnotationsFound) {
-                foreach ($method->getParameters() as $param) {
-                    $name = $param->getName();
-                    $params[$name] = new NakedParam('string', $name);
-                }
-            }
-            $methods[$methodName] = new NakedMethod($methodName, $params, $return);
         }
 
         list($userMethods, $hiddenMethods) = $this->_separateMethods($methods, $fields);

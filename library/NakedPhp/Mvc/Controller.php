@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Mvc;
-use NakedPhp\Metadata\NakedObject;
+use NakedPhp\Metadata\NakedObjectAbstract;
 use NakedPhp\Metadata\NakedEntity;
 use NakedPhp\Metadata\NakedBareEntity;
 use NakedPhp\Metadata\NakedCompleteEntity;
@@ -37,7 +37,7 @@ class Controller extends \Zend_Controller_Action
     private $_services;
 
     /**
-     * @var NakedObject     the current object
+     * @var NakedObjectAbstract     the current object
      */
     private $_completeObject;
 
@@ -147,11 +147,11 @@ class Controller extends \Zend_Controller_Action
 
     /**
      * This method redirects to the view action of a NakedBareEntity or NakedService object.
-     * @param NakedObject $no
+     * @param NakedObjectAbstract $no
      */
     protected function _redirectToObject($no)
     {
-        if (!($no instanceof NakedObject or $no instanceof NakedEntity)) {
+        if (!($no instanceof NakedObjectAbstract or $no instanceof NakedEntity)) {
             $factory = $this->_factory->getNakedFactory();
             $no = $factory->create($no);
         }

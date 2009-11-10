@@ -15,11 +15,11 @@
 
 namespace NakedPhp\Metadata;
 
-class NakedObjectTest extends \PHPUnit_Framework_TestCase
+class NakedObjectAbstractTest extends \PHPUnit_Framework_TestCase
 {
     public function testIsADecoratorForTheDomainObject()
     {
-        $no = new NakedObject($this, null);
+        $no = new NakedObjectAbstract($this, null);
         $this->assertEquals('cannedResponse', $no->dummyMethod());
     }
 
@@ -28,39 +28,39 @@ class NakedObjectTest extends \PHPUnit_Framework_TestCase
      */
     public function testRaiseExceptionWhenUnexistentMethodIsCalled()
     {
-        $no = new NakedObject($this, null);
+        $no = new NakedObjectAbstract($this, null);
         $no->foobar();
     }
 
     public function testDiscoversClassNameOfTheDomainObject()
     {
-        $no = new NakedObject($this, null);
-        $this->assertEquals('NakedPhp\Metadata\NakedObjectTest', $no->getClassName());
+        $no = new NakedObjectAbstract($this, null);
+        $this->assertEquals('NakedPhp\Metadata\NakedObjectAbstractTest', $no->getClassName());
     }
 
     public function testReturnsACommonStringRepresentationForUnconvertibleObjects()
     {
-        $no = new NakedObject($this, null);
+        $no = new NakedObjectAbstract($this, null);
         $this->assertEquals('OBJECT', (string) $no);
     }
 
     public function testIsEqualToAnotherOneWhichWrapTheSameObject()
     {
-        $no = new NakedObject($this, null);
-        $another = new NakedObject($this, null);
+        $no = new NakedObjectAbstract($this, null);
+        $another = new NakedObjectAbstract($this, null);
         $this->assertTrue($no->equals($another));
     }
 
     public function testIsNotEqualToAnotherOneWhichDoesNotWrapTheSameObject()
     {
-        $no = new NakedObject($this, null);
-        $another = new NakedObject(new \stdClass, null);
+        $no = new NakedObjectAbstract($this, null);
+        $another = new NakedObjectAbstract(new \stdClass, null);
         $this->assertFalse($no->equals($another));
     }
 
     public function testContainsItsWrappedObject()
     {
-        $no = new NakedObject($this, null);
+        $no = new NakedObjectAbstract($this, null);
         $this->assertFalse($no->isWrapping(new \stdClass));
         $this->assertTrue($no->isWrapping($this));
     }
