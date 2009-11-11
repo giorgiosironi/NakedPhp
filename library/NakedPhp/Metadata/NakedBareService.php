@@ -15,18 +15,22 @@
 
 namespace NakedPhp\Metadata;
 
-class NakedServiceTest extends \PHPUnit_Framework_TestCase
+/**
+ * Wraps a service object.
+ */
+class NakedBareService extends NakedObjectAbstract implements NakedService
 {
-    public function testRetainsClassMetadata()
+    public function __construct($service, NakedServiceClass $class = null)
     {
-        $no = new NakedService($this, $class = new NakedServiceClass('', array('doSomething')));
-        $this->assertSame($class, $no->getClass());
+        parent::__construct($service, $class);
     }
 
-    public function testProxiesToClassForMethodsMetadata()
+    /**
+     * @return NakedServiceClass
+     */
+    public function getClass()
     {
-        $no = new NakedService($this, $class = new NakedServiceClass('', array('key' => 'doSomething')));
-        $this->assertEquals(array('key' => 'doSomething'), $no->getMethods());
-        $this->assertEquals('doSomething', $no->getMethod('key'));
+        return $this->_class;
     }
 }
+

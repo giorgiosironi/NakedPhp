@@ -14,7 +14,6 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedService;
 
 class ServiceIteratorTest extends \PHPUnit_Framework_TestCase implements ServiceProvider
 {

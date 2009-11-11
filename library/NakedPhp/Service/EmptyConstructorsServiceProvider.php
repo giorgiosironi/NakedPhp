@@ -47,6 +47,6 @@ class EmptyConstructorsServiceProvider implements ServiceProvider
         $fullClassName = /*'\\' .*/ $className;
         $wrapped = new $fullClassName();
         $nakedClass = $this->_reflector->analyze($className);
-        return new \NakedPhp\Metadata\NakedService($wrapped, $nakedClass);
+        return new \NakedPhp\Metadata\NakedBareService($wrapped, $nakedClass);
     }
 }

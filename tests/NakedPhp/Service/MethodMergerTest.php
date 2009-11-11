@@ -17,7 +17,7 @@ namespace NakedPhp\Service;
 use NakedPhp\Metadata\NakedObjectAbstract;
 use NakedPhp\Metadata\NakedBareEntity;
 use NakedPhp\Metadata\NakedEntityClass;
-use NakedPhp\Metadata\NakedService;
+use NakedPhp\Metadata\NakedBareService;
 use NakedPhp\Metadata\NakedServiceClass;
 use NakedPhp\Metadata\NakedMethod;
 use NakedPhp\Metadata\NakedParam;
@@ -133,7 +133,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     public function testCallsAServiceMethodAsIfItWereOnTheEntityClass()
     {
         $this->_makeProcessMethodAvailable();
-        $service = new NakedService($this, $this->_serviceClass);
+        $service = new NakedBareService($this, $this->_serviceClass);
         $this->_providerMock->expects($this->once())
                             ->method('getService')
                             ->with('theService')

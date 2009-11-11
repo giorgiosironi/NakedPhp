@@ -20,12 +20,9 @@ namespace NakedPhp\Metadata;
  */
 class NakedBareEntity extends NakedObjectAbstract implements NakedEntity
 {
-    protected $_class;
-
     public function __construct($entity = null, NakedEntityClass $class = null)
     {
-        parent::__construct($entity);
-        $this->_class = $class;
+        parent::__construct($entity, $class);
     }
 
     /**
@@ -64,28 +61,6 @@ class NakedBareEntity extends NakedObjectAbstract implements NakedEntity
         }
     }
 
-    public function getMethods()
-    {
-        return $this->_class->getMethods(); 
-    }
-
-    /**
-     * Convenience method.
-     */
-    public function getMethod($methodName)
-    {
-        $methods = $this->getMethods();
-        return $methods[$methodName];
-    }
-
-    /**
-     * Convenience method.
-     */
-    public function hasMethod($methodName)
-    {
-        $methods = $this->getMethods();
-        return isset($methods[$methodName]);
-    }
 
     public function hasHiddenMethod($methodName)
     {

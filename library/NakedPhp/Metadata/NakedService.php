@@ -16,39 +16,8 @@
 namespace NakedPhp\Metadata;
 
 /**
- * Wraps a service object.
+ * Interface for classes that wrap a service object, which does not live trough requests.
  */
-class NakedService extends NakedObjectAbstract
+interface NakedService extends NakedObject
 {
-    protected $_class;
-
-    public function __construct($service, NakedServiceClass $class = null)
-    {
-        parent::__construct($service);
-        $this->_class = $class;
-    }
-
-    /**
-     * @return NakedServiceClass
-     */
-    public function getClass()
-    {
-        return $this->_class;
-    }
-
-    public function getMethods()
-    {
-        return $this->_class->getMethods();
-    }
-
-    /**
-     * Convenience method.
-     */
-    public function getMethod($methodName)
-    {
-        $methods = $this->getMethods();
-        return $methods[$methodName];
-    }
-
 }
-

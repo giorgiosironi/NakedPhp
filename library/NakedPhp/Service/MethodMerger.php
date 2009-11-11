@@ -16,7 +16,6 @@
 namespace NakedPhp\Service;
 use NakedPhp\Metadata\NakedObjectAbstract;
 use NakedPhp\Metadata\NakedClass;
-use NakedPhp\Metadata\NakedService;
 use NakedPhp\Metadata\NakedMethod;
 
 class MethodMerger implements MethodCaller

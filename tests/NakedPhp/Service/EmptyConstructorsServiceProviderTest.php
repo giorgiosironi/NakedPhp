@@ -14,7 +14,6 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedService;
 use NakedPhp\Metadata\NakedServiceClass;
 
 class EmptyConstructorsServiceProviderTest extends \PHPUnit_Framework_TestCase implements ServiceDiscoverer

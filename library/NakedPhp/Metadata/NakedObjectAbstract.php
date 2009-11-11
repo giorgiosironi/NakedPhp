@@ -28,11 +28,17 @@ class NakedObjectAbstract
     protected $_wrapped;
 
     /**
+     * @var NakedClass
+     */
+    protected $_class;
+
+    /**
      * @param object $wrapped   domain object to wrap.
      */
-    public function __construct($wrapped)
+    public function __construct($wrapped = null, NakedClass $class = null)
     {
         $this->_wrapped = $wrapped;
+        $this->_class   = $class;
     }
 
     /**
@@ -41,6 +47,29 @@ class NakedObjectAbstract
     public function getClassName()
     {
         return get_class($this->_wrapped);
+    }
+
+    public function getMethods()
+    {
+        return $this->_class->getMethods(); 
+    }
+
+    /**
+     * Convenience method.
+     */
+    public function getMethod($methodName)
+    {
+        $methods = $this->getMethods();
+        return $methods[$methodName];
+    }
+
+    /**
+     * Convenience method.
+     */
+    public function hasMethod($methodName)
+    {
+        $methods = $this->getMethods();
+        return isset($methods[$methodName]);
     }
 
     /**
