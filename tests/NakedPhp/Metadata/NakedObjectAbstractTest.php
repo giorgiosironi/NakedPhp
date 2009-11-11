@@ -32,10 +32,10 @@ class NakedObjectAbstractTest extends \PHPUnit_Framework_TestCase
         $no->foobar();
     }
 
-    public function testDiscoversClassNameOfTheDomainObject()
+    public function testDelegatesGettingClassNameOfTheDomainObject()
     {
-        $no = new NakedObjectAbstract($this, null);
-        $this->assertEquals('NakedPhp\Metadata\NakedObjectAbstractTest', $no->getClassName());
+        $no = new NakedObjectAbstract($this, new NakedClass('FooClass'));
+        $this->assertEquals('FooClass', $no->getClassName());
     }
 
     public function testReturnsACommonStringRepresentationForUnconvertibleObjects()

@@ -20,4 +20,8 @@ namespace NakedPhp\Metadata;
  */
 interface NakedService extends NakedObject
 {
+    /**
+     * @return NakedServiceClass
+     */
+    public function getClass();
 }

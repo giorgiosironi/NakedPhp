@@ -15,6 +15,7 @@
 
 namespace NakedPhp\Form;
 use NakedPhp\Metadata\NakedBareEntity;
+use NakedPhp\Metadata\NakedEntityClass;
 use NakedPhp\Stubs\User;
 use NakedPhp\Stubs\Phonenumber;
 
@@ -27,8 +28,9 @@ class StateManagerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $userEntity = new NakedBareEntity(new User('Snoopy'), null);
-        $this->_anotherUserEntity = new NakedBareEntity($this->_anotherUser = new User('PetitPrince'), null);
+        $userClass = new NakedEntityClass('NakedPhp\Stubs\User');
+        $userEntity = new NakedBareEntity(new User('Snoopy'), $userClass);
+        $this->_anotherUserEntity = new NakedBareEntity($this->_anotherUser = new User('PetitPrince'), $userClass);
         $phonenumberEntity = new NakedBareEntity(new Phonenumber(), null);
         $iterator = new \ArrayIterator(array(
             10 => $userEntity,

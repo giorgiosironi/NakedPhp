@@ -21,6 +21,11 @@ namespace NakedPhp\Metadata;
 interface NakedEntity extends NakedObject, \IteratorAggregate
 {
     /**
+     * @return NakedEntityClass
+     */
+    public function getClass();
+
+    /**
      * @return array    field names are keys
      */
     public function getState();

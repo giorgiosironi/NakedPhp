@@ -46,7 +46,7 @@ class NakedObjectAbstract
      */
     public function getClassName()
     {
-        return get_class($this->_wrapped);
+        return (string) $this->_class;
     }
 
     public function getMethods()

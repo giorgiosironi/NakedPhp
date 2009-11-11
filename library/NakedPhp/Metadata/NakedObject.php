@@ -21,11 +21,6 @@ namespace NakedPhp\Metadata;
 interface NakedObject
 {
     /**
-     * @return NakedEntityClass
-     */
-    public function getClass();
-
-    /**
      * @return string
      */
     public function getClassName();
