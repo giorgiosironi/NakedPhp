@@ -25,6 +25,12 @@ require_once 'Zend/Loader/Autoloader.php';
 $zfLoader = Zend_Loader_Autoloader::getInstance();
 $zfLoader->pushAutoloader(array($loader, 'autoload'));
 
+/*
+require 'Doctrine/Common/ClassLoader.php';
+$classLoader = new \Doctrine\Common\ClassLoader();
+*/
+
+
 $resourceLoader = new Zend_Loader_Autoloader_Resource(array(
     'basePath'  => APPLICATION_PATH,
     'namespace' => 'Example'

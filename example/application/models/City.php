@@ -13,8 +13,20 @@
  * @package    Example_Model
  */
 
+/**
+ * @Entity
+ */
 class Example_Model_City
 {
+    /**
+     * @Id @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
+    private $_id;
+
+    /**
+     * @Column(type="string")
+     */
     private $_name;
 
     public function __construct($name)

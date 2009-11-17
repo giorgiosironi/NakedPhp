@@ -13,13 +13,37 @@
  * @package    Example_Model
  */
 
+/**
+ * @Entity
+ */
 class Example_Model_Place
 {
+    /**
+     * @Id @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
+    private $_id;
+
+    /** @Column(type="string") */
     private $_name = 'Default Name';
+
+    /**
+     * @OneToOne(targetEntity="Example_Model_City")
+     * @JoinColumn(name="city_id", referencedColumnName="id")
+     */
     private $_city;
+
+    /**
+     * @OneToOne(targetEntity="Example_Model_PlaceCategory")
+     * @JoinColumn(name="category_id", referencedColumnName="id")
+     */
     private $_category;
+
+    /** @Column(type="string") */
     private $_website;
+    /** @Column(type="string") */
     private $_address;
+    /** @Column(type="string") */
     private $_phone;
 
     /**
