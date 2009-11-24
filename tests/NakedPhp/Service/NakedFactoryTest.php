@@ -76,6 +76,9 @@ class NakedFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($class, $no->getClass());
     }
 
-
+    public function testDoesNotWrapScalarValues()
+    {
+        $this->fail();
+    }
 }
 

@@ -23,7 +23,11 @@ use NakedPhp\Metadata\NakedBareEntity;
  */
 class EntityContainer implements \IteratorAggregate
 {
+    const STATE_NEW = 0;
+    const STATE_DETACHED = 1;
+
     private $_objects = array();
+    private $_states = array();
     private $_counter = 0;
 
     public function __construct()
@@ -42,6 +46,7 @@ class EntityContainer implements \IteratorAggregate
         }
         $this->_counter++;
         $this->_objects[$this->_counter] = $object;
+        $this->_states[$this->_counter] = self::STATE_NEW;
         return $this->_counter;
     }
 
@@ -52,6 +57,24 @@ class EntityContainer implements \IteratorAggregate
     public function get($key)
     {
         return $this->_objects[$key];
+    }
+
+    /**
+     * @param integer $key    key for the object
+     * @param integer $state  one of the STATE_* constants
+     */
+    public function setState($key, $state)
+    {
+        $this->_states[$key] = $state;
+    }
+
+    /**
+     * @param integer $key  key for the object
+     * @return one of the STATE_* constants
+     */
+    public function getState($key)
+    {
+        return $this->_states[$key];
     }
 
     /**

@@ -22,7 +22,7 @@ class EntityContainerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_container = new \NakedPhp\Service\EntityContainer();
+        $this->_container = new EntityContainer();
     }
 
     public function testAddsAnObjectAndReturnsKey()
@@ -30,6 +30,21 @@ class EntityContainerTest extends \PHPUnit_Framework_TestCase
         $no = new NakedBareEntity(null);
         $key = $this->_container->add($no);
         $this->assertSame($no, $this->_container->get($key));
+    }
+
+    public function testSetsStateOfAddedObjectsAsNew()
+    {
+        $no = new NakedBareEntity(null);
+        $key = $this->_container->add($no);
+        $this->assertEquals(EntityContainer::STATE_NEW, $this->_container->getState($key));
+    }
+
+    public function testAllowsManualStateSetting()
+    {
+        $no = new NakedBareEntity(null);
+        $key = $this->_container->add($no);
+        $this->_container->setState($key, EntityContainer::STATE_DETACHED);
+        $this->assertEquals(EntityContainer::STATE_DETACHED, $this->_container->getState($key));
     }
 
     /**

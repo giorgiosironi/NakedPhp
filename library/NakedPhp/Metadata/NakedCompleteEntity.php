@@ -15,6 +15,7 @@
 
 namespace NakedPhp\Metadata;
 use NakedPhp\Service\MethodCaller;
+use NakedPhp\Service\NakedFactory;
 
 /**
  * Wraps a NakedBareEntity object, providing automatic injection of services
@@ -25,11 +26,13 @@ class NakedCompleteEntity implements NakedEntity
 {
     protected $_entity;
     protected $_merger;
+    protected $_factory;
 
-    public function __construct(NakedBareEntity $entity = null, MethodCaller $methodCaller = null)
+    public function __construct(NakedBareEntity $entity = null, MethodCaller $methodCaller = null, NakedFactory $nakedFactory = null)
     {
         $this->_entity = $entity;
         $this->_merger = $methodCaller;
+        $this->_factory = $nakedFactory;
     }
 
     /**
@@ -108,7 +111,8 @@ class NakedCompleteEntity implements NakedEntity
 
     public function __call($methodName, array $arguments = array())
     {
-        return $this->_merger->call($this->_entity, $methodName, $arguments);
+        $result = $this->_merger->call($this->_entity, $methodName, $arguments);
+        return $this->_factory->create($result);
     }
 
     public function getIterator()

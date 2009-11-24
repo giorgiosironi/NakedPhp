@@ -26,7 +26,6 @@ use NakedPhp\Stubs\User;
 class MethodMergerTest extends \PHPUnit_Framework_TestCase
 {
     private $_providerMock;
-    private $_factoryMock;
     private $_methodMerger;
     private $_serviceClass;
     private $_called;
@@ -35,7 +34,6 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->_providerMock = $this->getMock('NakedPhp\Service\ServiceProvider', array('getServiceClasses', 'getService'));
-        $this->_factoryMock = $this->getMock('NakedPhp\Service\NakedFactory', array('create'));
         $this->_methodMerger = new MethodMerger($this->_providerMock, $this->_factoryMock);
     }
     
@@ -197,30 +195,6 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
                 'name' => $name = new NakedParam('string', 'name')
             ))
         ));
-    }
-
-    public function testWrapsObjectResultUsingNakedFactory()
-    {
-        $expectedResult = new NakedBareEntity(new \stdClass);
-        $this->_factoryMock->expects($this->any())
-                           ->method('create')
-                           ->will($this->returnValue($expectedResult));
-        $mock = $this->getMock('NakedPhp\Stubs\User', array('getStatus'));
-        $mock->expects($this->once())
-             ->method('getStatus')
-             ->will($this->returnValue(new \stdClass));
-        $result = $this->_methodMerger->call($this->_wrapEntity($mock, 'getStatus'), 'getStatus');
-        $this->assertSame($expectedResult, $result);
-    }
-
-    public function testDoesNotWrapScalarResult()
-    {
-        $mock = $this->getMock('NakedPhp\Stubs\User', array('getStatus'));
-        $mock->expects($this->once())
-             ->method('getStatus')
-             ->will($this->returnValue('foo'));
-        $result = $this->_methodMerger->call($this->_wrapEntity($mock, 'getStatus'), 'getStatus');
-        $this->assertSame('foo', $result);
     }
 
     protected function _createFakeEntity()

@@ -81,4 +81,10 @@ class Factory
     {
         return new Metadata\NakedCompleteEntity($entity, $this->getMethodMerger());
     }
+
+    public function getPersistenceStorage()
+    {
+        require_once __DIR__ . '/../../example/bin/cli-config.php';
+        return new Persistence\Storage($em);
+    }
 }

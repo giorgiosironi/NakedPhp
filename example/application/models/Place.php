@@ -29,13 +29,13 @@ class Example_Model_Place
 
     /**
      * @OneToOne(targetEntity="Example_Model_City")
-     * @JoinColumn(name="city_id", referencedColumnName="id")
+     * @JoinColumn(name="city_id", referencedColumnName="_id")
      */
     private $_city;
 
     /**
      * @OneToOne(targetEntity="Example_Model_PlaceCategory")
-     * @JoinColumn(name="category_id", referencedColumnName="id")
+     * @JoinColumn(name="category_id", referencedColumnName="_id")
      */
     private $_category;
 

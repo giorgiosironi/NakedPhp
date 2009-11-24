@@ -79,6 +79,7 @@ class Controller extends \Zend_Controller_Action
             $this->render(null, null, true);
             $this->renderScript('segments/session.phtml', 'nakedphp_session');
             $this->renderScript('segments/services.phtml', 'nakedphp_services');
+            $this->renderScript('segments/context.phtml', 'nakedphp_context');
             if ($this->_completeObject) {
                 $this->renderScript('segments/methods.phtml', 'nakedphp_methods');
             }
@@ -142,6 +143,21 @@ class Controller extends \Zend_Controller_Action
         } else {
             $this->view->result = $result;
         }
+    }
+
+    public function saveAction()
+    {
+        $storage = $this->_factory->getPersistenceStorage();
+        foreach ($this->_entityContainer as $key => $bareEntity) {
+            $state = $this->_entityContainer->getState($key);
+            if ($state == \NakedPhp\Service\EntityContainer::STATE_NEW) {
+                $storage->persist($bareEntity->unwrap());
+                $this->_entityContainer->setState($key, \NakedPhp\Service\EntityContainer::STATE_DETACHED);
+            } else {
+                $storage->merge($bareEntity->unwrap());
+            }
+        }
+        $storage->flush();
     }
 
     /**
