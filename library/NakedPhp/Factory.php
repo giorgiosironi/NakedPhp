@@ -26,13 +26,28 @@ class Factory
         $this->_reflectFactory = new \NakedPhp\Reflect\ReflectFactory();
     }
 
+    protected function _getSessionBridge()
+    {
+        if (!isset($this->_sessionBridge)) {
+            $this->_sessionBridge = new \Zend_Session_Namespace('NakedPhp');
+        }
+        return $this->_sessionBridge;
+    }
+
     public function getEntityContainer()
     {
-        $this->_sessionBridge = new \Zend_Session_Namespace('NakedPhp');
-        if (!isset($this->_sessionBridge->entityContainer)) {
-            $this->_sessionBridge->entityContainer = new Service\EntityContainer(array());
+        if (!isset($this->_getSessionBridge()->entityContainer)) {
+            $this->_getSessionBridge()->entityContainer = new Service\EntityContainer(array());
         }
-        return $this->_sessionBridge->entityContainer;
+        return $this->_getSessionBridge()->entityContainer;
+    }
+
+    public function getContextContainer()
+    {
+        if (!isset($this->_getSessionBridge()->contextContainer)) {
+            $this->_getSessionBridge()->contextContainer = new Service\ContextContainer();
+        }
+        return $this->_getSessionBridge()->contextContainer;
     }
 
     public function getServiceIterator()
@@ -40,6 +55,9 @@ class Factory
         return new Service\ServiceIterator($this->getServiceProvider());
     }
 
+    /**
+     * TODO: make private
+     */
     public function getMethodMerger()
     {
         $serviceProvider = $this->getServiceProvider();
@@ -53,6 +71,9 @@ class Factory
         return new Service\EmptyConstructorsServiceProvider($serviceDiscoverer, $this->_reflectFactory->createServiceReflector());
     }
 
+    /**
+     * TODO: make private
+     */
     public function getNakedFactory()
     {
         return new Service\NakedFactory($this->_reflectFactory->createEntityReflector(),
@@ -80,6 +101,14 @@ class Factory
     public function createCompleteEntity(Metadata\NakedBareEntity $entity)
     {
         return new Metadata\NakedCompleteEntity($entity, $this->getMethodMerger());
+    }
+
+    /**
+     * @return NakedCompleteService
+     */
+    public function createCompleteService(Metadata\NakedBareService $entity)
+    {
+        return new Metadata\NakedCompleteService($entity, $this->getMethodMerger());
     }
 
     public function getPersistenceStorage()

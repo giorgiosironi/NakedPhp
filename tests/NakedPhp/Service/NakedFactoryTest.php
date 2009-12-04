@@ -78,7 +78,8 @@ class NakedFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testDoesNotWrapScalarValues()
     {
-        $this->fail();
+        $result = $this->_factory->create('scalar result');
+        $this->assertEquals('scalar result', $result);
     }
 }
 

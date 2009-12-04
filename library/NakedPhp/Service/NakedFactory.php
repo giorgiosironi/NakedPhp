@@ -30,8 +30,15 @@ class NakedFactory
         $this->_serviceReflector = $serviceReflector;
     }
 
+    /**
+     * @param mixed $value
+     * @return mixed
+     */
     public function create($object)
     {
+        if (!is_object($object)) {
+            return $object;
+        }
         $className = get_class($object);
         if ($this->_serviceReflector->isService($className)) {
             $class = $this->_serviceReflector->analyze($className);

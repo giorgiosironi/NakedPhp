@@ -25,14 +25,12 @@ use NakedPhp\Service\NakedFactory;
 class NakedCompleteEntity implements NakedEntity
 {
     protected $_entity;
-    protected $_merger;
-    protected $_factory;
+    protected $_caller;
 
-    public function __construct(NakedBareEntity $entity = null, MethodCaller $methodCaller = null, NakedFactory $nakedFactory = null)
+    public function __construct(NakedBareEntity $entity = null, MethodCaller $methodCaller = null)
     {
         $this->_entity = $entity;
-        $this->_merger = $methodCaller;
-        $this->_factory = $nakedFactory;
+        $this->_caller = $methodCaller;
     }
 
     /**
@@ -83,7 +81,7 @@ class NakedCompleteEntity implements NakedEntity
 
     public function getMethods()
     {
-        return $this->_merger->getApplicableMethods($this->_entity->getClass());
+        return $this->_caller->getApplicableMethods($this->_entity->getClass());
     }
 
     /**
@@ -106,13 +104,12 @@ class NakedCompleteEntity implements NakedEntity
 
     public function hasHiddenMethod($methodName)
     {
-        return $this->_merger->hasHiddenMethod($this->_entity->getClass(), $methodName);
+        return $this->_caller->hasHiddenMethod($this->_entity->getClass(), $methodName);
     }
 
     public function __call($methodName, array $arguments = array())
     {
-        $result = $this->_merger->call($this->_entity, $methodName, $arguments);
-        return $this->_factory->create($result);
+        return $this->_caller->call($this->_entity, $methodName, $arguments);
     }
 
     public function getIterator()

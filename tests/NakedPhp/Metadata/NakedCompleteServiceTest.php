@@ -14,44 +14,35 @@
  */
 
 namespace NakedPhp\Metadata;
+use NakedPhp\Service\MethodMerger;
 
 class NakedCompleteServiceTest extends \PHPUnit_Framework_TestCase
 {
-    public function testProxiesToWrappedServiceForClassMetadata()
+    public function testDelegatesToWrappedServiceForClassMetadata()
     {
         $bareNo = new NakedBareService($this, $class = new NakedServiceClass('FooClass', array('doSomething')));
         $no = new NakedCompleteService($bareNo);
         $this->assertSame($class, $no->getClass());
         $this->assertEquals('FooClass', $no->getClassName());
+        $this->assertEquals('OBJECT', (string) $no);
     }
 
-    /**
-     * TODO: refactor this test together with NakedCompleteEntityTest
-     *       to share wrapping of results and methodmerger delegation
-     *       (extracting interface NakedFactory)
-     */
-    public function testAfterMethodCallingWrapsObjectResultUsingNakedFactory()
+    public function testDelegatesMethodCallingToMethodCaller()
     {
-        $this->fail();
-        $expectedResult = new NakedBareEntity(new \stdClass);
-        $factoryMock = $this->getMock('NakedPhp\Service\NakedFactory');
-        $factoryMock->expects($this->any())
-                           ->method('create')
-                           ->will($this->returnValue($expectedResult));
         $bareNo = $this->getMock('NakedPhp\Metadata\NakedBareService');
-        $merger = $this->_getMergerMock();
+        $merger = $this->getMock('NakedPhp\Service\MethodMerger');
         $merger->expects($this->once())
-             ->method('__call')
-             ->with($bareNo, 'methodName')
+             ->method('call')
+             ->with($bareNo, 'methodName', array('foo', 'bar'))
              ->will($this->returnValue('dummy'));
-        $no = new NakedCompleteEntity($bareNo, $merger, $factoryMock);
+        $no = new NakedCompleteService($bareNo, $merger);
 
-        $result = $no->__call('methodName');
+        $result = $no->__call('methodName', array('foo', 'bar'));
 
-        $this->assertSame($expectedResult, $result);
+        $this->assertSame('dummy', $result);
     }
 
-    public function testProxiesToWrappedServiceForMethodsMetadata()
+    public function testDelegatesToWrappedServiceForMethodsMetadata()
     {
         $bareNo = new NakedBareService($this, $class = new NakedServiceClass('', array('key' => 'doSomething')));
         $no = new NakedCompleteService($bareNo);

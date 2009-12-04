@@ -17,31 +17,12 @@ namespace NakedPhp\Metadata;
 
 class NakedCompleteEntityTest extends \PHPUnit_Framework_TestCase
 {
-    public function testAfterMethodCallingWrapsObjectResultUsingNakedFactory()
-    {
-        $expectedResult = new NakedBareEntity(new \stdClass);
-        $factoryMock = $this->_getFactoryMock();
-        $factoryMock->expects($this->any())
-                           ->method('create')
-                           ->will($this->returnValue($expectedResult));
-        $bareNo = new NakedBareEntity();
-        $merger = $this->_getMergerMock();
-        $merger->expects($this->once())
-             ->method('call')
-             ->with($bareNo, 'methodName')
-             ->will($this->returnValue('dummy'));
-        $no = new NakedCompleteEntity($bareNo, $merger, $factoryMock);
-
-        $result = $no->__call('methodName');
-
-        $this->assertSame($expectedResult, $result);
-    }
-
-    public function testForwardsToTheInnerEntityForClassMetadata()
+    public function testDelegatesToTheInnerEntityForClassMetadata()
     {
         $no = new NakedBareEntity($this, $class = new NakedEntityClass('', array(), array('name')));
         $completeNo = new NakedCompleteEntity($no, null);
         $this->assertSame($class, $completeNo->getClass());
+        $this->assertSame('OBJECT', (string) $completeNo);
     }
 
     public function testUnwrapsTheInnerBareEntity()
@@ -51,7 +32,7 @@ class NakedCompleteEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($no, $completeNo->getBareEntity());
     }
 
-    public function testForwardsToTheInnerEntityForObtainingState()
+    public function testDelegatesToTheInnerEntityForObtainingState()
     {
         $state = array('nickname' => 'dummy');
         $no = $this->_getBareEntityMock();
@@ -63,7 +44,7 @@ class NakedCompleteEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($state, $completeNo->getState());
     }
 
-    public function testForwardsToTheInnerEntityForSettingTheState()
+    public function testDelegatesToTheInnerEntityForSettingTheState()
     {
         $data = array('nickname' => 'dummy');
         $no = $this->_getBareEntityMock();
@@ -75,7 +56,7 @@ class NakedCompleteEntityTest extends \PHPUnit_Framework_TestCase
         $completeNo->setState($data);
     }
 
-    public function testProxiesToTheMergerForObtainingApplicableMethods()
+    public function testDelegatesToTheMergerForObtainingApplicableMethods()
     {
         $class = new NakedEntityClass('DummyClass');
         $bareNo = new NakedBareEntity($this, $class);
@@ -92,32 +73,28 @@ class NakedCompleteEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($no->hasMethod('notExistentMethodName'));
     }
 
-    public function testProxiesToTheMergerForCallingMethods()
+    public function testDelegatesToTheMergerForCallingMethods()
     {
-        $factoryMock = $this->_getFactoryMock();
-        $factoryMock->expects($this->any())
-                    ->method('create')
-                    ->will($this->returnArgument(0));
         $bareNo = new NakedBareEntity();
         $merger = $this->_getMergerMock();
         $merger->expects($this->once())
              ->method('call')
              ->with($bareNo, 'methodName', array('foo', 'bar'))
              ->will($this->returnValue('dummy'));
-        $no = new NakedCompleteEntity($bareNo, $merger, $factoryMock);
+        $no = new NakedCompleteEntity($bareNo, $merger);
 
         $this->assertEquals('dummy', $no->__call('methodName', array('foo', 'bar')));
     }
 
-    public function testProxiesToTheMergerForSearchingTemplateMethods()
+    public function testDelegatesToTheMergerForSearchingTemplateMethods()
     {
         $class = new NakedEntityClass('DummyClass');
         $bareNo = new NakedBareEntity($this, $class);
         $merger = $this->_getMergerMock(array('hasHiddenMethod'));
         $merger->expects($this->any())
-             ->method('hasHiddenMethod')
-             ->with($class, 'dummyMethodName')
-             ->will($this->returnValue(true));
+               ->method('hasHiddenMethod')
+               ->with($class, 'dummyMethodName')
+               ->will($this->returnValue(true));
         $no = new NakedCompleteEntity($bareNo, $merger);
 
         $this->assertTrue($no->hasHiddenMethod('dummyMethodName'));
@@ -129,7 +106,7 @@ class NakedCompleteEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($no instanceof \IteratorAggregate);
     }
 
-    public function testIsTraversableProxyingToTheInnerEntityIterator()
+    public function testIsTraversableDelegatingToTheInnerEntityIterator()
     {
         $iterator = 'dummy';
         $no = $this->_getBareEntityMock();

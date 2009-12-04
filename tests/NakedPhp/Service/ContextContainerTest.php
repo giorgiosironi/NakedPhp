@@ -34,6 +34,14 @@ class ContextContainerTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testDoesNotAllowInsertionOfTheSameUrlConsecutively()
+    {
+        $this->_container->remember('/edit/1');
+        $this->_container->remember('/edit/1');
+         
+        $this->assertEquals(1, count($this->_container));
+    }
+
     /**
      * @depends testRemembersInsertedUrl
      */
@@ -43,5 +51,6 @@ class ContextContainerTest extends \PHPUnit_Framework_TestCase
         $this->_container->remember('/search-objects');
         $this->_container->completed();
         $this->assertEquals(1, count($this->_container));
+        $this->assertEquals('/edit/1', $this->_container->getLast());
     }
 }

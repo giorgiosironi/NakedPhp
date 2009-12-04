@@ -10,27 +10,15 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Metadata
+ * @package    NakedPhp_Stubs
  */
 
-namespace NakedPhp\Metadata;
+namespace NakedPhp\Stubs;
 
-/**
- * Wraps a service object.
- */
-class NakedBareService extends NakedObjectAbstract implements NakedService
+class NakedFactoryStub extends \NakedPhp\Service\NakedFactory
 {
-    public function __construct($service = null, NakedServiceClass $class = null)
+    public function create($object)
     {
-        parent::__construct($service, $class);
-    }
-
-    /**
-     * @return NakedServiceClass
-     */
-    public function getClass()
-    {
-        return $this->_class;
+        return $object;
     }
 }
-

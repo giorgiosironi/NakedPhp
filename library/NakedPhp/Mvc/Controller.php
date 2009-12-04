@@ -31,6 +31,11 @@ class Controller extends \Zend_Controller_Action
     private $_entityContainer;
 
     /**
+     * @var NakedPhp\Service\ContextContainer  remembers current workflow
+     */
+    private $_contextContainer;
+
+    /**
      * @var NakedPhp\Service\ServiceIterator    lists services
      */
     private $_services;
@@ -49,13 +54,15 @@ class Controller extends \Zend_Controller_Action
     {
         $this->_factory = new \NakedPhp\Factory();
         $this->view->session = $this->_entityContainer = $this->_factory->getEntityContainer();
+        $this->view->context = $this->_contextContainer = $this->_factory->getContextContainer();
         $this->view->services = $this->_services = $this->_factory->getServiceIterator();
 
         $objectKey = $this->_request->getParam('object');
         if ($objectKey !== null) {
             if ($this->_request->getParam('type') == 'service') {
                 $provider = $this->_factory->getServiceProvider();
-                $this->_completeObject = $provider->getService($objectKey);
+                $object = $provider->getService($objectKey);
+                $this->_completeObject = $this->_factory->createCompleteService($object); 
             } else {
                 $object = $this->_entityContainer->get($objectKey);
                 $this->_completeObject = $this->_factory->createCompleteEntity($object);
@@ -166,11 +173,6 @@ class Controller extends \Zend_Controller_Action
      */
     protected function _redirectToObject($no)
     {
-        if (!($no instanceof NakedObjectAbstract or $no instanceof NakedEntity)) {
-            $factory = $this->_factory->getNakedFactory();
-            $no = $factory->create($no);
-        }
-
         if ($no instanceof NakedEntity) {
             if ($no instanceof NakedCompleteEntity) {
                 $no = $no->getBareEntity();

@@ -22,6 +22,7 @@ use NakedPhp\Metadata\NakedServiceClass;
 use NakedPhp\Metadata\NakedMethod;
 use NakedPhp\Metadata\NakedParam;
 use NakedPhp\Stubs\User;
+use NakedPhp\Stubs\NakedFactoryStub;
 
 class MethodMergerTest extends \PHPUnit_Framework_TestCase
 {
@@ -34,7 +35,8 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->_providerMock = $this->getMock('NakedPhp\Service\ServiceProvider', array('getServiceClasses', 'getService'));
-        $this->_methodMerger = new MethodMerger($this->_providerMock, $this->_factoryMock);
+        $this->_factoryStub = new NakedFactoryStub();
+        $this->_methodMerger = new MethodMerger($this->_providerMock, $this->_factoryStub);
     }
     
     private function _wrapEntity($entityObject, $method = null)

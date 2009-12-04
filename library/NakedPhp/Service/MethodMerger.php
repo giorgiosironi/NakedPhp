@@ -54,7 +54,7 @@ class MethodMerger implements MethodCaller
             $result = call_user_func_array(array($service, $methodName), $params);
         }
 
-        return $this->_treatResult($result);
+        return $this->_nakedFactory->create($result);
     }
 
     /**
@@ -100,20 +100,6 @@ class MethodMerger implements MethodCaller
         assert('$parameters == array()');
 
         return $completeParameters;
-    }
-
-    /**
-     * Wraps a method result in a NakedObjectAbstract instance if it is not scalar.
-     * @param mixed
-     * @return mixed
-     */
-    protected function _treatResult($result)
-    {
-        if (is_object($result)) {
-            return $this->_nakedFactory->create($result);
-        } else {
-            return $result;
-        }
     }
 
     /**

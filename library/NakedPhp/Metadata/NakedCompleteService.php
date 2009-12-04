@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\Metadata;
+use NakedPhp\Service\MethodCaller;
 
 /**
  * Decorates a NakedBareService object, providing wrapping of results after method calls.
@@ -25,9 +26,15 @@ class NakedCompleteService implements NakedService
      */
     private $_wrapped;
 
-    public function __construct(NakedService $service)
+    /**
+     * @var MethodCaller
+     */
+    private $_caller;
+
+    public function __construct(NakedService $service, MethodCaller $methodCaller = null)
     {
         $this->_wrapped = $service;
+        $this->_caller = $methodCaller;
     }
 
     public function getClass()
@@ -57,7 +64,12 @@ class NakedCompleteService implements NakedService
 
     public function __call($methodName, array $arguments = array())
     {
-        return $this->_wrapped->__call($methodName, $arguments);
+        return $this->_caller->call($this->_wrapped, $methodName, $arguments);
+    }
+
+    public function __toString()
+    {
+        return (string) $this->_wrapped;
     }
 }
 

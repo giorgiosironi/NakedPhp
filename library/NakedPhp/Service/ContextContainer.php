@@ -21,12 +21,20 @@ class ContextContainer implements \IteratorAggregate, \Countable
 
     public function remember($url)
     {
+        if ($url == $this->getLast()) {
+            return false;
+        }
         $this->_urls[] = $url;
     }
 
     public function completed()
     {
         array_pop($this->_urls);
+    }
+
+    public function getLast()
+    {
+        return end($this->_urls);
     }
 
     public function getIterator()
