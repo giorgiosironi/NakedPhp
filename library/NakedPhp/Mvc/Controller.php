@@ -189,13 +189,13 @@ class Controller extends \Zend_Controller_Action
         }
 
         if (count($this->_contextContainer)) {
-            $this->_helper->Redirector->gotoUrl($this->_contextContainer->getLast());
+            return $this->_helper->Redirector->gotoUrl($this->_contextContainer->getLast());
         }
 
         $params = array(
             'type' => $type,
             'object' => $index
         );
-        $this->_helper->Redirector('view', null, null, $params);
+        return $this->_helper->Redirector('view', null, null, $params);
     }
 }

@@ -84,4 +84,50 @@ class Example_CrudTest extends Example_AbstractTest
         $this->assertQueryContentContains('.nakedphp_entity.Example_Model_PlaceCategory .name',
                                           'Disco');
     }
+
+    /**
+     * @depends testCityFactoryMethodCreatesCityInstance
+     */
+    public function testPlaceEditingDisplaysOtherEntitiesAsSelectable()
+    {
+        $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createPlace');
+
+        $this->resetRequest()
+             ->resetResponse();
+        $this->getRequest()
+             ->setMethod('POST')
+             ->setPost(array(
+                 'name' => 'New York'
+             ));
+        $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createCity');
+
+        $this->resetRequest()
+             ->resetResponse();
+        $this->dispatch('/naked-php/edit/type/entity/object/1');
+        $this->assertQueryContentContains('.nakedphp_entity.Example_Model_Place select[name="city"] option', 'New York');
+    }
+
+    /**
+     * @depends testCityFactoryMethodCreatesCityInstance
+     */
+    public function testPlaceEditingConservesContext()
+    {
+        $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createPlace');
+
+        $this->resetRequest()
+             ->resetResponse();
+        $this->dispatch('/naked-php/edit/type/entity/object/1');
+        $this->assertQuery('#nakedphp_context li a');//[href="**"]');
+        $this->assertQuery('.nakedphp_entity.Example_Model_Place select[name="city"]');
+
+        $this->resetRequest()
+             ->resetResponse();
+        $this->getRequest()
+             ->setMethod('POST')
+             ->setPost(array(
+                 'name' => 'New York'
+             ));
+        $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createCity');
+        $this->assertRedirectTo('/naked-php/edit/type/entity/object/1');
+    }
 }
