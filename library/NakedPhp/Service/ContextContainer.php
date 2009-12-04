@@ -37,6 +37,11 @@ class ContextContainer implements \IteratorAggregate, \Countable
         return end($this->_urls);
     }
 
+    public function reset()
+    {
+        $this->_urls = array();
+    }
+
     public function getIterator()
     {
         return new \ArrayIterator($this->_urls);

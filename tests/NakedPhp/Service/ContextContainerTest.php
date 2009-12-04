@@ -53,4 +53,15 @@ class ContextContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, count($this->_container));
         $this->assertEquals('/edit/1', $this->_container->getLast());
     }
+
+    /**
+     * @depends testRemembersInsertedUrl
+     */
+    public function testCanResetTheContext()
+    {
+        $this->_container->remember('/edit/1');
+        $this->_container->remember('/search-objects');
+        $this->_container->reset();
+        $this->assertEquals(0, count($this->_container));
+    }
 }

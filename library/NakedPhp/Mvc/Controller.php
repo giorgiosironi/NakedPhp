@@ -95,7 +95,7 @@ class Controller extends \Zend_Controller_Action
 
     public final function indexAction()
     {
-        echo "Hello world from NakedPhp!";
+        $this->_contextContainer->reset();
     }
 
     /**
@@ -110,6 +110,7 @@ class Controller extends \Zend_Controller_Action
      */
     public final function editAction()
     {
+        $this->_contextContainer->remember($this->_helper->Url->url());
         $formBuilder = $this->_factory->getFieldsFormBuilder();
         $form = $formBuilder->createForm($this->_completeObject, $this->_class->getFields());
         $stateManager = $this->_factory->getStateManager()
@@ -117,6 +118,7 @@ class Controller extends \Zend_Controller_Action
                                        ->setFormState($form, $this->_completeObject);
         if ($this->_request->isPost() && $form->isValidPartial($this->_request->getPost())) {
             $state = $stateManager->setEntityState($this->_completeObject, $form);
+            $this->_contextContainer->completed();
             $this->_redirectToObject($this->_completeObject);
         } else {
             $this->view->form = $form;
@@ -128,6 +130,7 @@ class Controller extends \Zend_Controller_Action
      */
     public final function callAction()
     {
+        $this->_contextContainer->remember($this->_helper->Url->url());
         $methodName = $this->_request->getParam('method');
         $this->view->methodName = $methodName;
         $method = $this->_completeObject->getMethod($methodName);
@@ -145,6 +148,7 @@ class Controller extends \Zend_Controller_Action
         }
 
         $result = $this->_completeObject->__call((string) $method, $parameters);
+        $this->_contextContainer->completed();
         if (is_object($result)) {
             $this->_redirectToObject($result);
         } else {
@@ -183,6 +187,11 @@ class Controller extends \Zend_Controller_Action
             $index = (string) $no->getClass();
             $type = 'service';
         }
+
+        if (count($this->_contextContainer)) {
+            $this->_helper->Redirector->gotoUrl($this->_contextContainer->getLast());
+        }
+
         $params = array(
             'type' => $type,
             'object' => $index

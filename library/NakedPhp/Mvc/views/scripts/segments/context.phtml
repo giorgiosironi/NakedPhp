@@ -1,1 +1,8 @@
-Context
+<ul>
+<li><a href="<? echo $this->url(array('action' => 'index', 'controller' => 'naked-php'), 'default', true);?>">Index</a></li>
+<?php
+foreach ($this->context as $url) {
+    echo "<li><a href=\"$url\">" . basename($url) . "</a></li>";
+}
+?>
+</ul>

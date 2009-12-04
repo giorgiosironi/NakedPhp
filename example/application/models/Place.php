@@ -129,9 +129,9 @@ class Example_Model_Place
      * @param string $name              the name of pub, disco
      * @return Example_Model_Place      this object
      */
-    public function edit($name)
+    public function giveMeAName($name)
     {
-        $this->_name = (string) $name;
+        $this->setName($name);
         return $this;
     }
 
