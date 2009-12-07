@@ -37,7 +37,7 @@ class Factory
     public function getEntityContainer()
     {
         if (!isset($this->_getSessionBridge()->entityContainer)) {
-            $this->_getSessionBridge()->entityContainer = new Service\EntityContainer(array());
+            $this->_getSessionBridge()->entityContainer = new Mvc\EntityContainer(array());
         }
         return $this->_getSessionBridge()->entityContainer;
     }

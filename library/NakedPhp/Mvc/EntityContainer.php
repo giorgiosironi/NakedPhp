@@ -10,10 +10,10 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Service
+ * @package    NakedPhp_Mvc
  */
 
-namespace NakedPhp\Service;
+namespace NakedPhp\Mvc;
 use NakedPhp\Metadata\NakedBareEntity;
 
 /**
@@ -29,10 +29,6 @@ class EntityContainer implements \IteratorAggregate
     private $_objects = array();
     private $_states = array();
     private $_counter = 0;
-
-    public function __construct()
-    {
-    }
 
     /**
      * @param NakedBareEntity $object   object to be added idempotently
