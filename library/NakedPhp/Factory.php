@@ -45,7 +45,7 @@ class Factory
     public function getContextContainer()
     {
         if (!isset($this->_getSessionBridge()->contextContainer)) {
-            $this->_getSessionBridge()->contextContainer = new Service\ContextContainer();
+            $this->_getSessionBridge()->contextContainer = new Mvc\ContextContainer();
         }
         return $this->_getSessionBridge()->contextContainer;
     }

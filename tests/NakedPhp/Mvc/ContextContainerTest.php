@@ -10,10 +10,10 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Service
+ * @package    NakedPhp_Mvc
  */
 
-namespace NakedPhp\Service;
+namespace NakedPhp\Mvc;
 
 class ContextContainerTest extends \PHPUnit_Framework_TestCase
 {
