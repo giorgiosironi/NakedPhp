@@ -14,39 +14,18 @@
  */
 
 namespace NakedPhp\Service\Provider;
+use NakedPhp\Service\Provider\AbstractProvider;
+use NakedPhp\Service\ServiceDiscoverer;
+use NakedPhp\Reflect\ServiceReflector;
 
-class EmptyConstructorsProvider implements \NakedPhp\Service\ServiceProvider
+class EmptyConstructorsProvider extends AbstractProvider
 {
-    private $_discoverer;
-    private $_reflector;
-
-    public function __construct(\NakedPhp\Service\ServiceDiscoverer $discoverer = null, \NakedPhp\Reflect\ServiceReflector $serviceReflector = null)
-    {
-        $this->_discoverer = $discoverer;
-        $this->_reflector = $serviceReflector;
-    }
-
     /**
-     * @return array    NakedServiceClass instances
-     */
-    public function getServiceClasses()
-    {
-        $array = array();
-        foreach ($this->_discoverer->getList() as $className) {
-            $array[$className] = $this->_reflector->analyze($className);
-        }
-        return $array;
-    }
-
-    /**
-     * @param string $className
-     * @return NakedService
+     * {@inheritdoc}
      */
     public function getService($className)
     {
-        $fullClassName = /*'\\' .*/ $className;
-        $wrapped = new $fullClassName();
-        $nakedClass = $this->_reflector->analyze($className);
-        return new \NakedPhp\Metadata\NakedBareService($wrapped, $nakedClass);
+        $wrapped = new $className();
+        return $this->_wrap($wrapped, $className);
     }
 }
