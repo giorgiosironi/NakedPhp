@@ -13,14 +13,14 @@
  * @package    NakedPhp_Service
  */
 
-namespace NakedPhp\Service;
+namespace NakedPhp\Service\Provider;
 
-class EmptyConstructorsServiceProvider implements ServiceProvider
+class EmptyConstructorsProvider implements \NakedPhp\Service\ServiceProvider
 {
     private $_discoverer;
     private $_reflector;
 
-    public function __construct(ServiceDiscoverer $discoverer = null, \NakedPhp\Reflect\ServiceReflector $serviceReflector = null)
+    public function __construct(\NakedPhp\Service\ServiceDiscoverer $discoverer = null, \NakedPhp\Reflect\ServiceReflector $serviceReflector = null)
     {
         $this->_discoverer = $discoverer;
         $this->_reflector = $serviceReflector;

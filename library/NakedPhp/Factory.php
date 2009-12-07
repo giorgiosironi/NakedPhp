@@ -68,7 +68,7 @@ class Factory
     {
         $reflector = $this->_reflectFactory->createServiceReflector();
         $serviceDiscoverer = new Service\FilesystemServiceDiscoverer($reflector, __DIR__ . '/../../example/application/models/', 'Example_Model_');
-        return new Service\EmptyConstructorsServiceProvider($serviceDiscoverer, $this->_reflectFactory->createServiceReflector());
+        return new Service\Provider\EmptyConstructorsProvider($serviceDiscoverer, $this->_reflectFactory->createServiceReflector());
     }
 
     /**
