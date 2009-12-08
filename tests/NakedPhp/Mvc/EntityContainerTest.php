@@ -27,24 +27,37 @@ class EntityContainerTest extends \PHPUnit_Framework_TestCase
 
     public function testAddsAnObjectAndReturnsKey()
     {
-        $no = new NakedBareEntity(null);
-        $key = $this->_container->add($no);
-        $this->assertSame($no, $this->_container->get($key));
+        $entity = new \stdClass;
+        $key = $this->_container->add($entity);
+        $this->assertSame($entity, $this->_container->get($key));
+        return $key;
+    }
+
+    /**
+     * @depends testAddsAnObjectAndReturnsKey
+     */
+    public function testRemovesAnObject($key)
+    {
+        $this->_container->remove($key); 
+        $this->_assertContainerIsEmpty();
     }
 
     public function testSetsStateOfAddedObjectsAsNew()
     {
-        $no = new NakedBareEntity(null);
-        $key = $this->_container->add($no);
+        $entity = new \stdClass;
+        $key = $this->_container->add($entity);
         $this->assertEquals(EntityContainer::STATE_NEW, $this->_container->getState($key));
     }
 
     public function testAllowsManualStateSetting()
     {
-        $no = new NakedBareEntity(null);
-        $key = $this->_container->add($no);
+        $entity = new \stdClass;
+        $key = $this->_container->add($entity);
         $this->_container->setState($key, EntityContainer::STATE_DETACHED);
         $this->assertEquals(EntityContainer::STATE_DETACHED, $this->_container->getState($key));
+
+        $this->_container->setState($key, EntityContainer::STATE_REMOVED);
+        $this->assertEquals(EntityContainer::STATE_REMOVED, $this->_container->getState($key));
     }
 
     /**
@@ -52,8 +65,8 @@ class EntityContainerTest extends \PHPUnit_Framework_TestCase
      */
     public function testRecognizesNewObjects()
     {
-        $no = new NakedBareEntity(null);
-        $this->assertFalse($this->_container->contains($no));
+        $entity = new \stdClass;
+        $this->assertFalse($this->_container->contains($entity));
     }
 
     /**
@@ -61,9 +74,9 @@ class EntityContainerTest extends \PHPUnit_Framework_TestCase
      */
     public function testRecognizesAnAddedObject()
     {
-        $no = new NakedBareEntity(null);
-        $key = $this->_container->add($no);
-        $this->assertTrue((boolean) $this->_container->contains($no));
+        $entity = new \stdClass;
+        $key = $this->_container->add($entity);
+        $this->assertTrue((boolean) $this->_container->contains($entity));
     }
 
     /**
@@ -71,21 +84,9 @@ class EntityContainerTest extends \PHPUnit_Framework_TestCase
      */
     public function testAddsAnObjectIdempotently()
     {
-        $no = new NakedBareEntity(null);
-        $key = $this->_container->add($no);
-        $anotherKey = $this->_container->add($no);
-        $this->assertSame($key, $anotherKey);
-    }
-
-    /**
-     * @depends testAddsAnObjectAndReturnsKey
-     */
-    public function testAddsAnEqualsObjectIdempotently()
-    {
-        $wrapped = new \stdClass;
-        $no = new NakedBareEntity($wrapped);
-        $key = $this->_container->add($no);
-        $anotherKey = $this->_container->add(new NakedBareEntity($wrapped));
+        $entity = new \stdClass;
+        $key = $this->_container->add($entity);
+        $anotherKey = $this->_container->add($entity);
         $this->assertSame($key, $anotherKey);
     }
 
@@ -94,13 +95,20 @@ class EntityContainerTest extends \PHPUnit_Framework_TestCase
      */
     public function testSerializationMustNotAffectIdempotentAddition()
     {
-        $no = new NakedBareEntity(null);
-        $key = $this->_container->add($no);
+        $entity = new \stdClass;
+        $key = $this->_container->add($entity);
         $serialized = serialize($this->_container);
         unset($this->_container);
         $container = unserialize($serialized);
-        $no = $container->get($key);
-        $anotherKey = $container->add($no);
+        $entity = $container->get($key);
+        $anotherKey = $container->add($entity);
         $this->assertSame($key, $anotherKey);
+    }
+
+    private function _assertContainerIsEmpty()
+    {
+        foreach ($this->_container as $object) {
+            $this->asserTrue(false);
+        } 
     }
 }

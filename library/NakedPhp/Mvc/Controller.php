@@ -26,12 +26,12 @@ class Controller extends \Zend_Controller_Action
     private $_factory;
 
     /**
-     * @var NakedPhp\Service\EntityContainer   contains entity objects
+     * @var EntityContainer   contains entity objects
      */
     private $_entityContainer;
 
     /**
-     * @var NakedPhp\Service\ContextContainer  remembers current workflow
+     * @var ContextContainer  remembers current workflow
      */
     private $_contextContainer;
 
@@ -39,6 +39,11 @@ class Controller extends \Zend_Controller_Action
      * @var NakedPhp\Service\ServiceIterator    lists services
      */
     private $_services;
+
+    /**
+     * @var mixed   key to identify service or entity
+     */
+    private $_objectKey;
 
     /**
      * @var NakedObjectAbstract     the current object
@@ -53,6 +58,7 @@ class Controller extends \Zend_Controller_Action
     public final function preDispatch()
     {
         $this->_factory = new \NakedPhp\Factory();
+        $this->_nakedFactory = $this->_factory->getNakedFactory();
         $this->view->session = $this->_entityContainer = $this->_factory->getEntityContainer();
         $this->view->context = $this->_contextContainer = $this->_factory->getContextContainer();
         $this->view->services = $this->_services = $this->_factory->getServiceIterator();
@@ -65,8 +71,10 @@ class Controller extends \Zend_Controller_Action
                 $this->_completeObject = $this->_factory->createCompleteService($object); 
             } else {
                 $object = $this->_entityContainer->get($objectKey);
-                $this->_completeObject = $this->_factory->createCompleteEntity($object);
+                $bareObject = $this->_nakedFactory->create($object);
+                $this->_completeObject = $this->_factory->createCompleteEntity($bareObject);
             }
+            $this->_objectKey = $objectKey;
             $this->view->methods = $this->_completeObject->getMethods();
             $this->_class = $this->_completeObject->getClass();
             $this->view->object = $this->_completeObject;
@@ -125,6 +133,11 @@ class Controller extends \Zend_Controller_Action
         }
     }
 
+    public final function removeAction()
+    {
+        $this->_entityContainer->setState($this->_objectKey, EntityContainer::STATE_REMOVED);
+    }
+
     /**
      * This action allows to call a method on a NakedEntity or NakedService object.
      */
@@ -159,13 +172,33 @@ class Controller extends \Zend_Controller_Action
     public function saveAction()
     {
         $storage = $this->_factory->getPersistenceStorage();
-        foreach ($this->_entityContainer as $key => $bareEntity) {
+        $this->view->entities = array(
+            'new' => array(),
+            'detached' => array(),
+            'removed' => array()
+        );
+        foreach ($this->_entityContainer as $key => $entity) {
             $state = $this->_entityContainer->getState($key);
-            if ($state == \NakedPhp\Service\EntityContainer::STATE_NEW) {
-                $storage->persist($bareEntity->unwrap());
-                $this->_entityContainer->setState($key, \NakedPhp\Service\EntityContainer::STATE_DETACHED);
-            } else {
-                $storage->merge($bareEntity->unwrap());
+ /*           $bareEntity = $this->_nakedFactory->create($entity);
+            $entityRepresentation = (string) $bareEntity;*/
+            switch ($state) {
+                case EntityContainer::STATE_NEW:
+                    $storage->persist($entity);
+                    $this->_entityContainer->setState($key, EntityContainer::STATE_DETACHED);
+                    $this->view->entities['new'][] = $entityRepresentation;
+                    break;
+                case EntityContainer::STATE_DETACHED:
+                    $storage->merge($entity);
+                    $this->view->entities['detached'][] = $entityRepresentation;
+                    break;
+                case EntityContainer::STATE_REMOVED:
+                    $storage->merge($entity);
+                    $storage->remove($entity);
+                    $this->view->entities['removed'][] = $entityRepresentation;
+                    break;
+                default:
+                    throw new Exception("Unknown entity state: $state.");
+                    break;
             }
         }
         $storage->flush();
@@ -181,7 +214,8 @@ class Controller extends \Zend_Controller_Action
             if ($no instanceof NakedCompleteEntity) {
                 $no = $no->getBareEntity();
             }
-            $index = $this->_entityContainer->add($no);
+            $object = $no->unwrap();
+            $index = $this->_entityContainer->add($object);
             $type = 'entity';
         } else {
             $index = (string) $no->getClass();

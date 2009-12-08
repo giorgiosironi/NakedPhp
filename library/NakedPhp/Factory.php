@@ -72,7 +72,7 @@ class Factory
     }
 
     /**
-     * TODO: make private
+     * TODO: make private if possible
      */
     public function getNakedFactory()
     {

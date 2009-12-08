@@ -15,10 +15,31 @@
 
 namespace NakedPhp\Stubs;
 
+/**
+ * @Entity
+ */
 class User
 {
+    /**
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
+    private $_id;
+
+    /**
+     * @Column(type="string")
+     */
     private $_name;
+
+    /**
+     * @Column(type="boolean")
+     */
     private $_active = true;
+
+    /**
+     * @Column(type="string", nullable=true)
+     */
     private $_phonenumber;
         
     public function __construct($name = null)
