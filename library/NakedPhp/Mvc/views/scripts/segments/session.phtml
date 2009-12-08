@@ -3,12 +3,18 @@ $labels = array();
 foreach ($this->session as $index => $object) {
     $url = $this->url(array('action' => 'view', 'type' => 'entity', 'object' => $index));
     $editUrl = $this->url(array('action' => 'edit', 'type' => 'entity', 'object' => $index));
+    $removeUrl = $this->url(array('action' => 'remove', 'type' => 'entity', 'object' => $index));
     $class = $object->getClassName();
     $this->iconLoader($class);
     $labels[] = "<dt class=\"icon $class\"><a href=\"$url\">$object</a></dt>
-    <dd class=\"button edit\"><a href=\"$editUrl\">(edit)</a></dd>
+    <dd>
+        <!--<div class=\"button edit\"><a href=\"$editUrl\">(edit)</a>
+        <div class=\"button remove\"><a href=\"$removeUrl\">(remove)</a>-->
+    </dd>
     ";
 }
 if ($labels) {
-    echo "<dl>\n" . implode('', $labels) . "</dl>\n";
+    $saveUrl = $this->url(array('action' => 'save', 'controller' => 'naked-php'), 'default', true);
+    echo "<div class=\"button save\"><a href=\"{$saveUrl}\">Save</a></div>
+    <dl>\n" . implode('', $labels) . "</dl>\n";
 }
