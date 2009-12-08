@@ -29,7 +29,7 @@ class Example_Model_City
      */
     private $_name;
 
-    public function __construct($name)
+    public function __construct($name = null)
     {
         $this->setName($name);
     }
