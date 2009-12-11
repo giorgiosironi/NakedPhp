@@ -54,7 +54,7 @@ class MethodMerger implements MethodCaller
             $result = call_user_func_array(array($service, $methodName), $params);
         }
 
-        return $this->_nakedFactory->create($result);
+        return $this->_nakedFactory->createBare($result);
     }
 
     /**

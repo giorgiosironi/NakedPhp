@@ -13,16 +13,16 @@
  * @package    NakedPhp_Mvc
  */
 
-namespace NakedPhp\Mvc;
-use NakedPhp\Metadata\NakedBareEntity;
+namespace NakedPhp\Mvc\EntityContainer;
+use NakedPhp\Mvc\EntityContainer;
 
-class EntityContainerTest extends \PHPUnit_Framework_TestCase
+class UnwrappedContainerTest extends \PHPUnit_Framework_TestCase
 {
     private $_container;
 
     public function setUp()
     {
-        $this->_container = new EntityContainer();
+        $this->_container = new UnwrappedContainer();
     }
 
     public function testAddsAnObjectAndReturnsKey()
@@ -38,8 +38,18 @@ class EntityContainerTest extends \PHPUnit_Framework_TestCase
      */
     public function testRemovesAnObject($key)
     {
-        $this->_container->remove($key); 
+        $this->_container->delete($key); 
         $this->_assertContainerIsEmpty();
+    }
+
+    public function testReplacesAnObject()
+    {
+        $entity = new \stdClass;
+        $key = $this->_container->add($entity);
+        $newEntity = new \stdClass;
+        $this->_container->replace($key, $newEntity);
+        $this->assertSame($newEntity, $this->_container->get($key));
+
     }
 
     public function testSetsStateOfAddedObjectsAsNew()
@@ -58,6 +68,13 @@ class EntityContainerTest extends \PHPUnit_Framework_TestCase
 
         $this->_container->setState($key, EntityContainer::STATE_REMOVED);
         $this->assertEquals(EntityContainer::STATE_REMOVED, $this->_container->getState($key));
+    }
+
+    public function testAllowsManualStateSettingDuringAddition()
+    {
+        $entity = new \stdClass;
+        $key = $this->_container->add($entity, EntityContainer::STATE_DETACHED);
+        $this->assertEquals(EntityContainer::STATE_DETACHED, $this->_container->getState($key));
     }
 
     /**

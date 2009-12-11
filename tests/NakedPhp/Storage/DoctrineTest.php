@@ -14,9 +14,15 @@
  */
 
 namespace NakedPhp\Storage;
+use Doctrine\ORM\UnitOfWork;
 use NakedPhp\Mvc\EntityContainer;
+use NakedPhp\Mvc\EntityContainer\UnwrappedContainer;
 use NakedPhp\Stubs\User;
 
+/**
+ * Exercise the Doctrine storage driver, which should reflect to the database
+ * the changes in entities kept in an EntityContainer.
+ */
 class DoctrineTest extends \PHPUnit_Framework_TestCase
 {
     private $_storage;
@@ -34,33 +40,104 @@ class DoctrineTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->_em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config);
+        $this->_regenerateSchema();
 
+        $this->_storage = new Doctrine($this->_em);
+    }
+
+    private function _regenerateSchema()
+    {
         $tool = new \Doctrine\ORM\Tools\SchemaTool($this->_em);
         $classes = array(
             $this->_em->getClassMetadata('NakedPhp\Stubs\User')
         );
         $tool->dropSchema($classes);
         $tool->createSchema($classes);
-        $this->_storage = new Doctrine($this->_em);
     }
 
     public function testSavesNewEntities()
     {
         $container = $this->_getContainer(array(
-            'John' => EntityContainer::STATE_NEW
+            'Picard' => EntityContainer::STATE_NEW
         ));
-        $this->_storage->process($container);
+        $this->_storage->save($container);
 
-        $this->_exists('John');
-        $this->_notExists('Trudy');
+        $this->_assertExistsOne('Picard');
     }
 
-    private function _exists($name)
+    /**
+     * @depends testSavesNewEntities
+     */
+    public function testSavesIdempotently()
+    {
+        $container = $this->_getContainer(array(
+            'Picard' => EntityContainer::STATE_NEW
+        ));
+        $this->_storage->save($container);
+
+        $this->_simulateNewPage();
+        $this->_storage->save($container);
+
+        $this->_assertExistsOne('Picard');
+    }
+
+    public function testSavesUpdatedEntities()
+    {
+        $picard = $this->_getDetachedUser('Picard');
+        $picard->setName('Locutus');
+        $container = $this->_getContainer();
+        $key = $container->add($picard, EntityContainer::STATE_DETACHED);
+        $this->_storage->save($container);
+
+        $this->_assertExistsOne('Locutus');
+        $this->_assertNotExists('Picard');
+    }
+
+    public function testRemovesPreviouslySavedEntities()
+    {
+        $picard = $this->_getDetachedUser('Picard');
+        $container = $this->_getContainer();
+
+        $key = $container->add($picard, EntityContainer::STATE_REMOVED);
+        $this->_storage->save($container);
+
+        $this->_assertNotExists('Picard');
+        $this->assertFalse($container->contains($picard));
+    }
+
+    private function _getNewUser($name)
+    {
+        $user = new User();
+        $user->setName($name);
+        return $user;
+    }
+
+    private function _getDetachedUser($name)
+    {
+        $user = $this->_getNewUser($name);
+        $this->_em->persist($user);
+        $this->_em->flush();
+        $this->_em->detach($user);
+        return $user;
+    }
+
+    private function _getContainer(array $fixture = array())
+    {
+        $container = new UnwrappedContainer;
+        foreach ($fixture as $name => $state) {
+            $user = $this->_getNewUser($name);
+            $key = $container->add($user);
+            $container->setState($key, $state);
+        }
+        return $container;
+    }
+
+    private function _assertExistsOne($name)
     {
         $this->_howMany($name, 1);
     }
 
-    private function _notExists($name)
+    private function _assertNotExists($name)
     {
         $this->_howMany($name, 0);
     }
@@ -69,24 +146,11 @@ class DoctrineTest extends \PHPUnit_Framework_TestCase
     {
         $q = $this->_em->createQuery("SELECT COUNT(u._id) FROM NakedPhp\Stubs\User u WHERE u._name = '$name'");
         $result = $q->getSingleScalarResult();
-        $this->assertEquals($number, $result);
+        $this->assertEquals($number, $result, "There are $result instances of $name saved instead of $number.");
     }
 
-    private function _getContainer(array $fixture)
+    private function _simulateNewPage()
     {
-        $container = new EntityContainer;
-        foreach ($fixture as $name => $state) {
-            $user = $this->_getUser($name);
-            $key = $container->add($user);
-            $container->setState($key, $state);
-        }
-        return $container;
-    }
-
-    private function _getUser($name)
-    {
-        $user = new User();
-        $user->setName('John');
-        return $user;
+        $this->_em->clear(); // detach all entities
     }
 }

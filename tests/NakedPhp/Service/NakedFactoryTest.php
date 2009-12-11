@@ -37,7 +37,7 @@ class NakedFactoryTest extends \PHPUnit_Framework_TestCase
         $this->_serviceReflectorMock->expects($this->any())
                                     ->method('isService')
                                     ->will($this->returnValue(false));
-        $no = $this->_factory->create(new \stdClass);
+        $no = $this->_factory->createBare(new \stdClass);
         $this->assertTrue($no instanceof NakedBareEntity);
     }
 
@@ -50,7 +50,7 @@ class NakedFactoryTest extends \PHPUnit_Framework_TestCase
         $this->_entityReflectorMock->expects($this->any())
                                     ->method('analyze')
                                     ->will($this->returnValue($class));
-        $no = $this->_factory->create(new \stdClass);
+        $no = $this->_factory->createBare(new \stdClass);
         $this->assertSame($class, $no->getClass());
     }
 
@@ -59,7 +59,7 @@ class NakedFactoryTest extends \PHPUnit_Framework_TestCase
         $this->_serviceReflectorMock->expects($this->any())
                                     ->method('isService')
                                     ->will($this->returnValue(true));
-        $no = $this->_factory->create(new \stdClass);
+        $no = $this->_factory->createBare(new \stdClass);
         $this->assertTrue($no instanceof NakedService);
     }
 
@@ -72,13 +72,13 @@ class NakedFactoryTest extends \PHPUnit_Framework_TestCase
         $this->_serviceReflectorMock->expects($this->any())
                                     ->method('analyze')
                                     ->will($this->returnValue($class));
-        $no = $this->_factory->create(new \stdClass);
+        $no = $this->_factory->createBare(new \stdClass);
         $this->assertSame($class, $no->getClass());
     }
 
     public function testDoesNotWrapScalarValues()
     {
-        $result = $this->_factory->create('scalar result');
+        $result = $this->_factory->createBare('scalar result');
         $this->assertEquals('scalar result', $result);
     }
 }

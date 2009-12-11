@@ -34,12 +34,18 @@ class Factory
         return $this->_sessionBridge;
     }
 
-    public function getEntityContainer()
+    public function getUnwrappedContainer()
     {
-        if (!isset($this->_getSessionBridge()->entityContainer)) {
-            $this->_getSessionBridge()->entityContainer = new Mvc\EntityContainer(array());
+        if (!isset($this->_getSessionBridge()->unwrappedContainer)) {
+            $this->_getSessionBridge()->unwrappedContainer = new Mvc\EntityContainer\UnwrappedContainer(array());
         }
-        return $this->_getSessionBridge()->entityContainer;
+        return $this->_getSessionBridge()->unwrappedContainer;
+    }
+
+    public function getBareWrappingIterator()
+    {
+        return new Mvc\EntityContainer\BareWrappingIterator($this->getUnwrappedContainer(),
+                                                            $this->getNakedFactory());
     }
 
     public function getContextContainer()
@@ -92,7 +98,7 @@ class Factory
 
     public function getStateManager()
     {
-        return new Form\StateManager($this->getEntityContainer());
+        return new Form\StateManager($this->getBareWrappingIterator());
     }
 
     /**

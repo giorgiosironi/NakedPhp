@@ -28,7 +28,7 @@ class Controller extends \Zend_Controller_Action
     /**
      * @var EntityContainer   contains entity objects
      */
-    private $_entityContainer;
+    private $_unwrappedContainer;
 
     /**
      * @var ContextContainer  remembers current workflow
@@ -59,7 +59,9 @@ class Controller extends \Zend_Controller_Action
     {
         $this->_factory = new \NakedPhp\Factory();
         $this->_nakedFactory = $this->_factory->getNakedFactory();
-        $this->view->session = $this->_entityContainer = $this->_factory->getEntityContainer();
+        $this->_unwrappedContainer = $this->_factory->getUnwrappedContainer();
+        $this->_bareWrappingIterator = $this->_factory->getBareWrappingIterator();
+        $this->view->session = $this->_bareWrappingIterator;
         $this->view->context = $this->_contextContainer = $this->_factory->getContextContainer();
         $this->view->services = $this->_services = $this->_factory->getServiceIterator();
 
@@ -70,8 +72,8 @@ class Controller extends \Zend_Controller_Action
                 $object = $provider->getService($objectKey);
                 $this->_completeObject = $this->_factory->createCompleteService($object); 
             } else {
-                $object = $this->_entityContainer->get($objectKey);
-                $bareObject = $this->_nakedFactory->create($object);
+                $object = $this->_unwrappedContainer->get($objectKey);
+                $bareObject = $this->_nakedFactory->createBare($object);
                 $this->_completeObject = $this->_factory->createCompleteEntity($bareObject);
             }
             $this->_objectKey = $objectKey;
@@ -135,7 +137,7 @@ class Controller extends \Zend_Controller_Action
 
     public final function removeAction()
     {
-        $this->_entityContainer->setState($this->_objectKey, EntityContainer::STATE_REMOVED);
+        $this->_unwrappedContainer->setState($this->_objectKey, EntityContainer::STATE_REMOVED);
     }
 
     /**
@@ -172,19 +174,21 @@ class Controller extends \Zend_Controller_Action
     public function saveAction()
     {
         $storage = $this->_factory->getPersistenceStorage();
+        $storage->process($this->_unwrappedContainer);
         $this->view->entities = array(
             'new' => array(),
             'detached' => array(),
             'removed' => array()
         );
-        foreach ($this->_entityContainer as $key => $entity) {
-            $state = $this->_entityContainer->getState($key);
- /*           $bareEntity = $this->_nakedFactory->create($entity);
-            $entityRepresentation = (string) $bareEntity;*/
+        /*
+        foreach ($this->_unwrappedContainer as $key => $entity) {
+            $state = $this->_unwrappedContainer->getState($key);
+            $bareEntity = $this->_nakedFactory->create($entity);
+            $entityRepresentation = (string) $bareEntity;
             switch ($state) {
                 case EntityContainer::STATE_NEW:
                     $storage->persist($entity);
-                    $this->_entityContainer->setState($key, EntityContainer::STATE_DETACHED);
+                    $this->_unwrappedContainer->setState($key, EntityContainer::STATE_DETACHED);
                     $this->view->entities['new'][] = $entityRepresentation;
                     break;
                 case EntityContainer::STATE_DETACHED:
@@ -202,6 +206,7 @@ class Controller extends \Zend_Controller_Action
             }
         }
         $storage->flush();
+        */
     }
 
     /**
@@ -215,7 +220,7 @@ class Controller extends \Zend_Controller_Action
                 $no = $no->getBareEntity();
             }
             $object = $no->unwrap();
-            $index = $this->_entityContainer->add($object);
+            $index = $this->_unwrappedContainer->add($object);
             $type = 'entity';
         } else {
             $index = (string) $no->getClass();

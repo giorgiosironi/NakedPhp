@@ -17,7 +17,7 @@ namespace NakedPhp\Stubs;
 
 class NakedFactoryStub extends \NakedPhp\Service\NakedFactory
 {
-    public function create($object)
+    public function createBare($object)
     {
         return $object;
     }

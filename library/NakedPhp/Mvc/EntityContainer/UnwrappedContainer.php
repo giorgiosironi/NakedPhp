@@ -13,41 +13,26 @@
  * @package    NakedPhp_Mvc
  */
 
-namespace NakedPhp\Mvc;
-use NakedPhp\Metadata\NakedBareEntity;
+namespace NakedPhp\Mvc\EntityContainer;
+use NakedPhp\Mvc\EntityContainer;
 
 /**
  * This class act as a small container for entity instances which the user is working on.
  * Its goal is to be kept in a php session for working on the objects contained.
  * Then the result can be saved by a DataMapper.
  */
-class EntityContainer implements \IteratorAggregate
+class UnwrappedContainer implements EntityContainer
 {
-    /**
-     * Entity which has been created but is not known to Doctrine.
-     */
-    const STATE_NEW = 0;
-
-    /**
-     * Entity known to Doctrine but detached from any ORM service.
-     * There are no entities known to Doctrine and not detached in this container.
-     */
-    const STATE_DETACHED = 1;
-
-    /**
-     * Entity which deletion is pending.
-     */
-    const STATE_REMOVED = 2;
-
     private $_objects = array();
     private $_states = array();
     private $_counter = 0;
 
     /**
      * @param object $object   object to be added idempotently
+     * @param integer $state   one of the STATE_* constants
      * @return integer         the key of the object in this container
      */
-    public function add($object)
+    public function add($object, $state = self::STATE_NEW)
     {
         $index = $this->contains($object);
         if ($index) {
@@ -55,17 +40,26 @@ class EntityContainer implements \IteratorAggregate
         }
         $this->_counter++;
         $this->_objects[$this->_counter] = $object;
-        $this->_states[$this->_counter] = self::STATE_NEW;
+        $this->_states[$this->_counter] = $state;
         return $this->_counter;
     }
 
     /**
      * @param integer $key      key returned during insertion
      */
-    public function remove($key)
+    public function delete($key)
     {
         unset($this->_objects[$key]);
         unset($this->_states[$key]);
+    }
+
+    /**
+     * @param integer $key      key returned during insertion
+     * @param object $object   object to be added idempotently
+     */
+    public function replace($key, $object)
+    {
+        $this->_objects[$key] = $object;
     }
 
     /**

@@ -34,7 +34,7 @@ class NakedFactory
      * @param mixed $value
      * @return mixed
      */
-    public function create($object)
+    public function createBare($object)
     {
         if (!is_object($object)) {
             return $object;

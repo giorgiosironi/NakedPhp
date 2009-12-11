@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\Storage;
+use NakedPhp\Mvc\EntityContainer;
 
 class Doctrine
 {
@@ -24,10 +25,26 @@ class Doctrine
         $this->_em = $em;
     }
 
-    public function process(\NakedPhp\Mvc\EntityContainer $container)
+    public function save(EntityContainer $container)
     {
         foreach ($container as $key => $entity) {
-            $this->_em->persist($entity);
+            $state = $container->getState($key);
+            switch ($state) {
+                case EntityContainer::STATE_NEW:
+                    $this->_em->persist($entity);
+                    $container->setState($key, EntityContainer::STATE_DETACHED);
+                    break;
+                case EntityContainer::STATE_DETACHED:
+                    $this->_em->merge($entity);
+                    break;
+                case EntityContainer::STATE_REMOVED:
+                    $entity = $this->_em->merge($entity);
+                    $this->_em->remove($entity);
+                    $container->delete($key);
+                    break;
+                default:
+                    throw new \Exception("State not recognized: $state.");
+            }
         }
         $this->_em->flush();
     }
