@@ -28,9 +28,7 @@ class UnwrappedContainer implements EntityContainer
     private $_counter = 0;
 
     /**
-     * @param object $object   object to be added idempotently
-     * @param integer $state   one of the STATE_* constants
-     * @return integer         the key of the object in this container
+     * {inheritdoc}
      */
     public function add($object, $state = self::STATE_NEW)
     {
@@ -45,7 +43,7 @@ class UnwrappedContainer implements EntityContainer
     }
 
     /**
-     * @param integer $key      key returned during insertion
+     * {inheritdoc}
      */
     public function delete($key)
     {
@@ -54,8 +52,7 @@ class UnwrappedContainer implements EntityContainer
     }
 
     /**
-     * @param integer $key      key returned during insertion
-     * @param object $object   object to be added idempotently
+     * {inheritdoc}
      */
     public function replace($key, $object)
     {
@@ -63,8 +60,7 @@ class UnwrappedContainer implements EntityContainer
     }
 
     /**
-     * @param integer $key  key for the object
-     * @return object
+     * {inheritdoc}
      */
     public function get($key)
     {
@@ -72,8 +68,7 @@ class UnwrappedContainer implements EntityContainer
     }
 
     /**
-     * @param integer $key    key for the object
-     * @param integer $state  one of the STATE_* constants
+     * {inheritdoc}
      */
     public function setState($key, $state)
     {
@@ -81,8 +76,7 @@ class UnwrappedContainer implements EntityContainer
     }
 
     /**
-     * @param integer $key  key for the object
-     * @return one of the STATE_* constants
+     * {inheritdoc}
      */
     public function getState($key)
     {
@@ -90,8 +84,7 @@ class UnwrappedContainer implements EntityContainer
     }
 
     /**
-     * @param object        $object
-     * @return integer      the object key; false if it's not contained
+     * {inheritdoc}
      */
     public function contains($object)
     {

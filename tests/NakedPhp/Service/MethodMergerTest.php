@@ -27,13 +27,15 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     private $_providerMock;
     private $_methodMerger;
     private $_serviceClass;
-    private $_called;
+    private $_callbackCalled;
     private $_object;
 
     public function setUp()
     {
         $this->_providerMock = $this->getMock('NakedPhp\Service\ServiceProvider', array('getServiceClasses', 'getService'));
         $this->_methodMerger = new MethodMerger($this->_providerMock);
+
+        $this->_callbackCalled = false;
     }
     
     private function _wrapEntity($entityObject, $method = null)
@@ -117,7 +119,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     public function testListsMethodOfTheServiceClassesWhichTakesEntityAsAnArgument()
     {
         $this->_makeProcessMethodAvailable();
-        $class = new NakedEntityClass('NakedPhp\Stubs\User', array());
+        $class = $this->_getEmptyEntityClass();
         $methods = $this->_methodMerger->getApplicableMethods($class);
         $this->assertTrue(isset($methods['process']));
     }
@@ -125,7 +127,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     public function testDoesNotListEntityAsAnArgumentOfAServiceMethod()
     {
         $this->_makeProcessMethodAvailable();
-        $class = new NakedEntityClass('NakedPhp\Stubs\User', array());
+        $class = $this->_getEmptyEntityClass();
         $methods = $this->_methodMerger->getApplicableMethods($class);
         $params = $methods['process']->getParams();
         $this->assertEquals(0, count($params));
@@ -139,18 +141,17 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
                             ->method('getService')
                             ->with('theService')
                             ->will($this->returnValue($service));
-        $class = new NakedEntityClass('NakedPhp\Stubs\User', array());
+        $class = $this->_getEmptyEntityClass();
         $this->_object = new \NakedPhp\Stubs\User;
         $user = new NakedBareEntity($this->_object, $class);
-        $this->_called = false;
         $methods = $this->_methodMerger->call($user, 'process');
-        $this->assertTrue($this->_called);
+        $this->assertTrue($this->_callbackCalled);
     }
 
     public function process($argument)
     {
         $this->assertEquals($this->_object, $argument);
-        $this->_called = true;
+        $this->_callbackCalled = true;
     }
 
     private function _makeProcessMethodAvailable()
@@ -179,15 +180,14 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         $class = $this->_getEntityClassWithCreateNewMethod();
         $no = new NakedBareEntity($this, $class);
 
-        $this->_called = false;
         $this->_methodMerger->call($no, 'createNew', array('John Doe'));
-        $this->assertTrue($this->_called);
+        $this->assertTrue($this->_callbackCalled);
     }
 
     public function createNew(\NakedPhp\Stubs\UserFactory $factory, $name)
     {
         $this->assertEquals('John Doe', $name);
-        $this->_called = true;
+        $this->_callbackCalled = true;
     }
 
     private function _getEntityClassWithCreateNewMethod()
@@ -198,6 +198,11 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
                 'name' => $name = new NakedParam('string', 'name')
             ))
         ));
+    }
+
+    private function _getEmptyEntityClass()
+    {
+        return  new NakedEntityClass('NakedPhp\Stubs\User', array());
     }
 
     protected function _createFakeEntity()
@@ -250,8 +255,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
             'theService' => $this->_serviceClass
         ));
 
-        $class = new NakedEntityClass('NakedPhp\Stubs\User');
-
+        $class = $this->_getEmptyEntityClass();
         $this->assertTrue($this->_methodMerger->hasMethod($class, 'block'));
         $method = $this->_methodMerger->getMethod($class, 'block');
         $this->assertEquals(array('days' => $days), $method->getParams());

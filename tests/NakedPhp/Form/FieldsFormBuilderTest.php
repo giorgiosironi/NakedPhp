@@ -125,8 +125,8 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
     public function testNormalizesClassNameForRelationships()
     {
         $form = $this->_getForm();
-        $this->assertEquals('NakedPhp-Stubs-User',
-                            $form->oneRelation->getAttrib('class'));
+        $classAttribute = $form->oneRelation->getAttrib('class');
+        $this->assertEquals('NakedPhp-Stubs-User', $classAttribute);
     }
 }
 
