@@ -14,7 +14,6 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedObjectAbstract;
 use NakedPhp\Metadata\NakedBareEntity;
 use NakedPhp\Metadata\NakedEntityClass;
 use NakedPhp\Metadata\NakedBareService;
@@ -22,7 +21,6 @@ use NakedPhp\Metadata\NakedServiceClass;
 use NakedPhp\Metadata\NakedMethod;
 use NakedPhp\Metadata\NakedParam;
 use NakedPhp\Stubs\User;
-use NakedPhp\Stubs\NakedFactoryStub;
 
 class MethodMergerTest extends \PHPUnit_Framework_TestCase
 {
@@ -35,8 +33,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->_providerMock = $this->getMock('NakedPhp\Service\ServiceProvider', array('getServiceClasses', 'getService'));
-        $this->_factoryStub = new NakedFactoryStub();
-        $this->_methodMerger = new MethodMerger($this->_providerMock, $this->_factoryStub);
+        $this->_methodMerger = new MethodMerger($this->_providerMock);
     }
     
     private function _wrapEntity($entityObject, $method = null)
@@ -64,12 +61,16 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         $mock = $this->getMock('NakedPhp\Stubs\User', array('sendMessage'));
         $mock->expects($this->once())
              ->method('sendMessage')
-             ->with('Title', 'text...');
+             ->with('Title', 'text...')
+             ->will($this->returnValue('dummy'));
         $entity = $this->_wrapEntity($mock, new NakedMethod('sendMessage', array(
             'title' => new NakedParam('string', 'title'),
             'text' => new NakedParam('string', 'text')
         )));
-        $this->_methodMerger->call($entity, 'sendMessage', array('Title', 'text...'));
+
+        $result = $this->_methodMerger->call($entity, 'sendMessage', array('Title', 'text...'));
+
+        $this->assertEquals('dummy', $result);
     }
 
     public function testCallsAHiddenMethodOfTheObjectClass()

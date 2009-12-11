@@ -16,7 +16,7 @@
 namespace NakedPhp\Mvc;
 use NakedPhp\Metadata\NakedObjectAbstract;
 use NakedPhp\Metadata\NakedEntity;
-use NakedPhp\Metadata\NakedCompleteEntity;
+use NakedPhp\Metadata\NakedService;
 
 class Controller extends \Zend_Controller_Action
 {
@@ -129,7 +129,7 @@ class Controller extends \Zend_Controller_Action
         if ($this->_request->isPost() && $form->isValidPartial($this->_request->getPost())) {
             $state = $stateManager->setEntityState($this->_completeObject, $form);
             $this->_contextContainer->completed();
-            $this->_redirectToObject($this->_completeObject);
+            $this->_redirectToObject($this->_completeObject->unwrap());
         } else {
             $this->view->form = $form;
         }
@@ -211,20 +211,20 @@ class Controller extends \Zend_Controller_Action
 
     /**
      * This method redirects to the view action of a NakedEntity or NakedService object.
-     * @param NakedObjectAbstract $no
+     * @param object    native object of the Domain Model
+     * FIX: 
      */
-    protected function _redirectToObject($no)
+    protected function _redirectToObject($object)
     {
-        if ($no instanceof NakedEntity) {
-            if ($no instanceof NakedCompleteEntity) {
-                $no = $no->getBareEntity();
-            }
-            $object = $no->unwrap();
+        $completeObject = $this->_nakedFactory->createBare($object);
+        if ($completeObject instanceof NakedEntity) {
             $index = $this->_unwrappedContainer->add($object);
             $type = 'entity';
-        } else {
-            $index = (string) $no->getClass();
+        } else if ($completeObject instanceof NakedService) {
+            $index = (string) $completeObject->getClass();
             $type = 'service';
+        } else {
+            throw new Exception("Unrecognized object to redirect to.");
         }
 
         if (count($this->_contextContainer)) {

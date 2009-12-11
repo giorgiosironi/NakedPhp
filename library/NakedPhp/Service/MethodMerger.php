@@ -20,12 +20,10 @@ use NakedPhp\Metadata\NakedMethod;
 
 class MethodMerger implements MethodCaller
 {
-    protected $_nakedFactory;
     protected $_serviceProvider;
 
-    public function __construct(ServiceProvider $serviceProvider = null, NakedFactory $nakedFactory = null)
+    public function __construct(ServiceProvider $serviceProvider = null)
     {
-        $this->_nakedFactory = $nakedFactory;
         $this->_serviceProvider = $serviceProvider;
     }
 
@@ -54,7 +52,7 @@ class MethodMerger implements MethodCaller
             $result = call_user_func_array(array($service, $methodName), $params);
         }
 
-        return $this->_nakedFactory->createBare($result);
+        return $result;
     }
 
     /**
