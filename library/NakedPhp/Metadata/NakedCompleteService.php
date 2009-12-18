@@ -71,5 +71,23 @@ class NakedCompleteService implements NakedService
     {
         return (string) $this->_wrapped;
     }
+
+    /**
+     * {@inheritdoc}
+     * Not allowed.
+     */
+    public function addFacet(Facet $facet)
+    {
+        throw new \Exception('Adding a Facet to an object is not allowed. Access the NakedClass instance instead.');
+    }
+
+    /**
+     * {@inheritdoc}
+     * Proxies to the wrapped service.
+     */
+    public function getFacet($type)
+    {
+        return $this->_wrapped->getFacet($type);
+    }
 }
 

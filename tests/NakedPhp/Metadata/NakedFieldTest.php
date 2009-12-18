@@ -14,14 +14,26 @@
  */
 
 namespace NakedPhp\Metadata;
+use NakedPhp\Stubs\DummyFacet;
 
 class NakedFieldTest extends \PHPUnit_Framework_TestCase
 {
     public function testRetainsTypeAndName()
     {
-        $param = new NakedField('string', 'name');
-        $this->assertEquals('string', (string) $param->getType());
-        $this->assertEquals('name', $param->getName());
+        $field = new NakedField('string', 'name');
+        $this->assertEquals('string', (string) $field->getType());
+        $this->assertEquals('name', $field->getName());
+    }
+
+    public function testImplementsFacetHolderInterface()
+    {
+        $field = new NakedField();
+        $this->assertTrue($field instanceof FacetHolder);
+
+        $dummy = new DummyFacet();
+        $field->addFacet($dummy);
+        $this->assertEquals($dummy, $field->getFacet('DummyFacet'));
+        $this->assertNull($field->getFacet('NotExistent'));
     }
 
     /*

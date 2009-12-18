@@ -51,9 +51,8 @@ class FieldsFormBuilder
         if ($this->_isObjectField($field)) {
             $element =  new ObjectSelect($field->getName());
         } else {
-            $methodName = 'choices' . ucfirst($field->getName());
-            if ($entity->hasHiddenMethod($methodName)) {
-                $choices = $entity->__call($methodName); 
+            if ($choicesFacet = $field->getFacet('Property\Choices')) {
+                $choices = $choicesFacet->getChoices($entity); 
                 $element = new \Zend_Form_Element_Select($field->getName());
                 $element->setMultiOptions($choices);
             } else {

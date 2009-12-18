@@ -16,6 +16,7 @@
 namespace NakedPhp\Stubs;
 use NakedPhp\Metadata\NakedBareEntity;
 use NakedPhp\Metadata\NakedMethod;
+use NakedPhp\Metadata\Facet;
 
 class NakedEntityStub extends NakedBareEntity
 {
@@ -51,5 +52,19 @@ class NakedEntityStub extends NakedBareEntity
     public function hasHiddenMethod($methodName)
     {
         return isset($this->_hiddenMethods[$methodName]);
+    }
+
+    public function addFacet(Facet $facet)
+    {
+        $type = $facet->facetType();
+        $this->_facets[$type] = $facet;
+    }
+
+    public function getFacet($type)
+    {
+        if (isset($this->_facets[$type])) {
+            return $this->_facets[$type];
+        }
+        return null;
     }
 }

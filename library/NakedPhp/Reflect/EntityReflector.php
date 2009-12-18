@@ -18,6 +18,7 @@ use NakedPhp\Metadata\NakedEntityClass;
 use NakedPhp\Metadata\NakedMethod;
 use NakedPhp\Metadata\NakedParam;
 use NakedPhp\Metadata\NakedField;
+use NakedPhp\Metadata\Facet\Property\Choices;
 
 class EntityReflector
 {
@@ -29,6 +30,7 @@ class EntityReflector
     }
         
     /**
+     * TODO: refactor in generic FacetFactory implementations
      * @param string $className
      * @return NakedEntityClass
      */
@@ -50,6 +52,7 @@ class EntityReflector
         }
 
         list($userMethods, $hiddenMethods) = $this->_separateMethods($methods, $fields);
+
         return new NakedEntityClass($className, $userMethods, $fields, $hiddenMethods);
     }
 
@@ -87,6 +90,10 @@ class EntityReflector
                 $pattern = '/[a-z]{1,}' . ucfirst($fieldName) . '/';
                 if (preg_match($pattern, $methodName)) {
                     $hiddenMethods[$methodName] = $method;
+                    if (strstr($methodName, 'choices')) {
+                        $facet = new Choices($fieldName);
+                        $field->addFacet($facet);
+                    }
                 }
             }
             if (!isset($hiddenMethods[$methodName])) {

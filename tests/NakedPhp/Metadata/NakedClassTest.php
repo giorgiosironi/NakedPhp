@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\Metadata;
+use NakedPhp\Stubs\DummyFacet;
 
 class NakedClassTest extends \PHPUnit_Framework_TestCase
 {
@@ -37,4 +38,14 @@ class NakedClassTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('doThis', $nc->getMethod('key'));
     }
 
+    public function  testImplementsFacetHolderInterface()
+    {
+        $nc = new NakedClass();
+        $this->assertTrue($nc instanceof FacetHolder);
+
+        $facet = new DummyFacet();
+        $nc->addFacet($facet);
+        $this->assertSame($facet, $nc->getFacet('DummyFacet'));
+        $this->assertNull($nc->getFacet('Property\NotExistent'));
+    }
 }

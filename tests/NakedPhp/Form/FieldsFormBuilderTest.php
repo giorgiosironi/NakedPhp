@@ -16,6 +16,7 @@
 namespace NakedPhp\Form;
 use NakedPhp\Stubs\NakedEntityStub;
 use NakedPhp\Metadata\NakedField;
+use NakedPhp\Metadata\Facet\Property\Choices;
 
 class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
 {
@@ -67,8 +68,9 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
     public function testCreatesSelectForLimitedChoices()
     {
         $entity = new NakedEntityStub($this);
-        $entity->addHiddenMethod('choicesLimitedField');
-        $element = $this->_formBuilder->createElement($entity, new NakedField('string', 'limitedField'));
+        $field = new NakedField('string', 'limitedField');
+        $field->addFacet(new Choices('limitedField'));
+        $element = $this->_formBuilder->createElement($entity, $field);
         $this->assertTrue($element instanceof \Zend_Form_Element_Select);
         $expected = array('foo' => 'Foo', 'bar' => 'Bar');
         $this->assertEquals($expected, $element->getMultiOptions());

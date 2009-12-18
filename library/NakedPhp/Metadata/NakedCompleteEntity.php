@@ -116,4 +116,22 @@ class NakedCompleteEntity implements NakedEntity
     {
         return $this->_entity->getIterator();
     }
+
+    /**
+     * {@inheritdoc}
+     * Not allowed.
+     */
+    public function addFacet(Facet $facet)
+    {
+        throw new \Exception('Adding a Facet to an object is not allowed. Access the NakedClass instance instead.');
+    }
+
+    /**
+     * {@inheritdoc}
+     * Proxies to the wrapped entity.
+     */
+    public function getFacet($type)
+    {
+        return $this->_entity->getFacet($type);
+    }
 }

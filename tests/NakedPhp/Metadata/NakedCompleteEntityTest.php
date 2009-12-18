@@ -86,7 +86,7 @@ class NakedCompleteEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('dummy', $no->__call('methodName', array('foo', 'bar')));
     }
 
-    public function testDelegatesToTheMergerForSearchingTemplateMethods()
+    public function testDelegatesToTheMergerForSearchingHiddenMethods()
     {
         $class = new NakedEntityClass('DummyClass');
         $bareNo = new NakedBareEntity($this, $class);
@@ -98,6 +98,18 @@ class NakedCompleteEntityTest extends \PHPUnit_Framework_TestCase
         $no = new NakedCompleteEntity($bareNo, $merger);
 
         $this->assertTrue($no->hasHiddenMethod('dummyMethodName'));
+    }
+
+    public function testProxiesToBareEntityForFacetHolding()
+    {
+        $bareNo = $this->_getBareEntityMock();
+        $bareNo->expects($this->once())
+               ->method('getFacet')
+               ->with('Dummy')
+               ->will($this->returnValue('foo'));
+
+        $no = new NakedCompleteEntity($bareNo);
+        $this->assertEquals('foo', $no->getFacet('Dummy'));
     }
 
     public function testIsTraversable()

@@ -17,6 +17,7 @@ namespace NakedPhp\Reflect;
 use NakedPhp\Metadata\NakedEntityClass;
 use NakedPhp\Metadata\NakedField;
 use NakedPhp\Metadata\NakedMethod;
+use NakedPhp\Metadata\Facet;
 
 class EntityReflectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -81,5 +82,16 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
         $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
         $hiddenMethods = $result->getHiddenMethods();
         $this->assertEquals('choicesStatus', (string) $hiddenMethods['choicesStatus']);
+    }
+
+    /**
+     * TODO: refactor in FacetFactory implementations
+     */
+    public function testGenerateFacetsForChoices()
+    {
+        $class = $this->_reflector->analyze('NakedPhp\Stubs\User');
+        $field = $class->getField('status');
+        $facet = $field->getFacet('Property\Choices');
+        $this->assertTrue($facet instanceof Facet);
     }
 }

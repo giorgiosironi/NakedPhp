@@ -120,4 +120,22 @@ class NakedObjectAbstract
         }
         return $result;
     }
+    
+    /**
+     * {@inheritdoc}
+     * Not allowed.
+     */
+    public function addFacet(Facet $facet)
+    {
+        throw new \Exception('It is not possible to add a Facet to an object. Access the NakedClass instance instead.');
+    }
+
+    /**
+     * {@inheritdoc}
+     * Proxies to the NakedClass instance.
+     */
+    public function getFacet($type)
+    {
+        return $this->_class->getFacet($type);
+    }
 }

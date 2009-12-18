@@ -18,7 +18,7 @@ namespace NakedPhp\Metadata;
 /**
  * Interface for classes that wrap a domain object.
  */
-interface NakedObject
+interface NakedObject extends FacetHolder
 {
     /**
      * @return string

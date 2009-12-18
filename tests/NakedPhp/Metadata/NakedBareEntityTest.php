@@ -66,7 +66,7 @@ class NakedBareEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($no->hasMethod('notExistentMethodName'));
     }
 
-    public function testProxiesToTheClassForObtainingTemplateMethods()
+    public function testProxiesToTheClassForObtainingHiddenMethods()
     {
         $class = $this->getMock('NakedPhp\Metadata\NakedEntityClass', array('getHiddenMethods'));
         $class->expects($this->any())
@@ -78,6 +78,17 @@ class NakedBareEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($no->hasHiddenMethod('notExistentMethodName'));
     }
 
+    public function testProxiesToTheClassForFacetHolding()
+    {
+        $class = $this->getMock('NakedPhp\Metadata\NakedEntityClass', array('getFacet'));
+        $class->expects($this->once())
+             ->method('getFacet')
+             ->with('Dummy')
+             ->will($this->returnValue('foo'));
+
+        $no = new NakedBareEntity(null, $class);
+        $this->assertEquals('foo', $no->getFacet('Dummy'));
+    }
 
     public function testIsTraversable()
     {

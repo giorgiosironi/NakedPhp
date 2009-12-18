@@ -19,7 +19,7 @@ namespace NakedPhp\Metadata;
  * Wraps properties about a domain class.
  * @abstract    not declared abstract to allow testing of base functionality
  */
-class NakedClass
+class NakedClass implements FacetHolder
 {
     /**
      * @var string
@@ -35,6 +35,11 @@ class NakedClass
      * @var array of NakedMethod instances
      */
     protected $_hiddenMethods;
+
+    /**
+     * @var array of Facet instances, indexed by type
+     */
+    protected $_facets;
 
     /**
      * @param string $className
@@ -121,4 +126,24 @@ class NakedClass
         return isset($methods[$name]);
     }
 
+    /** FacetHolder interface */
+    /**
+     * {@inheritdoc}
+     */
+    public function addFacet(Facet $facet)
+    {
+        $type = $facet->facetType();
+        $this->_facets[$type] = $facet;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFacet($type)
+    {
+        if (isset($this->_facets[$type])) {
+            return $this->_facets[$type];
+        }
+        return null;
+    }
 }

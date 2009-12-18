@@ -15,6 +15,7 @@
 
 namespace NakedPhp\Metadata;
 use NakedPhp\Service\MethodMerger;
+use NakedPhp\Stubs\DummyFacet;
 
 class NakedCompleteServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -50,5 +51,15 @@ class NakedCompleteServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('doSomething', $no->getMethod('key'));
         $this->assertTrue($no->hasMethod('key'));
         $this->assertFalse($no->hasMethod('not_existent_key'));
+    }
+
+    public function testProxiesToBareEntityForFacetHolding()
+    {
+        $class = new NakedServiceClass();
+        $class->addFacet(new DummyFacet());
+        $bareNo = new NakedBareService(null, $class);
+
+        $no = new NakedCompleteService($bareNo);
+        $this->assertNotNull($no->getFacet('DummyFacet'));
     }
 }
