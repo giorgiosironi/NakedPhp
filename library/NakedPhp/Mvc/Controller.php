@@ -180,39 +180,11 @@ class Controller extends \Zend_Controller_Action
             'detached' => array(),
             'removed' => array()
         );
-        /*
-        foreach ($this->_unwrappedContainer as $key => $entity) {
-            $state = $this->_unwrappedContainer->getState($key);
-            $bareEntity = $this->_nakedFactory->create($entity);
-            $entityRepresentation = (string) $bareEntity;
-            switch ($state) {
-                case EntityContainer::STATE_NEW:
-                    $storage->persist($entity);
-                    $this->_unwrappedContainer->setState($key, EntityContainer::STATE_DETACHED);
-                    $this->view->entities['new'][] = $entityRepresentation;
-                    break;
-                case EntityContainer::STATE_DETACHED:
-                    $storage->merge($entity);
-                    $this->view->entities['detached'][] = $entityRepresentation;
-                    break;
-                case EntityContainer::STATE_REMOVED:
-                    $storage->merge($entity);
-                    $storage->remove($entity);
-                    $this->view->entities['removed'][] = $entityRepresentation;
-                    break;
-                default:
-                    throw new Exception("Unknown entity state: $state.");
-                    break;
-            }
-        }
-        $storage->flush();
-        */
     }
 
     /**
      * This method redirects to the view action of a NakedEntity or NakedService object.
      * @param object    native object of the Domain Model
-     * FIX: 
      */
     protected function _redirectToObject($object)
     {

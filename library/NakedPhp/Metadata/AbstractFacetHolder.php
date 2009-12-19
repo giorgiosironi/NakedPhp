@@ -15,34 +15,31 @@
 
 namespace NakedPhp\Metadata;
 
-/**
- * Wraps info about a field of a NakedEntityClass.
- */
-class NakedField extends AbstractFacetHolder
+
+abstract class AbstractFacetHolder implements FacetHolder
 {
     /**
-     * @var string
+     * @var array of Facet instances, indexed by type
      */
-    private $_type;
+    protected $_facets;
 
     /**
-     * @var string
+     * {@inheritdoc}
      */
-    private $_name;
-
-    public function __construct($type = '', $name = '')
+    public function addFacet(Facet $facet)
     {
-        $this->_type = $type;
-        $this->_name = $name;
+        $type = $facet->facetType();
+        $this->_facets[$type] = $facet;
     }
 
-    public function getType()
+    /**
+     * {@inheritdoc}
+     */
+    public function getFacet($type)
     {
-        return $this->_type;
-    }
-
-    public function getName()
-    {
-        return $this->_name;
+        if (isset($this->_facets[$type])) {
+            return $this->_facets[$type];
+        }
+        return null;
     }
 }
