@@ -18,6 +18,7 @@ use NakedPhp\Metadata\NakedEntityClass;
 use NakedPhp\Metadata\NakedMethod;
 use NakedPhp\Metadata\NakedParam;
 use NakedPhp\Metadata\NakedField;
+use NakedPhp\Metadata\Facet\Disabled;
 use NakedPhp\Metadata\Facet\Property\Choices;
 
 class EntityReflector
@@ -92,6 +93,10 @@ class EntityReflector
                     $hiddenMethods[$methodName] = $method;
                     if (strstr($methodName, 'choices')) {
                         $facet = new Choices($fieldName);
+                        $field->addFacet($facet);
+                    }
+                    if (strstr($methodName, 'disable')) {
+                        $facet = new Disabled($fieldName);
                         $field->addFacet($facet);
                     }
                 }

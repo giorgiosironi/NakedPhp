@@ -70,9 +70,8 @@ class FieldsFormBuilder
                 ->addDecorator('Label', array('tag' => 'dt'));
  
 
-        $methodName = 'disable' . ucfirst($field->getName());
-        if ($entity->hasHiddenMethod($methodName)) {
-            $disabled = $entity->__call($methodName); 
+        if ($facet = $field->getFacet('Disabled')) {
+            $disabled = $facet->disabledReason($entity); 
             if ($disabled) {
                 $element->setAttrib('disabled', 'disabled');
                 if (is_string($disabled)) {

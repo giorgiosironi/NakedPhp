@@ -16,6 +16,7 @@
 namespace NakedPhp\Form;
 use NakedPhp\Stubs\NakedEntityStub;
 use NakedPhp\Metadata\NakedField;
+use NakedPhp\Metadata\Facet\Disabled;
 use NakedPhp\Metadata\Facet\Property\Choices;
 
 class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
@@ -84,8 +85,9 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
     public function testDisablesInputProgrammatically()
     {
         $entity = new NakedEntityStub($this);
-        $entity->addHiddenMethod('disableMyField');
-        $element = $this->_formBuilder->createElement($entity, new NakedField('string', 'myField'));
+        $field = new NakedField('string', 'myField');
+        $field->addFacet(new Disabled('myField'));
+        $element = $this->_formBuilder->createElement($entity, $field);
         $this->assertEquals('disabled', $element->getAttrib('disabled'));
     }
 
@@ -97,8 +99,10 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
     public function testShowsTooltipOnDisabledInputs()
     {
         $entity = new NakedEntityStub($this);
-        $entity->addHiddenMethod('disableMyOtherField');
-        $element = $this->_formBuilder->createElement($entity, new NakedField('string', 'myOtherField'));
+        $field = new NakedField('string', 'myOtherField');
+        $field->addFacet(new Disabled('myOtherField'));
+        $element = $this->_formBuilder->createElement($entity, $field);
+
         $decorators = $element->getDecorators();
         $tooltipDecoratorOptions = $decorators['Tooltip']->getOptions();
         $labelDecoratorOptions = $decorators['Zend_Form_Decorator_Label']->getOptions();
