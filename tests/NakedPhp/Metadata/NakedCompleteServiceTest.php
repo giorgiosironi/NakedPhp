@@ -16,16 +16,54 @@
 namespace NakedPhp\Metadata;
 use NakedPhp\Service\MethodMerger;
 use NakedPhp\Stubs\DummyFacet;
+use NakedPhp\Test\Delegation;
 
-class NakedCompleteServiceTest extends \PHPUnit_Framework_TestCase
+class NakedCompleteServiceTest extends \NakedPhp\Test\TestCase
 {
+    private $_original;
+    private $_completeObject;
+    private $_delegation;
+
+    public function setUp()
+    {
+        $this->_original = $this->getMock('NakedPhp\Metadata\NakedBareService');
+        $this->_completeObject = new NakedCompleteService($this->_original);
+        $this->_delegation = new Delegation($this, $this->_original);
+    }
+
     public function testDelegatesToWrappedServiceForClassMetadata()
     {
-        $bareNo = new NakedBareService($this, $class = new NakedServiceClass('FooClass', array('doSomething')));
-        $no = new NakedCompleteService($bareNo);
-        $this->assertSame($class, $no->getClass());
-        $this->assertEquals('FooClass', $no->getClassName());
-        $this->assertEquals('OBJECT', (string) $no);
+        $class = new NakedServiceClass();
+        $this->_delegation->getterIs('getClass', $class);
+        $this->_delegation->getterIs('getClassName', 'FooClass');
+
+        $this->assertSame($class, $this->_completeObject->getClass());
+        $this->assertEquals('FooClass', $this->_completeObject->getClassName());
+    }
+
+    public function testDelegatesToWrappedServiceForStringRepresentation()
+    {
+        $this->_delegation->getterIs('__toString', 'dummy');
+
+        $this->assertEquals('dummy', (string) $this->_completeObject);
+    }
+
+    public function testDelegatesToWrappedServiceForMethodsMetadata()
+    {
+        $this->_delegation->getterIs('getMethods', array('key' => 'doSomething'));
+        $this->_delegation->getterIs('getMethod', 'doSomething');
+        $this->_delegation->getterIs('hasMethod', true);
+
+        $this->assertEquals(array('key' => 'doSomething'), $this->_completeObject->getMethods());
+        $this->assertEquals('doSomething', $this->_completeObject->getMethod('key'));
+        $this->assertTrue($this->_completeObject->hasMethod('key'));
+    }
+
+    public function testDelegatesToWrappedServiceForFacetHolding()
+    {
+        $this->_delegation->getterIs('getFacet', new DummyFacet());
+
+        $this->assertTrue($this->_completeObject->getFacet('DummyFacet') instanceof DummyFacet);
     }
 
     public function testDelegatesMethodCallingToMethodCaller()
@@ -41,25 +79,5 @@ class NakedCompleteServiceTest extends \PHPUnit_Framework_TestCase
         $result = $no->__call('methodName', array('foo', 'bar'));
 
         $this->assertSame('dummy', $result);
-    }
-
-    public function testDelegatesToWrappedServiceForMethodsMetadata()
-    {
-        $bareNo = new NakedBareService($this, $class = new NakedServiceClass('', array('key' => 'doSomething')));
-        $no = new NakedCompleteService($bareNo);
-        $this->assertEquals(array('key' => 'doSomething'), $no->getMethods());
-        $this->assertEquals('doSomething', $no->getMethod('key'));
-        $this->assertTrue($no->hasMethod('key'));
-        $this->assertFalse($no->hasMethod('not_existent_key'));
-    }
-
-    public function testProxiesToBareEntityForFacetHolding()
-    {
-        $class = new NakedServiceClass();
-        $class->addFacet(new DummyFacet());
-        $bareNo = new NakedBareService(null, $class);
-
-        $no = new NakedCompleteService($bareNo);
-        $this->assertNotNull($no->getFacet('DummyFacet'));
     }
 }

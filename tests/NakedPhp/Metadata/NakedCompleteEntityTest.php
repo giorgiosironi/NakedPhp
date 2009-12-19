@@ -14,46 +14,74 @@
  */
 
 namespace NakedPhp\Metadata;
+use NakedPhp\Test\Delegation;
 
-class NakedCompleteEntityTest extends \PHPUnit_Framework_TestCase
+class NakedCompleteEntityTest extends \NakedPhp\Test\TestCase
 {
+    private $_original;
+    private $_completeObject;
+    private $_delegation;
+
+    public function setUp()
+    {
+        $this->_original = $this->_getBareEntityMock();
+        $this->_completeObject = new NakedCompleteEntity($this->_original);
+        $this->_delegation = new Delegation($this, $this->_original);
+    }
+
     public function testDelegatesToTheInnerEntityForClassMetadata()
     {
-        $no = new NakedBareEntity($this, $class = new NakedEntityClass('', array(), array('name')));
-        $completeNo = new NakedCompleteEntity($no, null);
-        $this->assertSame($class, $completeNo->getClass());
-        $this->assertSame('OBJECT', (string) $completeNo);
+        $class = new NakedEntityClass();
+        $this->_delegation->getterIs('getClass', $class);
+
+        $this->assertSame($class, $this->_completeObject->getClass());
+    }
+
+    public function testDelegatesToTheInnerEntityForStringRepresentation()
+    {
+        $this->_delegation->getterIs('__toString', 'STUBBED');
+
+        $this->assertSame('STUBBED', (string) $this->_completeObject);
     }
 
     public function testUnwrapsTheInnerBareEntity()
     {
-        $no = new NakedBareEntity($this);
-        $completeNo = new NakedCompleteEntity($no, null);
-        $this->assertSame($no, $completeNo->getBareEntity());
+        $this->assertSame($this->_original, $this->_completeObject->getBareEntity());
     }
 
     public function testDelegatesToTheInnerEntityForObtainingState()
     {
         $state = array('nickname' => 'dummy');
-        $no = $this->_getBareEntityMock();
-        $no->expects($this->once())
-           ->method('getState')
-           ->will($this->returnValue($state));
-        $completeNo = new NakedCompleteEntity($no, null);
+        $this->_delegation->getterIs('getState', $state);
 
-        $this->assertEquals($state, $completeNo->getState());
+        $this->assertEquals($state, $this->_completeObject->getState());
     }
 
     public function testDelegatesToTheInnerEntityForSettingTheState()
     {
         $data = array('nickname' => 'dummy');
-        $no = $this->_getBareEntityMock();
-        $no->expects($this->once())
-           ->method('setState')
-           ->with($data);
-        $completeNo = new NakedCompleteEntity($no, null);
+        $this->_delegation->setterIs('setState', $data);
 
-        $completeNo->setState($data);
+        $this->_completeObject->setState($data);
+    }
+
+    public function testDelegatesToTheInnerEntityForFacetHolding()
+    {
+        $this->_delegation->getterIs('getFacet', 'foo');
+
+        $this->assertEquals('foo', $this->_completeObject->getFacet('Dummy'));
+    }
+
+    public function testIsTraversable()
+    {
+        $this->assertTrue($this->_completeObject instanceof \Traversable);
+    }
+
+    public function testIsTraversableDelegatingToTheInnerEntityIterator()
+    {
+        $this->_delegation->getterIs('getIterator', 'dummy');
+
+        $this->assertEquals('dummy', $this->_completeObject->getIterator());
     }
 
     public function testDelegatesToTheMergerForObtainingApplicableMethods()
@@ -100,46 +128,11 @@ class NakedCompleteEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($no->hasHiddenMethod('dummyMethodName'));
     }
 
-    public function testProxiesToBareEntityForFacetHolding()
-    {
-        $bareNo = $this->_getBareEntityMock();
-        $bareNo->expects($this->once())
-               ->method('getFacet')
-               ->with('Dummy')
-               ->will($this->returnValue('foo'));
-
-        $no = new NakedCompleteEntity($bareNo);
-        $this->assertEquals('foo', $no->getFacet('Dummy'));
-    }
-
-    public function testIsTraversable()
-    {
-        $no = new NakedBareEntity();
-        $this->assertTrue($no instanceof \IteratorAggregate);
-    }
-
-    public function testIsTraversableDelegatingToTheInnerEntityIterator()
-    {
-        $iterator = 'dummy';
-        $no = $this->_getBareEntityMock();
-        $no->expects($this->once())
-           ->method('getIterator')
-           ->will($this->returnValue($iterator));
-        $completeNo = new NakedBareEntity($no);
-
-        $this->assertEquals('dummy', $no->getIterator());
-    }
-
     private function _getBareEntityMock()
     {
         return $this->getMock('NakedPhp\Metadata\NakedBareEntity');
     }
 
-    private function _getFactoryMock()
-    {
-        return $this->getMock('NakedPhp\Service\NakedFactory', array('create'));
-    }
-    
     private function _getMergerMock(array $methods = array('call'))
     {
         return $this->getMock('NakedPhp\Service\MethodMerger', $methods);
