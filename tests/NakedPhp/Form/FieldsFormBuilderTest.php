@@ -18,6 +18,7 @@ use NakedPhp\Stubs\NakedEntityStub;
 use NakedPhp\Metadata\NakedField;
 use NakedPhp\Metadata\Facet\Disabled;
 use NakedPhp\Metadata\Facet\Property\Choices;
+use NakedPhp\Metadata\Facet\Property\Validate;
 
 class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
 {
@@ -118,8 +119,9 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
     public function testValidatesInputProgrammatically()
     {
         $entity = new NakedEntityStub($this);
-        $entity->addHiddenMethod('validateMyField');
-        $element = $this->_formBuilder->createElement($entity, new NakedField('string', 'myField'));
+        $field = new NakedField('string', 'myField');
+        $field->addFacet(new Validate('myField'));
+        $element = $this->_formBuilder->createElement($entity, $field);
         $this->assertFalse($element->isValid('foo'));
     }
 

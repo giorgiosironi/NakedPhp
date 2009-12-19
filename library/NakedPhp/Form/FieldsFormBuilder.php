@@ -84,9 +84,10 @@ class FieldsFormBuilder
             }
         }
 
-        $methodName = 'validate' . ucfirst($field->getName());
-        if ($entity->hasHiddenMethod($methodName)) {
-            $callback = array($entity, $methodName);
+        if ($facet = $field->getFacet('Property\Validate')) {
+            $callback = function($proposedValue) use ($facet, $entity) {
+                return $facet->invalidReason($entity, $proposedValue);
+            };
             $validator = new \Zend_Validate_Callback($callback);
             $element->addValidator($validator);
         }
