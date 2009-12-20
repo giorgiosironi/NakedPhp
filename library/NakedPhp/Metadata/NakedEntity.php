@@ -37,6 +37,12 @@ interface NakedEntity extends NakedObject, \IteratorAggregate
     public function setState(array $data);
 
     /**
+     * @param string $name
+     * @return NakedField
+     */
+    public function getField($name);
+
+    /**
      * Finds out if a template method exists.
      * @param string $methodName
      * @return boolean

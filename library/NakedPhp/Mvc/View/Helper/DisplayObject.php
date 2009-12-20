@@ -17,15 +17,18 @@ namespace NakedPhp\Mvc\View\Helper;
 
 class DisplayObject extends \Zend_View_Helper_Abstract
 {
+    /**
+     * TODO: support a string as result of hiddenReason()
+     */
     public function __call($name, $args)
     {
         list ($no, ) = $args;
         $className = $no->getClassName();
         $html = "<table class=\"nakedphp_entity $className\">";
         foreach ($no as $fieldName => $value) {
-            $methodName = 'hide' . ucfirst($fieldName);
-            if ($no->hasHiddenMethod($methodName)) {
-                if ($no->__call($methodName)) {
+            $field = $no->getField($fieldName);
+            if ($facet = $field->getFacet('Hidden')) {
+                if ($facet->hiddenReason($no)) {
                     continue;
                 }
             }

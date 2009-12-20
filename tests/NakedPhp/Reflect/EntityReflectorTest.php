@@ -35,7 +35,8 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
             'getStatus' => new NakedMethod('getStatus', array(), 'string'),
             'choicesStatus' => new NakedMethod('choicesStatus', array(), 'array'),
             'disableStatus' => new NakedMethod('disableStatus', array(), 'boolean'),
-            'validateStatus' => new NakedMethod('validateStatus', array(), 'boolean')
+            'validateStatus' => new NakedMethod('validateStatus', array(), 'boolean'),
+            'hideStatus' => new NakedMethod('hideStatus', array(), 'boolean')
         );
         $this->_methodsReflector->expects($this->once())
                                 ->method('analyze')
@@ -120,6 +121,17 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
         $class = $this->_reflector->analyze('NakedPhp\Stubs\User');
         $field = $class->getField('status');
         $facet = $field->getFacet('Property\Validate');
+        $this->assertTrue($facet instanceof Facet);
+    }
+
+    /**
+     * TODO: refactor in FacetFactory implementations
+     */
+    public function testGenerateFacetsForHiding()
+    {
+        $class = $this->_reflector->analyze('NakedPhp\Stubs\User');
+        $field = $class->getField('status');
+        $facet = $field->getFacet('Hidden');
         $this->assertTrue($facet instanceof Facet);
     }
 }

@@ -63,7 +63,8 @@ class NakedCompleteEntity implements NakedEntity
     }
 
     /**
-     * @return array    proxies to wrapped entity
+     * {@inheritdoc}
+     * Proxies to wrapped entity.
      */
     public function getState()
     {
@@ -71,20 +72,35 @@ class NakedCompleteEntity implements NakedEntity
     }
 
     /**
-     * @param array $data   field names are keys; works also with objects and
-     *                      objects wrapped in NakedBareEntity
+     * {@inheritdoc}
+     * Proxies to wrapped entity.
      */
     public function setState(array $data)
     {
         return $this->_entity->setState($data);
     }
 
+    /**
+     * {@inheritdoc}
+     * Proxies to wrapped entity.
+     */
+    public function getField($name)
+    {
+        return $this->_entity->getField($name);
+    }
+
+    /**
+     * {@inheritdoc}
+     * Proxies to wrapped entity.
+     */
     public function getMethods()
     {
         return $this->_caller->getApplicableMethods($this->_entity->getClass());
     }
 
     /**
+     * {@inheritdoc}
+     * Proxies to wrapped entity.
      * Convenience method.
      */
     public function getMethod($methodName)
@@ -94,6 +110,8 @@ class NakedCompleteEntity implements NakedEntity
     }
 
     /**
+     * {@inheritdoc}
+     * Proxies to wrapped entity.
      * Convenience method.
      */
     public function hasMethod($methodName)

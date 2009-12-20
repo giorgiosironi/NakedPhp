@@ -20,8 +20,14 @@ class NakedBareEntityTest extends \PHPUnit_Framework_TestCase
 {
     public function testRetainsClassMetadata()
     {
-        $no = new NakedBareEntity($this, $class = new NakedEntityClass('', array(), array('name')));
+        $no = new NakedBareEntity($this, $class = new NakedEntityClass());
         $this->assertSame($class, $no->getClass());
+    }
+
+    public function testDelegatesFieldManagementToTheInnerClassInstance()
+    {
+        $no = new NakedBareEntity($this, $class = new NakedEntityClass('', array(), array('name' => 'Name')));
+        $this->assertSame('Name', $no->getField('name'));
     }
 
     public function testReturnsTheStateOfTheObject()

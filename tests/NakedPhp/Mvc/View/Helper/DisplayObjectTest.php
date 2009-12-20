@@ -16,7 +16,8 @@
 namespace NakedPhp\Mvc\View\Helper;
 use NakedPhp\Stubs\NakedEntityStub;
 use NakedPhp\Metadata\NakedEntityClass;
-use NakedPhp\Metadata\NakedMethod;
+use NakedPhp\Metadata\NakedField;
+use NakedPhp\Metadata\Facet\Hidden;
 
 class DisplayObjectTest extends \PHPUnit_Framework_TestCase
 {
@@ -30,6 +31,8 @@ class DisplayObjectTest extends \PHPUnit_Framework_TestCase
             'firstName' => 'Giorgio',
             'lastName' => 'Sironi'
         ));
+        $this->_object->setField('firstName', new NakedField('string', 'firstName'));
+        $this->_object->setField('lastName', new NakedField('string', 'lastName'));
         $this->_helper = new DisplayObject();
     }
 
@@ -48,14 +51,8 @@ class DisplayObjectTest extends \PHPUnit_Framework_TestCase
 
     public function testHidesFieldsProgrammatically()
     {
-        $object = new NakedEntityStub($this);
-        $object->setState(array(
-            'firstName' => 'Giorgio',
-            'lastName' => 'Sironi'
-        ));
-        $object->addHiddenMethod('hideFirstName');
-
-        $result = $this->_helper->displayObject($object);
+        $this->_object->getField('firstName')->addFacet(new Hidden('firstName'));
+        $result = $this->_helper->displayObject($this->_object);
 
         $this->assertQueryContentNotContains($result, 'table tr td', 'firstName');
     }

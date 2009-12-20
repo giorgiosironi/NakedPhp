@@ -76,6 +76,8 @@ class MethodsReflector
     }
 
     /**
+     * TODO: maybe hidden methods should be listed anyway, but then the
+     * Invocation facet would have to be created here
      * @param string $docblock  documentation block of a method or property
      * @return boolean
      */

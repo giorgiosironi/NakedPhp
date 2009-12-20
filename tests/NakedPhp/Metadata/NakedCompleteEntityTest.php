@@ -49,6 +49,14 @@ class NakedCompleteEntityTest extends \NakedPhp\Test\TestCase
         $this->assertSame($this->_original, $this->_completeObject->getBareEntity());
     }
 
+    public function testDelegatesToTheInnerEntityForObtainingFieldMetadata()
+    {
+        $this->_delegation->getterIs('getField', 'STUBBED');
+
+        $this->assertSame('STUBBED', $this->_completeObject->getField('foo'));
+    }
+
+
     public function testDelegatesToTheInnerEntityForObtainingState()
     {
         $state = array('nickname' => 'dummy');

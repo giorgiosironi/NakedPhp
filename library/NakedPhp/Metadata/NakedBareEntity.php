@@ -34,7 +34,7 @@ class NakedBareEntity extends AbstractNakedObject implements NakedEntity
     }
 
     /**
-     * @return array    field names are keys
+     * {@inheritdoc}
      */
     public function getState()
     {
@@ -47,8 +47,7 @@ class NakedBareEntity extends AbstractNakedObject implements NakedEntity
     }
 
     /**
-     * @param array $data   field names are keys; works also with objects and
-     *                      objects wrapped in NakedBareEntity
+     * {@inheritdoc}
      */
     public function setState(array $data)
     {
@@ -61,6 +60,13 @@ class NakedBareEntity extends AbstractNakedObject implements NakedEntity
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getField($name)
+    {
+        return $this->_class->getField($name);
+    }
 
     public function hasHiddenMethod($methodName)
     {

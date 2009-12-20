@@ -20,6 +20,7 @@ use NakedPhp\Metadata\NakedParam;
 use NakedPhp\Metadata\NakedField;
 use NakedPhp\Metadata\Facet\Action\Invocation;
 use NakedPhp\Metadata\Facet\Disabled;
+use NakedPhp\Metadata\Facet\Hidden;
 use NakedPhp\Metadata\Facet\Property\Choices;
 use NakedPhp\Metadata\Facet\Property\Validate;
 
@@ -107,6 +108,10 @@ class EntityReflector
                     }
                     if (strstr($methodName, 'validate')) {
                         $facet = new Validate($fieldName);
+                        $field->addFacet($facet);
+                    }
+                    if (strstr($methodName, 'hide')) {
+                        $facet = new Hidden($fieldName);
                         $field->addFacet($facet);
                     }
                 }
