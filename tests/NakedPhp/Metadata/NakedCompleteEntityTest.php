@@ -124,20 +124,6 @@ class NakedCompleteEntityTest extends \NakedPhp\Test\TestCase
         $this->assertEquals('dummy', $no->__call('methodName', array('foo', 'bar')));
     }
 
-    public function testDelegatesToTheMergerForSearchingHiddenMethods()
-    {
-        $class = new NakedEntityClass('DummyClass');
-        $bareNo = new NakedBareEntity($this, $class);
-        $merger = $this->_getMergerMock(array('hasHiddenMethod'));
-        $merger->expects($this->any())
-               ->method('hasHiddenMethod')
-               ->with($class, 'dummyMethodName')
-               ->will($this->returnValue(true));
-        $no = new NakedCompleteEntity($bareNo, $merger);
-
-        $this->assertTrue($no->hasHiddenMethod('dummyMethodName'));
-    }
-
     private function _getBareEntityMock()
     {
         return $this->getMock('NakedPhp\Metadata\NakedBareEntity');

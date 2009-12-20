@@ -46,16 +46,6 @@ class NakedEntityStub extends NakedBareEntity
         return $this->_state;
     }
     
-    public function addHiddenMethod($methodName)
-    {
-        $this->_hiddenMethods[$methodName] = true;
-    }
-
-    public function hasHiddenMethod($methodName)
-    {
-        return isset($this->_hiddenMethods[$methodName]);
-    }
-
     public function setField($name, NakedField $field)
     {
         return $this->_fields[$name] = $field;

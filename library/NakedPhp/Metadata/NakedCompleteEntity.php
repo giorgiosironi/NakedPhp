@@ -120,11 +120,6 @@ class NakedCompleteEntity implements NakedEntity
         return isset($methods[$methodName]);
     }
 
-    public function hasHiddenMethod($methodName)
-    {
-        return $this->_caller->hasHiddenMethod($this->_entity->getClass(), $methodName);
-    }
-
     public function __call($methodName, array $arguments = array())
     {
         return $this->_caller->call($this->_entity, $methodName, $arguments);

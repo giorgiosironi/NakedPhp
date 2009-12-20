@@ -32,20 +32,14 @@ class NakedClass extends AbstractFacetHolder
     protected $_methods;
 
     /**
-     * @var array of NakedMethod instances
-     */
-    protected $_hiddenMethods;
-
-    /**
      * @param string $className
      * @param array $methods        NakedMethod instances; keys are method names
      * @param array $hiddenMethods
      */
-    public function __construct($className = '', array $methods = array(), $hiddenMethods = array())
+    public function __construct($className = '', array $methods = array())
     {
         $this->_className = $className;
         $this->_methods = $methods;
-        $this->_hiddenMethods = $hiddenMethods;
     }
 
     /**
@@ -89,36 +83,6 @@ class NakedClass extends AbstractFacetHolder
     public function __toString()
     {
         return $this->getClassName();
-    }
-
-    /**
-     * @return array of @see NakedMethod instances
-     */
-    public function getHiddenMethods()
-    {
-        return $this->_hiddenMethods;
-    }
-
-    /**
-     * Convenience method.
-     * @param string $name
-     * @return NakedMethod
-     */
-    public function getHiddenMethod($name)
-    {
-        $methods = $this->getHiddenMethods();
-        return $methods[$name];
-    }
-
-    /**
-     * Convenience method.
-     * @param string $name
-     * @return boolean
-     */
-    public function hasHiddenMethod($name)
-    {
-        $methods = $this->getHiddenMethods();
-        return isset($methods[$name]);
     }
 }
 

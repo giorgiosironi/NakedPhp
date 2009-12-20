@@ -41,11 +41,4 @@ interface NakedEntity extends NakedObject, \IteratorAggregate
      * @return NakedField
      */
     public function getField($name);
-
-    /**
-     * Finds out if a template method exists.
-     * @param string $methodName
-     * @return boolean
-     */
-    public function hasHiddenMethod($methodName);
 }

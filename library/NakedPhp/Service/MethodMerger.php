@@ -43,13 +43,9 @@ class MethodMerger implements MethodCaller
         assert('is_string($methodName)');
 
         $class = $no->getClass();
-        $hiddenMethods = $class->getHiddenMethods();
 
         if ($class->hasMethod($methodName)) {
             $parameters = $this->_addServices($class->getMethod($methodName), $parameters);
-            $result = call_user_func_array(array($no, $methodName), $parameters);
-        } else if (isset($hiddenMethods[$methodName])) {
-            $parameters = $this->_addServices($class->getHiddenMethod($methodName), $parameters);
             $result = call_user_func_array(array($no, $methodName), $parameters);
         } else {
             $service = $this->_findService($methodName);
@@ -213,21 +209,12 @@ class MethodMerger implements MethodCaller
     }
 
     /**
-     * TODO: refactor to separate visible and hidden methods
-     */
-    public function hasHiddenMethod(NakedClass $class, $methodName)
-    {
-        return $this->hasMethod($class, $methodName);
-    }
-
-    /**
      * Returns all methods, visible and hidden ones. To use internally.
      * @return array NakedMethod instances
      */
     protected function _getAllMethods(NakedClass $class)
     {
         $methods = $this->getApplicableMethods($class);
-        $methods += $class->getHiddenMethods();
         return $methods;
     }
 }

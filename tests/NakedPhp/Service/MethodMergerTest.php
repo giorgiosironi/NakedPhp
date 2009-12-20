@@ -76,17 +76,6 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('dummy', $result);
     }
 
-    public function testCallsAHiddenMethodOfTheObjectClass()
-    {
-        $class = new NakedEntityClass('NakedPhp\Stubs\User', array(), array(), array('iAmHidden' => new NakedMethod('iAmHidden', array('first' => new NakedParam('string', 'first')))));
-        $mock = $this->getMock('NakedPhp\Stubs\User', array('iAmHidden'));
-        $mock->expects($this->once())
-             ->method('iAmHidden')
-             ->with('foo');
-        $entity = new NakedBareEntity($mock, $class);
-        $this->_methodMerger->call($entity, 'iAmHidden', array('foo'));
-    }
-
     public function testListsMethodOfTheObjectClass()
     {
         $this->_setAvailableServiceClasses(array());
@@ -95,21 +84,6 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(isset($methods['doSomething']));
         $this->assertTrue($this->_methodMerger->hasMethod($class, 'doSomething'));
         $this->assertFalse($this->_methodMerger->hasMethod($class, 'doSomethingWhichDoesNotExist'));
-    }
-
-    public function testDoesNotListHiddenMethods()
-    {
-        $this->_setAvailableServiceClasses(array());
-        $class = new NakedEntityClass('NakedPhp\Stubs\User', array(), array(), array('iAmHidden' => new NakedMethod('iAmHidden')));
-        $methods = $this->_methodMerger->getApplicableMethods($class);
-        $this->assertEquals(array(), $methods);
-    }
-
-    public function testFindOutIfAnHiddenMethodExists()
-    {
-        $this->_setAvailableServiceClasses(array());
-        $class = new NakedEntityClass('NakedPhp\Stubs\User', array(), array(), array('iAmHidden' => new NakedMethod('iAmHidden')));
-        $this->assertTrue($this->_methodMerger->hasHiddenMethod($class, 'iAmHidden'));
     }
 
     public function testCallsAServiceMethodAsIfItWereAnHiddenOneOnTheEntityClass()
@@ -139,7 +113,6 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(isset($methods['process']));
         $this->assertNotNull($methods['process']->getFacet('Action\Invocation'));
     }
-
 
     public function testDoesNotListEntityAsAnArgumentOfAServiceMethod()
     {
@@ -244,19 +217,6 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
             'doSomething' => $expectedMethod = new NakedMethod(''),
         );
         $class = new NakedEntityClass('NakedPhp\Stubs\User', $methods);
-
-        $this->assertTrue($this->_methodMerger->hasMethod($class, 'doSomething'));
-        $this->assertSame($expectedMethod,
-                          $this->_methodMerger->getMethod($class, 'doSomething'));
-    }
-
-    public function testExtractsMetadataForAHiddenMethod()
-    {
-        $this->_setAvailableServiceClasses(array());
-        $methods = array(
-            'doSomething' => $expectedMethod = new NakedMethod(''),
-        );
-        $class = new NakedEntityClass('NakedPhp\Stubs\User', array(), array(), $methods);
 
         $this->assertTrue($this->_methodMerger->hasMethod($class, 'doSomething'));
         $this->assertSame($expectedMethod,

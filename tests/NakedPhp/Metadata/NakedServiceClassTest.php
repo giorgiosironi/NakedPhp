@@ -17,11 +17,12 @@ namespace NakedPhp\Metadata;
 
 class NakedServiceClassTest extends \PHPUnit_Framework_TestCase
 {
-    public function testRetainsHiddenMethodsList()
+    /**
+     * FIX: delete if there is nothing to test here
+     */
+    public function testIncomplete()
     {
-        $nc = new NakedServiceClass('', array(), $hiddenMethods = array('key' => 'choicesField', 'validateMethod'));
-        $this->assertEquals($hiddenMethods, $nc->getHiddenMethods());
-        $this->assertEquals('choicesField', $nc->getHiddenMethod('key'));
+        $this->markTestIncomplete();
     }
 }
 

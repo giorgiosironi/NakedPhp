@@ -84,13 +84,6 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('string', $fields['status']->getType());
     }
 
-    public function testListsHiddenMethodsInASpecialList()
-    {
-        $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $hiddenMethods = $result->getHiddenMethods();
-        $this->assertEquals('choicesStatus', (string) $hiddenMethods['choicesStatus']);
-    }
-
     /**
      * TODO: refactor in FacetFactory implementations
      */

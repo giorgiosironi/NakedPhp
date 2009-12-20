@@ -55,11 +55,8 @@ class EntityReflector
             }
         }
 
-        list($userMethods, $hiddenMethods) = $this->_separateMethods($methods, $fields);
-        $class = new NakedEntityClass($className, $userMethods, $fields, $hiddenMethods);
-        foreach ($userMethods as $methodName => $method) {
-            $method->addFacet(new Invocation($methodName));
-        }
+        $this->_generateFacets($methods, $fields);
+        $class = new NakedEntityClass($className, $methods, $fields);
 
         return $class;
     }
@@ -87,10 +84,8 @@ class EntityReflector
      * metadata on $fields.
      * @param array $methods    NakedMethod instances indexed by name
      * @param array $fields     NakedField instances indexed by name
-     * @return array            first element is array of user methods,
-     *                          second is array of hidden methods.
      */
-    protected function _separateMethods(array $methods, array $fields)
+    protected function _generateFacets(array $methods, array $fields)
     {
         $userMethods = $hiddenMethods = array();
         foreach ($methods as $methodName => $method) {
@@ -120,6 +115,9 @@ class EntityReflector
                 $userMethods[$methodName] = $method;
             }
         }
-        return array($userMethods, $hiddenMethods);
+
+        foreach ($userMethods as $methodName => $method) {
+            $method->addFacet(new Invocation($methodName));
+        }
     }
 }

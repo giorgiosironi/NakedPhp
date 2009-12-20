@@ -37,7 +37,7 @@ interface MethodCaller
     public function getApplicableMethods(NakedClass $class);
 
     /**
-     * Returns metadata about a method, being it visible or not.
+     * Returns metadata about a method.
      * @param NakedClass $class     class to search the method on
      * @param string $methodName
      * @return NakedMethod          or null if not found
@@ -45,7 +45,7 @@ interface MethodCaller
     public function getMethod(NakedClass $no, $methodName);
 
     /**
-     * Finds out if a method exists, being it visible or not.
+     * Finds out if a method exists.
      * @param NakedClass $class     class to search the method on
      * @param string $methodName
      * @return boolean

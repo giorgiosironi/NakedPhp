@@ -68,11 +68,6 @@ class NakedBareEntity extends AbstractNakedObject implements NakedEntity
         return $this->_class->getField($name);
     }
 
-    public function hasHiddenMethod($methodName)
-    {
-        return $this->_class->hasHiddenMethod($methodName);
-    }
-
     public function getIterator()
     {
         return new \ArrayIterator($this->getState());

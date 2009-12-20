@@ -72,18 +72,6 @@ class NakedBareEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($no->hasMethod('notExistentMethodName'));
     }
 
-    public function testProxiesToTheClassForObtainingHiddenMethods()
-    {
-        $class = $this->getMock('NakedPhp\Metadata\NakedEntityClass', array('getHiddenMethods'));
-        $class->expects($this->any())
-             ->method('getHiddenMethods')
-             ->will($this->returnValue(array('dummy' => 'DummyMethod')));
-
-        $no = new NakedBareEntity($this, $class);
-        $this->assertTrue($no->hasHiddenMethod('dummy'));
-        $this->assertFalse($no->hasHiddenMethod('notExistentMethodName'));
-    }
-
     public function testProxiesToTheClassForFacetHolding()
     {
         $class = $this->getMock('NakedPhp\Metadata\NakedEntityClass', array('getFacet'));
