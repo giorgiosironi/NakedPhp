@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedObjectAbstract;
+use NakedPhp\Metadata\NakedObject;
 use NakedPhp\Metadata\NakedClass;
 use NakedPhp\Metadata\NakedMethod;
 
@@ -29,10 +29,9 @@ class MethodMerger implements MethodCaller
 
     /**
      * {@inheritdoc}
-     * @return NakedObjectAbstract  if the result is an object it will be wrapped.
-     *                      Otherwise, it will be returned as-is.
+     * @return mixed 
      */
-    public function call(NakedObjectAbstract $no, $methodName, array $parameters = array())
+    public function call(NakedObject $no, $methodName, array $parameters = array())
     {
         assert('is_string($methodName)');
 
@@ -85,7 +84,7 @@ class MethodMerger implements MethodCaller
      * automatically injecting the latter.
      * TODO: factoring out protected methods in a ParameterManager/Parameters class.
      */
-    protected function _mergeParameters(NakedMethod $method, NakedObjectAbstract $entity, array $parameters)
+    protected function _mergeParameters(NakedMethod $method, NakedObject $entity, array $parameters)
     {
         $completeParameters = array();
         foreach ($method->getParams() as $param) {

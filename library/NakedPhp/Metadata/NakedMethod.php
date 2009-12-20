@@ -15,7 +15,7 @@
 
 namespace NakedPhp\Metadata;
 
-final class NakedMethod
+class NakedMethod extends AbstractFacetHolder
 {
     /**
      * @var string

@@ -15,11 +15,11 @@
 
 namespace NakedPhp\Metadata;
 
-class NakedObjectAbstractTest extends \PHPUnit_Framework_TestCase
+class AbstractNakedObjectTest extends \PHPUnit_Framework_TestCase
 {
     public function testIsADecoratorForTheDomainObject()
     {
-        $no = new NakedObjectAbstract($this, null);
+        $no = new AbstractNakedObject($this, null);
         $this->assertEquals('cannedResponse', $no->dummyMethod());
     }
 
@@ -28,39 +28,25 @@ class NakedObjectAbstractTest extends \PHPUnit_Framework_TestCase
      */
     public function testRaiseExceptionWhenUnexistentMethodIsCalled()
     {
-        $no = new NakedObjectAbstract($this, null);
+        $no = new AbstractNakedObject($this, null);
         $no->foobar();
     }
 
     public function testDelegatesGettingClassNameOfTheDomainObject()
     {
-        $no = new NakedObjectAbstract($this, new NakedClass('FooClass'));
+        $no = new AbstractNakedObject($this, new NakedClass('FooClass'));
         $this->assertEquals('FooClass', $no->getClassName());
     }
 
     public function testReturnsACommonStringRepresentationForUnconvertibleObjects()
     {
-        $no = new NakedObjectAbstract($this, null);
+        $no = new AbstractNakedObject($this, null);
         $this->assertEquals('OBJECT', (string) $no);
-    }
-
-    public function testIsEqualToAnotherOneWhichWrapTheSameObject()
-    {
-        $no = new NakedObjectAbstract($this, null);
-        $another = new NakedObjectAbstract($this, null);
-        $this->assertTrue($no->equals($another));
-    }
-
-    public function testIsNotEqualToAnotherOneWhichDoesNotWrapTheSameObject()
-    {
-        $no = new NakedObjectAbstract($this, null);
-        $another = new NakedObjectAbstract(new \stdClass, null);
-        $this->assertFalse($no->equals($another));
     }
 
     public function testContainsItsWrappedObject()
     {
-        $no = new NakedObjectAbstract($this, null);
+        $no = new AbstractNakedObject($this, null);
         $this->assertFalse($no->isWrapping(new \stdClass));
         $this->assertTrue($no->isWrapping($this));
     }

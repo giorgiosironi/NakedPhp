@@ -68,8 +68,10 @@ class NakedCompleteEntityTest extends \NakedPhp\Test\TestCase
     public function testDelegatesToTheInnerEntityForFacetHolding()
     {
         $this->_delegation->getterIs('getFacet', 'foo');
+        $this->_delegation->getterIs('getFacets', array('foo', 'bar'));
 
         $this->assertEquals('foo', $this->_completeObject->getFacet('Dummy'));
+        $this->assertEquals(array('foo', 'bar'), $this->_completeObject->getFacets('Dummy'));
     }
 
     public function testIsTraversable()

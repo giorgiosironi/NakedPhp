@@ -18,7 +18,7 @@ namespace NakedPhp\Metadata;
 /**
  * Wraps a service object.
  */
-class NakedBareService extends NakedObjectAbstract implements NakedService
+class NakedBareService extends AbstractNakedObject implements NakedService
 {
     public function __construct($service = null, NakedServiceClass $class = null)
     {

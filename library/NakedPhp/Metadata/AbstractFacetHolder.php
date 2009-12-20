@@ -29,7 +29,10 @@ abstract class AbstractFacetHolder implements FacetHolder
     public function addFacet(Facet $facet)
     {
         $type = $facet->facetType();
-        $this->_facets[$type] = $facet;
+        if (!isset($this->_facets[$type])) {
+            $this->_facets[$type] = array();
+        }
+        $this->_facets[$type][] = $facet;
     }
 
     /**
@@ -38,8 +41,19 @@ abstract class AbstractFacetHolder implements FacetHolder
     public function getFacet($type)
     {
         if (isset($this->_facets[$type])) {
-            return $this->_facets[$type];
+            return current($this->_facets[$type]);
         }
         return null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFacets($type)
+    {
+        if (isset($this->_facets[$type])) {
+            return $this->_facets[$type];
+        }
+        return array();
     }
 }

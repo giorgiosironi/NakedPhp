@@ -20,7 +20,7 @@ namespace NakedPhp\Metadata;
  * Wraps the object itself.
  * @abstract    not marked as abstract to allow testing of base behavior
  */
-class NakedObjectAbstract
+class AbstractNakedObject
 {
     /**
      * POPO to wrap.
@@ -84,17 +84,6 @@ class NakedObjectAbstract
     }
 
     /**
-     * @return boolean  true if the instance contains the same domain object
-     */
-    public function equals(NakedObjectAbstract $object)
-    {
-        if ($this->_wrapped === $object->_wrapped) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * @param object $object
      * @return boolean  true if $object is the same domain object wrapped
      */
@@ -138,4 +127,14 @@ class NakedObjectAbstract
     {
         return $this->_class->getFacet($type);
     }
+
+    /**
+     * {@inheritdoc}
+     * Proxies to the NakedClass instance.
+     */
+    public function getFacets($type)
+    {
+        return $this->_class->getFacets($type);
+    }
+
 }

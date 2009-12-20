@@ -14,7 +14,6 @@
  */
 
 namespace NakedPhp\Mvc;
-use NakedPhp\Metadata\NakedObjectAbstract;
 use NakedPhp\Metadata\NakedEntity;
 use NakedPhp\Metadata\NakedService;
 
@@ -46,7 +45,7 @@ class Controller extends \Zend_Controller_Action
     private $_objectKey;
 
     /**
-     * @var NakedObjectAbstract     the current object
+     * @var NakedObject     the current object
      */
     private $_completeObject;
 

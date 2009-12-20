@@ -28,12 +28,8 @@ class NakedFieldTest extends \PHPUnit_Framework_TestCase
     public function testImplementsFacetHolderInterface()
     {
         $field = new NakedField();
-        $this->assertTrue($field instanceof FacetHolder);
-
-        $dummy = new DummyFacet();
-        $field->addFacet($dummy);
-        $this->assertEquals($dummy, $field->getFacet('DummyFacet'));
-        $this->assertNull($field->getFacet('NotExistent'));
+        $helper = new \NakedPhp\Test\FacetHolder($this);
+        $helper->testIsFacetHolder($field);
     }
 
     /*

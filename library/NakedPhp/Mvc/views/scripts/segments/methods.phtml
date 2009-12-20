@@ -1,8 +1,10 @@
 <?php
 $methods = array();
 foreach ($this->methods as $name => $method) {
-    $url = $this->url(array('action' => 'call', 'method' => $name));
-    $methods[] = "<li><a href=\"$url\">$name</a></li>\n";
+    if ($method->getFacet('Action\Invocation')) {
+        $url = $this->url(array('action' => 'call', 'method' => $name));
+        $methods[] = "<li><a href=\"$url\">$name</a></li>\n";
+    }
 }
 if ($methods) {
     echo "<ul>\n" . implode('', $methods) . "</ul>\n";

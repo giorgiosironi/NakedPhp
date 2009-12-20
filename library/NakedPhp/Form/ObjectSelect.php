@@ -16,7 +16,7 @@
 namespace NakedPhp\Form;
 
 /**
- * Represents a select used to choose an @see NakedObjectAbstract.
+ * Represents a select used to choose an @see NakedObject.
  */
 class ObjectSelect extends \Zend_Form_Element_Select
 {

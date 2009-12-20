@@ -18,6 +18,7 @@ use NakedPhp\Metadata\NakedEntityClass;
 use NakedPhp\Metadata\NakedMethod;
 use NakedPhp\Metadata\NakedParam;
 use NakedPhp\Metadata\NakedField;
+use NakedPhp\Metadata\Facet\Action\Invocation;
 use NakedPhp\Metadata\Facet\Disabled;
 use NakedPhp\Metadata\Facet\Property\Choices;
 use NakedPhp\Metadata\Facet\Property\Validate;
@@ -54,8 +55,12 @@ class EntityReflector
         }
 
         list($userMethods, $hiddenMethods) = $this->_separateMethods($methods, $fields);
+        $class = new NakedEntityClass($className, $userMethods, $fields, $hiddenMethods);
+        foreach ($userMethods as $methodName => $method) {
+            $method->addFacet(new Invocation($methodName));
+        }
 
-        return new NakedEntityClass($className, $userMethods, $fields, $hiddenMethods);
+        return $class;
     }
 
     /**

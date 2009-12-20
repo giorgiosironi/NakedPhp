@@ -34,4 +34,11 @@ class NakedMethodTest extends \PHPUnit_Framework_TestCase
         $method = new NakedMethod('doSomething', $params = array(), 'string');
         $this->assertEquals('string', $method->getReturn());
     }
+
+    public function testImplementsFacetHolderInterface()
+    {
+        $field = new NakedMethod();
+        $helper = new \NakedPhp\Test\FacetHolder($this);
+        $helper->testIsFacetHolder($field);
+    }
 }

@@ -18,6 +18,7 @@ use NakedPhp\Metadata\NakedEntityClass;
 use NakedPhp\Metadata\NakedField;
 use NakedPhp\Metadata\NakedMethod;
 use NakedPhp\Metadata\Facet;
+use NakedPhp\Metadata\Facet\Action\Invocation;
 
 class EntityReflectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -49,11 +50,14 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($result instanceof NakedEntityClass);
     }
 
-    public function testListsBusinessMethodsOfAnEntityObjectViaDelegationToMethodsReflector()
+    /**
+     * TODO: refactor in FacetFactory implementations
+     */
+    public function testListsBusinessMethodsOfAnEntityObjectAsFacets()
     {
-        $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $methods = $result->getMethods();
-        $this->assertTrue(isset($methods['sendMessage']));
+        $class = $this->_reflector->analyze('NakedPhp\Stubs\User');
+        $facet = $class->getMethod('sendMessage')->getFacet('Action\Invocation');
+        $this->assertTrue($facet instanceof Invocation);
     }
 
     public function testListsFieldsOfAnEntityObjectThatHaveSetterAndGetter()

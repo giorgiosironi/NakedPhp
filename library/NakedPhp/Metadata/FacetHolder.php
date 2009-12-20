@@ -28,4 +28,11 @@ interface FacetHolder
      * @return Facet
      */
     public function getFacet($type);
+
+    /**
+     * @param string
+     * @example $holder->getFacets('Action\Invocation');
+     * @return array of Facet instances of the same type
+     */
+    public function getFacets($type);
 }

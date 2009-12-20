@@ -62,8 +62,10 @@ class NakedCompleteServiceTest extends \NakedPhp\Test\TestCase
     public function testDelegatesToWrappedServiceForFacetHolding()
     {
         $this->_delegation->getterIs('getFacet', new DummyFacet());
+        $this->_delegation->getterIs('getFacets', array('foo', 'bar'));
 
         $this->assertTrue($this->_completeObject->getFacet('DummyFacet') instanceof DummyFacet);
+        $this->assertEquals(array('foo', 'bar'), $this->_completeObject->getFacets('DummyFacet'));
     }
 
     public function testDelegatesMethodCallingToMethodCaller()

@@ -24,7 +24,7 @@ class ValidateTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Property\Validate', $facet->facetType());
     }
 
-    public function testReturnValidStateEstablishedFromTheHookMethod()
+    public function testReturnsValidStateEstablishedFromTheHookMethod()
     {
         $no = new NakedBareEntity($this);
         $facet = new Validate('myProperty');

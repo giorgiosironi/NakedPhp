@@ -16,6 +16,7 @@
 namespace NakedPhp\Reflect;
 use NakedPhp\Metadata\NakedServiceClass;
 use NakedPhp\Metadata\NakedMethod;
+use NakedPhp\Metadata\Facet\Action\Invocation;
 
 class ServiceReflectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -51,7 +52,17 @@ class ServiceReflectorTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->_result instanceof NakedServiceClass);
     }
 
-    public function testListBusinessMethodsOfAServiceObjectViaDelegationToTheMethodsReflector()
+    /**
+     * TODO: refactor in FacetFactory implementations
+     */
+    public function testListsBusinessMethodsOfAServiceObjectAsFacets()
+    {
+        $class = $this->_reflector->analyze('NakedPhp\Stubs\UserFactory');
+        $facet = $class->getMethod('createUser')->getFacet('Action\Invocation');
+        $this->assertTrue($facet instanceof Invocation);
+    }
+
+    public function testListBusinessMethodsOfAServiceObject()
     {
         $this->_result = $this->_reflector->analyze('NakedPhp\Stubs\UserFactory');
         $methods = $this->_result->getMethods();

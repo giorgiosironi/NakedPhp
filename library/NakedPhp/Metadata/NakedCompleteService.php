@@ -89,5 +89,14 @@ class NakedCompleteService implements NakedService
     {
         return $this->_wrapped->getFacet($type);
     }
+
+    /**
+     * {@inheritdoc}
+     * Proxies to the wrapped service.
+     */
+    public function getFacets($type)
+    {
+        return $this->_wrapped->getFacets($type);
+    }
 }
 

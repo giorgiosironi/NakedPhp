@@ -134,4 +134,14 @@ class NakedCompleteEntity implements NakedEntity
     {
         return $this->_entity->getFacet($type);
     }
+
+    /**
+     * {@inheritdoc}
+     * Proxies to the wrapped entity.
+     */
+    public function getFacets($type)
+    {
+        return $this->_entity->getFacets($type);
+    }
+
 }

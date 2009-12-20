@@ -14,7 +14,6 @@
  */
 
 namespace NakedPhp\Mvc\View\Helper;
-use NakedPhp\Metadata\NakedObjectAbstract;
 
 class DisplayObject extends \Zend_View_Helper_Abstract
 {
