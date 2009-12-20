@@ -17,7 +17,14 @@ namespace NakedPhp\Service;
 use NakedPhp\Metadata\NakedObject;
 use NakedPhp\Metadata\NakedClass;
 use NakedPhp\Metadata\NakedMethod;
+use NakedPhp\Metadata\Facet\Action\Invocation;
 
+/**
+ * Merge services methods who take an entity as methods on the entity;
+ * inject services as entity method parameters.
+ * Note that hidden methods have no Invocation Facet and are strictly required
+ * on the entity. Merged service methods are always invocable.
+ */
 class MethodMerger implements MethodCaller
 {
     protected $_serviceProvider;
@@ -101,6 +108,8 @@ class MethodMerger implements MethodCaller
 
     /**
      * {@inheritdoc}
+     * Merges service methods and rewrite metadata for entity methods who 
+     * need a service, currying them.
      */
     public function getApplicableMethods(NakedClass $class)
     {
@@ -167,13 +176,20 @@ class MethodMerger implements MethodCaller
      */
     protected function _buildFakeMethod(NakedMethod $method, NakedClass $class)
     {
+        $methodName = (string) $method;
         $newParams = array();
         foreach ($method->getParams() as $key => $param) {
             if ($param->getType() != $class->getClassName()) { 
                 $newParams[$key] = $param;
             }
         }
-        return new NakedMethod((string) $method, $newParams, $method->getReturn());
+        $newMethod = new NakedMethod($methodName, $newParams, $method->getReturn());
+
+        if ($method->getFacet('Action\Invocation')) {
+            $newMethod->addFacet(new Invocation($methodName));
+        }
+
+        return $newMethod;
     }
 
     /**

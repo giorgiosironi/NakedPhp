@@ -20,6 +20,7 @@ use NakedPhp\Metadata\NakedBareService;
 use NakedPhp\Metadata\NakedServiceClass;
 use NakedPhp\Metadata\NakedMethod;
 use NakedPhp\Metadata\NakedParam;
+use NakedPhp\Metadata\Facet\Action\Invocation;
 use NakedPhp\Stubs\User;
 
 class MethodMergerTest extends \PHPUnit_Framework_TestCase
@@ -124,6 +125,22 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(isset($methods['process']));
     }
 
+    /**
+     * TODO: refactor implementation to keep ALL facets
+     * @depends testListsMethodOfTheServiceClassesWhichTakesEntityAsAnArgument
+     */
+    public function testKeepsInvocationFacetOnRebuiltMethods()
+    {
+        $this->_makeProcessMethodAvailable();
+        $this->_serviceClass->getMethod('process')->addFacet(new Invocation('process'));
+        $class = $this->_getEmptyEntityClass();
+        $methods = $this->_methodMerger->getApplicableMethods($class);
+
+        $this->assertTrue(isset($methods['process']));
+        $this->assertNotNull($methods['process']->getFacet('Action\Invocation'));
+    }
+
+
     public function testDoesNotListEntityAsAnArgumentOfAServiceMethod()
     {
         $this->_makeProcessMethodAvailable();
@@ -179,6 +196,9 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
 
         $class = $this->_getEntityClassWithCreateNewMethod();
         $no = new NakedBareEntity($this, $class);
+
+        $methods = $this->_methodMerger->getApplicableMethods($class);
+        $this->assertNull($methods['createNew']->getFacet('Action\Invocation'));
 
         $this->_methodMerger->call($no, 'createNew', array('John Doe'));
         $this->assertTrue($this->_callbackCalled);
