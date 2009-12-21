@@ -48,6 +48,14 @@ class User
     }
 
     /**
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->_id;
+    }
+
+    /**
      * @return string
      */
     public function getName()

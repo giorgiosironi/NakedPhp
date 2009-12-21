@@ -23,36 +23,15 @@ use NakedPhp\Stubs\User;
  * Exercise the Doctrine storage driver, which should reflect to the database
  * the changes in entities kept in an EntityContainer.
  */
-class DoctrineTest extends \PHPUnit_Framework_TestCase
+class DoctrineTest extends AbstractDoctrineTest
 {
     private $_storage;
 
     public function setUp()
     {
-        $config = new \Doctrine\ORM\Configuration();
-        $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache);
-        $config->setProxyDir('/NOTUSED/Proxies');
-        $config->setProxyNamespace('StubsProxies');
-
-        $connectionOptions = array(
-            'driver' => 'pdo_sqlite',
-            'path' => '/var/www/nakedphp/tests/database.sqlite'
-        );
-
-        $this->_em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config);
-        $this->_regenerateSchema();
+        parent::setUp();
 
         $this->_storage = new Doctrine($this->_em);
-    }
-
-    private function _regenerateSchema()
-    {
-        $tool = new \Doctrine\ORM\Tools\SchemaTool($this->_em);
-        $classes = array(
-            $this->_em->getClassMetadata('NakedPhp\Stubs\User')
-        );
-        $tool->dropSchema($classes);
-        $tool->createSchema($classes);
     }
 
     public function testSavesNewEntities()
