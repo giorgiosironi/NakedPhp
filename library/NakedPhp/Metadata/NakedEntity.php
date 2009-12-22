@@ -21,7 +21,7 @@ namespace NakedPhp\Metadata;
 interface NakedEntity extends NakedObject, \IteratorAggregate
 {
     /**
-     * @return NakedEntityClass
+     * @return NakedEntitySpecification
      */
     public function getClass();
 

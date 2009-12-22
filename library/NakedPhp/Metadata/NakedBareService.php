@@ -20,13 +20,13 @@ namespace NakedPhp\Metadata;
  */
 class NakedBareService extends AbstractNakedObject implements NakedService
 {
-    public function __construct($service = null, NakedServiceClass $class = null)
+    public function __construct($service = null, NakedServiceSpecification $class = null)
     {
         parent::__construct($service, $class);
     }
 
     /**
-     * @return NakedServiceClass
+     * @return NakedServiceSpecification
      */
     public function getClass()
     {

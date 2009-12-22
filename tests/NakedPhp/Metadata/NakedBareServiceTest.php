@@ -19,7 +19,7 @@ class NakedBareServiceTest extends \PHPUnit_Framework_TestCase
 {
     public function testRetainsClassMetadata()
     {
-        $no = new NakedBareService($this, $class = new NakedServiceClass('FooClass', array('doSomething')));
+        $no = new NakedBareService($this, $class = new NakedServiceSpecification('FooClass', array('doSomething')));
         $this->assertSame($class, $no->getClass());
         $this->assertEquals('FooClass', $no->getClassName());
     }
@@ -33,7 +33,7 @@ class NakedBareServiceTest extends \PHPUnit_Framework_TestCase
 
     public function testProxiesToClassForMethodsMetadata()
     {
-        $no = new NakedBareService($this, $class = new NakedServiceClass('', array('key' => 'doSomething')));
+        $no = new NakedBareService($this, $class = new NakedServiceSpecification('', array('key' => 'doSomething')));
         $this->assertEquals(array('key' => 'doSomething'), $no->getMethods());
         $this->assertEquals('doSomething', $no->getMethod('key'));
         $this->assertTrue($no->hasMethod('key'));

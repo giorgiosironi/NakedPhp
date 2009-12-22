@@ -31,7 +31,7 @@ class NakedCompleteEntityTest extends \NakedPhp\Test\TestCase
 
     public function testDelegatesToTheInnerEntityForClassMetadata()
     {
-        $class = new NakedEntityClass();
+        $class = new NakedEntitySpecification();
         $this->_delegation->getterIs('getClass', $class);
 
         $this->assertSame($class, $this->_completeObject->getClass());
@@ -98,7 +98,7 @@ class NakedCompleteEntityTest extends \NakedPhp\Test\TestCase
 
     public function testDelegatesToTheMergerForObtainingApplicableMethods()
     {
-        $class = new NakedEntityClass('DummyClass');
+        $class = new NakedEntitySpecification('DummyClass');
         $bareNo = new NakedBareEntity($this, $class);
         $merger = $this->_getMergerMock(array('getApplicableMethods'));
         $merger->expects($this->any())

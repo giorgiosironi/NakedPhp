@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Reflect;
-use NakedPhp\Metadata\NakedServiceClass;
+use NakedPhp\Metadata\NakedServiceSpecification;
 use NakedPhp\Metadata\NakedMethod;
 use NakedPhp\Metadata\NakedParam;
 use NakedPhp\Metadata\Facet\Action\Invocation;
@@ -32,13 +32,13 @@ class ServiceReflector
 
     /**
      * @param string $className
-     * @return NakedServiceClass
+     * @return NakedServiceSpecification
      */
     public function analyze($className)
     {
         $methods = $this->_methodsReflector->analyze($className);
 
-        $class = new NakedServiceClass($className, $methods);
+        $class = new NakedServiceSpecification($className, $methods);
         foreach ($methods as $methodName => $method) {
             $method->addFacet(new Invocation($methodName));
         }

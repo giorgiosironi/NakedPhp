@@ -16,17 +16,17 @@
 namespace NakedPhp\Metadata;
 use NakedPhp\Stubs\DummyFacet;
 
-class NakedClassTest extends \PHPUnit_Framework_TestCase
+class NakedObjectSpecificationTest extends \PHPUnit_Framework_TestCase
 {
     public function testRetainsClassName()
     {
-        $nc = new NakedClass('stdClass', array());
+        $nc = new NakedObjectSpecification('stdClass', array());
         $this->assertEquals('stdClass', $nc->getClassName());
     }
 
     public function testRetainsMethodsList()
     {
-        $nc = new NakedClass('', $methods = array('doThis' => 'doThis', 'doThat'));
+        $nc = new NakedObjectSpecification('', $methods = array('doThis' => 'doThis', 'doThat'));
         $this->assertEquals($methods, $nc->getMethods());
         $this->assertTrue($nc->hasMethod('doThis'));
         $this->assertFalse($nc->hasMethod('doAnything'));
@@ -34,13 +34,13 @@ class NakedClassTest extends \PHPUnit_Framework_TestCase
 
     public function testGivesAccessToAMethodByName()
     {
-        $nc = new NakedClass('', array('key' => 'doThis', 'doThat'));
+        $nc = new NakedObjectSpecification('', array('key' => 'doThis', 'doThat'));
         $this->assertEquals('doThis', $nc->getMethod('key'));
     }
 
     public function testImplementsFacetHolderInterface()
     {
-        $nc = new NakedClass();
+        $nc = new NakedObjectSpecification();
         $helper = new \NakedPhp\Test\FacetHolder($this);
         $helper->testIsFacetHolder($nc);
     }

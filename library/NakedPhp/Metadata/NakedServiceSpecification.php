@@ -15,17 +15,12 @@
 
 namespace NakedPhp\Metadata;
 
-class NakedEntityClassTest extends \PHPUnit_Framework_TestCase
+/**
+ * Wraps properties about a service domain class.
+ * A service is defined as a stateless object, with a bunch of methods
+ * that takes as parameters scalars and entities or value objects.
+ * Other services should be required in the constructor.
+ */
+class NakedServiceSpecification extends NakedObjectSpecification
 {
-    public function testRetainsFieldsList()
-    {
-        $nc = new NakedEntityClass('', array(), $fields = array('Name', 'Role'));
-        $this->assertEquals($fields, $nc->getFields());
-    }
-
-    public function testGivesAccessToAFieldByName()
-    {
-        $nc = new NakedEntityClass('', array(), array('key' => 'Name', 'Role'));
-        $this->assertEquals('Name', $nc->getField('key'));
-    }
 }

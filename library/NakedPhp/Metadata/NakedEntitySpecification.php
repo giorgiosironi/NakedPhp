@@ -19,7 +19,7 @@ namespace NakedPhp\Metadata;
  * Wraps properties about a entity class like fields, methods and metadata.
  * An entity is defined as a stateful class.
  */
-class NakedEntityClass extends NakedClass
+class NakedEntitySpecification extends NakedObjectSpecification
 {
     /**
      * @var array of NakedField instances

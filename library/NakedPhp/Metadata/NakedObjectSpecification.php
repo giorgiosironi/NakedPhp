@@ -19,7 +19,7 @@ namespace NakedPhp\Metadata;
  * Wraps properties about a domain class.
  * @abstract    not declared abstract to allow testing of base functionality
  */
-class NakedClass extends AbstractFacetHolder
+class NakedObjectSpecification extends AbstractFacetHolder
 {
     /**
      * @var string

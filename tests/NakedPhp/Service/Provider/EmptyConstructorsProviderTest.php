@@ -14,13 +14,13 @@
  */
 
 namespace NakedPhp\Service\Provider;
-use NakedPhp\Metadata\NakedServiceClass;
+use NakedPhp\Metadata\NakedServiceSpecification;
 
 class EmptyConstructorsProviderTest extends \PHPUnit_Framework_TestCase implements \NakedPhp\Service\ServiceDiscoverer
 {
     private $_serviceClasses = array('stdClass', 'SplQueue');
 
-    /** @var NakedPhp\Metadata\NakedServiceClass */
+    /** @var NakedPhp\Metadata\NakedServiceSpecification */
     private $_originalClass;
 
     /**
@@ -30,7 +30,7 @@ class EmptyConstructorsProviderTest extends \PHPUnit_Framework_TestCase implemen
     
     public function setUp()
     {
-        $this->_originalClass = new NakedServiceClass();
+        $this->_originalClass = new NakedServiceSpecification();
         $serviceReflectorMock = $this->getMock('NakedPhp\Reflect\ServiceReflector', array('analyze'));
         $serviceReflectorMock->expects($this->any())
                              ->method('analyze')

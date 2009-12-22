@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Reflect;
-use NakedPhp\Metadata\NakedEntityClass;
+use NakedPhp\Metadata\NakedEntitySpecification;
 use NakedPhp\Metadata\NakedField;
 use NakedPhp\Metadata\NakedMethod;
 use NakedPhp\Metadata\Facet;
@@ -48,7 +48,7 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
     public function testCreatesAClassMetadataObject()
     {
         $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $this->assertTrue($result instanceof NakedEntityClass);
+        $this->assertTrue($result instanceof NakedEntitySpecification);
     }
 
     /**

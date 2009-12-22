@@ -15,7 +15,7 @@
 
 namespace NakedPhp\Service;
 use NakedPhp\Metadata\NakedObject;
-use NakedPhp\Metadata\NakedClass;
+use NakedPhp\Metadata\NakedObjectSpecification;
 use NakedPhp\Metadata\NakedMethod;
 use NakedPhp\Metadata\Facet\Action\Invocation;
 
@@ -107,7 +107,7 @@ class MethodMerger implements MethodCaller
      * Merges service methods and rewrite metadata for entity methods who 
      * need a service, currying them.
      */
-    public function getApplicableMethods(NakedClass $class)
+    public function getApplicableMethods(NakedObjectSpecification $class)
     {
         $servicesMethods = array();
         foreach ($this->_getAllServicesMethods() as $methodName => $method) {
@@ -170,7 +170,7 @@ class MethodMerger implements MethodCaller
      * Builds metadata for a method leaving out the $class parameter, which
      * will be then automatically passed.
      */
-    protected function _buildFakeMethod(NakedMethod $method, NakedClass $class)
+    protected function _buildFakeMethod(NakedMethod $method, NakedObjectSpecification $class)
     {
         $methodName = (string) $method;
         $newParams = array();
@@ -192,7 +192,7 @@ class MethodMerger implements MethodCaller
      * {@inheritdoc}
      * Convenience method.
      */
-    public function getMethod(NakedClass $class, $methodName)
+    public function getMethod(NakedObjectSpecification $class, $methodName)
     {
         $methods = $this->_getAllMethods($class);
         return $methods[$methodName];
@@ -202,7 +202,7 @@ class MethodMerger implements MethodCaller
      * {@inheritdoc}
      * Convenience method.
      */
-    public function hasMethod(NakedClass $class, $methodName)
+    public function hasMethod(NakedObjectSpecification $class, $methodName)
     {
         $methods = $this->_getAllMethods($class);
         return isset($methods[$methodName]);
@@ -212,7 +212,7 @@ class MethodMerger implements MethodCaller
      * Returns all methods, visible and hidden ones. To use internally.
      * @return array NakedMethod instances
      */
-    protected function _getAllMethods(NakedClass $class)
+    protected function _getAllMethods(NakedObjectSpecification $class)
     {
         $methods = $this->getApplicableMethods($class);
         return $methods;

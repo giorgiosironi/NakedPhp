@@ -15,12 +15,14 @@
 
 namespace NakedPhp\Metadata;
 
-/**
- * Wraps properties about a service domain class.
- * A service is defined as a stateless object, with a bunch of methods
- * that takes as parameters scalars and entities or value objects.
- * Other services should be required in the constructor.
- */
-class NakedServiceClass extends NakedClass
+class NakedServiceSpecificationTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * FIX: delete if there is nothing to test here
+     */
+    public function testIncomplete()
+    {
+        $this->markTestIncomplete();
+    }
 }
+

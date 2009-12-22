@@ -20,13 +20,13 @@ namespace NakedPhp\Metadata;
  */
 class NakedBareEntity extends AbstractNakedObject implements NakedEntity
 {
-    public function __construct($entity = null, NakedEntityClass $class = null)
+    public function __construct($entity = null, NakedEntitySpecification $class = null)
     {
         parent::__construct($entity, $class);
     }
 
     /**
-     * @return NakedEntityClass
+     * @return NakedEntitySpecification
      */
     public function getClass()
     {

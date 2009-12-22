@@ -34,7 +34,7 @@ class NakedCompleteEntity implements NakedEntity
     }
 
     /**
-     * @return NakedEntityClass
+     * @return NakedEntitySpecification
      */
     public function getClass()
     {
@@ -136,7 +136,7 @@ class NakedCompleteEntity implements NakedEntity
      */
     public function addFacet(Facet $facet)
     {
-        throw new \Exception('Adding a Facet to an object is not allowed. Access the NakedClass instance instead.');
+        throw new \Exception('Adding a Facet to an object is not allowed. Access the NakedObjectSpecification instance instead.');
     }
 
     /**

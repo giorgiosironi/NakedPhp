@@ -33,7 +33,7 @@ class NakedCompleteServiceTest extends \NakedPhp\Test\TestCase
 
     public function testDelegatesToWrappedServiceForClassMetadata()
     {
-        $class = new NakedServiceClass();
+        $class = new NakedServiceSpecification();
         $this->_delegation->getterIs('getClass', $class);
         $this->_delegation->getterIs('getClassName', 'FooClass');
 

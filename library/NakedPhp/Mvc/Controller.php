@@ -50,7 +50,7 @@ class Controller extends \Zend_Controller_Action
     private $_completeObject;
 
     /**
-     * @var NakedClass      the class of the current object
+     * @var NakedObjectSpecification      the class of the current object
      */
     private $_class;
 

@@ -28,14 +28,14 @@ class AbstractNakedObject
     protected $_wrapped;
 
     /**
-     * @var NakedClass
+     * @var NakedObjectSpecification
      */
     protected $_class;
 
     /**
      * @param object $wrapped   domain object to wrap.
      */
-    public function __construct($wrapped = null, NakedClass $class = null)
+    public function __construct($wrapped = null, NakedObjectSpecification $class = null)
     {
         $this->_wrapped = $wrapped;
         $this->_class   = $class;
@@ -119,12 +119,12 @@ class AbstractNakedObject
      */
     public function addFacet(Facet $facet)
     {
-        throw new \Exception('It is not possible to add a Facet to an object. Access the NakedClass instance instead.');
+        throw new \Exception('It is not possible to add a Facet to an object. Access the NakedObjectSpecification instance instead.');
     }
 
     /**
      * {@inheritdoc}
-     * Proxies to the NakedClass instance.
+     * Proxies to the NakedObjectSpecification instance.
      */
     public function getFacet($type)
     {
@@ -133,7 +133,7 @@ class AbstractNakedObject
 
     /**
      * {@inheritdoc}
-     * Proxies to the NakedClass instance.
+     * Proxies to the NakedObjectSpecification instance.
      */
     public function getFacets($type)
     {

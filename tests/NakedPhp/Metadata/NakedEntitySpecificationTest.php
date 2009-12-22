@@ -15,14 +15,17 @@
 
 namespace NakedPhp\Metadata;
 
-class NakedServiceClassTest extends \PHPUnit_Framework_TestCase
+class NakedEntitySpecificationTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * FIX: delete if there is nothing to test here
-     */
-    public function testIncomplete()
+    public function testRetainsFieldsList()
     {
-        $this->markTestIncomplete();
+        $nc = new NakedEntitySpecification('', array(), $fields = array('Name', 'Role'));
+        $this->assertEquals($fields, $nc->getFields());
+    }
+
+    public function testGivesAccessToAFieldByName()
+    {
+        $nc = new NakedEntitySpecification('', array(), array('key' => 'Name', 'Role'));
+        $this->assertEquals('Name', $nc->getField('key'));
     }
 }
-

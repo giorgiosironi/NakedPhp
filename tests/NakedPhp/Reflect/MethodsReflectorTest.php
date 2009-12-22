@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Reflect;
-use NakedPhp\Metadata\NakedClass;
+use NakedPhp\Metadata\NakedObjectSpecification;
 use NakedPhp\Metadata\NakedField;
 
 class MethodsReflectorTest extends \PHPUnit_Framework_TestCase

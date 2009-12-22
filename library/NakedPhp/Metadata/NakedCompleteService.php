@@ -86,7 +86,7 @@ class NakedCompleteService implements NakedService
      */
     public function addFacet(Facet $facet)
     {
-        throw new \Exception('Adding a Facet to an object is not allowed. Access the NakedClass instance instead.');
+        throw new \Exception('Adding a Facet to an object is not allowed. Access the NakedObjectSpecification instance instead.');
     }
 
     /**

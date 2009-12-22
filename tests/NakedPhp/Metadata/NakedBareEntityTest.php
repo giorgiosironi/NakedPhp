@@ -20,13 +20,13 @@ class NakedBareEntityTest extends \PHPUnit_Framework_TestCase
 {
     public function testRetainsClassMetadata()
     {
-        $no = new NakedBareEntity($this, $class = new NakedEntityClass());
+        $no = new NakedBareEntity($this, $class = new NakedEntitySpecification());
         $this->assertSame($class, $no->getClass());
     }
 
     public function testDelegatesFieldManagementToTheInnerClassInstance()
     {
-        $no = new NakedBareEntity($this, $class = new NakedEntityClass('', array(), array('name' => 'Name')));
+        $no = new NakedBareEntity($this, $class = new NakedEntitySpecification('', array(), array('name' => 'Name')));
         $this->assertSame('Name', $no->getField('name'));
     }
 
@@ -39,7 +39,7 @@ class NakedBareEntityTest extends \PHPUnit_Framework_TestCase
 
     public function testReturnsTheStateOfTheObject()
     {
-        $no = new NakedBareEntity($this, $class = new NakedEntityClass('', array(), array('nickname' => null)));
+        $no = new NakedBareEntity($this, $class = new NakedEntitySpecification('', array(), array('nickname' => null)));
         $this->assertEquals(array('nickname' => 'dummy'), $no->getState());
     }
 
@@ -67,7 +67,7 @@ class NakedBareEntityTest extends \PHPUnit_Framework_TestCase
 
     public function testProxiesToTheClassForObtainingApplicableMethods()
     {
-        $class = $this->getMock('NakedPhp\Metadata\NakedEntityClass', array('getMethods'));
+        $class = $this->getMock('NakedPhp\Metadata\NakedEntitySpecification', array('getMethods'));
         $class->expects($this->any())
              ->method('getMethods')
              ->will($this->returnValue(array('dummy' => 'DummyMethod')));
@@ -81,7 +81,7 @@ class NakedBareEntityTest extends \PHPUnit_Framework_TestCase
 
     public function testProxiesToTheClassForFacetHolding()
     {
-        $class = $this->getMock('NakedPhp\Metadata\NakedEntityClass', array('getFacet'));
+        $class = $this->getMock('NakedPhp\Metadata\NakedEntitySpecification', array('getFacet'));
         $class->expects($this->once())
              ->method('getFacet')
              ->with('Dummy')
@@ -102,7 +102,7 @@ class NakedBareEntityTest extends \PHPUnit_Framework_TestCase
      */
     public function testIsTraversableProxyingToTheEntityState()
     {
-        $class = new NakedEntityClass('', array(), array('nickname' => null));
+        $class = new NakedEntitySpecification('', array(), array('nickname' => null));
         $no = new NakedBareEntity($this, $class);
         $this->assertEquals('dummy', $no->getIterator()->current());
     }

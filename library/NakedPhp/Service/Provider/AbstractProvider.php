@@ -30,7 +30,7 @@ abstract class AbstractProvider implements \NakedPhp\Service\ServiceProvider
     }
 
     /**
-     * @return array    NakedServiceClass instances
+     * @return array    NakedServiceSpecification instances
      */
     public function getServiceClasses()
     {

@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Reflect;
-use NakedPhp\Metadata\NakedEntityClass;
+use NakedPhp\Metadata\NakedEntitySpecification;
 use NakedPhp\Metadata\NakedMethod;
 use NakedPhp\Metadata\NakedParam;
 use NakedPhp\Metadata\NakedField;
@@ -36,7 +36,7 @@ class EntityReflector
     /**
      * TODO: refactor in generic FacetFactory implementations
      * @param string $className
-     * @return NakedEntityClass
+     * @return NakedEntitySpecification
      */
     public function analyze($className)
     {
@@ -56,7 +56,7 @@ class EntityReflector
         }
 
         $this->_generateFacets($methods, $fields);
-        $class = new NakedEntityClass($className, $methods, $fields);
+        $class = new NakedEntitySpecification($className, $methods, $fields);
 
         return $class;
     }

@@ -15,9 +15,9 @@
 
 namespace NakedPhp\Service;
 use NakedPhp\Metadata\NakedBareEntity;
-use NakedPhp\Metadata\NakedEntityClass;
+use NakedPhp\Metadata\NakedEntitySpecification;
 use NakedPhp\Metadata\NakedService;
-use NakedPhp\Metadata\NakedServiceClass;
+use NakedPhp\Metadata\NakedServiceSpecification;
 
 class NakedFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -46,7 +46,7 @@ class NakedFactoryTest extends \PHPUnit_Framework_TestCase
         $this->_serviceReflectorMock->expects($this->any())
                                     ->method('isService')
                                     ->will($this->returnValue(false));
-        $class = new NakedEntityClass();
+        $class = new NakedEntitySpecification();
         $this->_entityReflectorMock->expects($this->any())
                                     ->method('analyze')
                                     ->will($this->returnValue($class));
@@ -68,7 +68,7 @@ class NakedFactoryTest extends \PHPUnit_Framework_TestCase
         $this->_serviceReflectorMock->expects($this->any())
                                     ->method('isService')
                                     ->will($this->returnValue(true));
-        $class = new NakedServiceClass();
+        $class = new NakedServiceSpecification();
         $this->_serviceReflectorMock->expects($this->any())
                                     ->method('analyze')
                                     ->will($this->returnValue($class));

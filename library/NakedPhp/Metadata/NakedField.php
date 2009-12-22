@@ -16,7 +16,7 @@
 namespace NakedPhp\Metadata;
 
 /**
- * Wraps info about a field of a NakedEntityClass.
+ * Wraps info about a field of a NakedEntitySpecification.
  */
 class NakedField extends AbstractFacetHolder
 {

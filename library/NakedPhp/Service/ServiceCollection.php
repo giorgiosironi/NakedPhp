@@ -22,10 +22,10 @@ namespace NakedPhp\Service;
     }
 
     /**
-     * @param NakedEntityClass $class    the type of the entity considered
+     * @param NakedEntitySpecification $class    the type of the entity considered
      * @return array                     NakedMethod instances
      */
-    public function getApplicableMethods(NakedEntityClass $class)
+    public function getApplicableMethods(NakedEntitySpecification $class)
     {
         return array();
     }

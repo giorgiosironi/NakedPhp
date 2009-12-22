@@ -15,7 +15,7 @@
 
 namespace NakedPhp\Mvc\View\Helper;
 use NakedPhp\Stubs\NakedEntityStub;
-use NakedPhp\Metadata\NakedEntityClass;
+use NakedPhp\Metadata\NakedEntitySpecification;
 use NakedPhp\Metadata\NakedField;
 use NakedPhp\Metadata\Facet\Hidden;
 
