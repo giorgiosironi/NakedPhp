@@ -30,6 +30,13 @@ class NakedBareEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('Name', $no->getField('name'));
     }
 
+    public function testUnwrapsTheWrappedEntity()
+    {
+        $no = new NakedBareEntity($this);
+
+        $this->assertSame($this, $no->getObject());
+    }
+
     public function testReturnsTheStateOfTheObject()
     {
         $no = new NakedBareEntity($this, $class = new NakedEntityClass('', array(), array('nickname' => null)));

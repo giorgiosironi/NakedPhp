@@ -47,6 +47,14 @@ class NakedCompleteService implements NakedService
         return $this->_wrapped->getClassName();
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getObject()
+    {
+        return $this->_wrapped->getObject();
+    }
+
     public function getMethods()
     {
         return $this->_wrapped->getMethods();

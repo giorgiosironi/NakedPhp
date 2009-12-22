@@ -20,7 +20,7 @@ use NakedPhp\Service\NakedFactory;
 /**
  * Wraps a NakedBareEntity object, providing automatic injection of services
  * as methods parameters (Decorator pattern).
- * Should not be serialized. Store the inner object instead (@see getBareEntity()).
+ * Should not be serialized. Store the inner object instead (@see getObject()).
  */
 class NakedCompleteEntity implements NakedEntity
 {
@@ -50,11 +50,11 @@ class NakedCompleteEntity implements NakedEntity
     }
 
     /**
-     * @return NakedBareEntity
+     * {@inheritdoc}
      */
-    public function getBareEntity()
+    public function getObject()
     {
-        return $this->_entity;
+        return $this->_entity->getObject();
     }
 
     public function __toString()

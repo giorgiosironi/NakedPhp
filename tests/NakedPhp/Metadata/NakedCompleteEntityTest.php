@@ -44,9 +44,11 @@ class NakedCompleteEntityTest extends \NakedPhp\Test\TestCase
         $this->assertSame('STUBBED', (string) $this->_completeObject);
     }
 
-    public function testUnwrapsTheInnerBareEntity()
+    public function testDelegatesToTheInnerEntityForUnwrapping()
     {
-        $this->assertSame($this->_original, $this->_completeObject->getBareEntity());
+        $this->_delegation->getterIs('getObject', $entity = new \stdClass);
+
+        $this->assertSame($entity, $this->_completeObject->getObject());
     }
 
     public function testDelegatesToTheInnerEntityForObtainingFieldMetadata()

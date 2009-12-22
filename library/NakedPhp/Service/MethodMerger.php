@@ -92,7 +92,7 @@ class MethodMerger implements MethodCaller
         $completeParameters = array();
         foreach ($method->getParams() as $param) {
             if ($param->getType() == $entity->getClassName()) {
-                $completeParameters[] = $entity->unwrap();
+                $completeParameters[] = $entity->getObject();
             } else {
                 $completeParameters[] = array_shift($parameters);
             }

@@ -24,6 +24,13 @@ class NakedBareServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('FooClass', $no->getClassName());
     }
 
+    public function testUnwrapsTheWrappedService()
+    {
+        $no = new NakedBareService($this);
+
+        $this->assertSame($this, $no->getObject());
+    }
+
     public function testProxiesToClassForMethodsMetadata()
     {
         $no = new NakedBareService($this, $class = new NakedServiceClass('', array('key' => 'doSomething')));

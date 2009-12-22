@@ -26,6 +26,11 @@ interface NakedObject extends FacetHolder
     public function getClassName();
 
     /**
+     * @return object   the wrapped instance
+     */
+    public function getObject();
+
+    /**
      * Builds the list of all methods visible to the end user.
      * @return array                     NakedMethod instances
      */

@@ -128,7 +128,7 @@ class Controller extends \Zend_Controller_Action
         if ($this->_request->isPost() && $form->isValidPartial($this->_request->getPost())) {
             $state = $stateManager->setEntityState($this->_completeObject, $form);
             $this->_contextContainer->completed();
-            $this->_redirectToObject($this->_completeObject->unwrap());
+            $this->_redirectToObject($this->_completeObject->getObject());
         } else {
             $this->view->form = $form;
         }

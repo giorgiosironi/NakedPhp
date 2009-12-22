@@ -93,13 +93,16 @@ class AbstractNakedObject
     }
 
     /**
-     * @return object
+     * {@inheritdoc}
      */
-    public function unwrap()
+    public function getObject()
     {
         return $this->_wrapped;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function __toString()
     {
         if (method_exists($this->_wrapped, '__toString')) {

@@ -48,6 +48,13 @@ class NakedCompleteServiceTest extends \NakedPhp\Test\TestCase
         $this->assertEquals('dummy', (string) $this->_completeObject);
     }
 
+    public function testDelegatesToWrappedServiceForUnwrapping()
+    {
+        $this->_delegation->getterIs('getObject', $service = new \stdClass);
+
+        $this->assertEquals($service, $this->_completeObject->getObject());
+    }
+
     public function testDelegatesToWrappedServiceForMethodsMetadata()
     {
         $this->_delegation->getterIs('getMethods', array('key' => 'doSomething'));
