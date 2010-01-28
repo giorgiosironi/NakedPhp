@@ -18,7 +18,7 @@ namespace NakedPhp\Metadata;
 /**
  * Wraps info about a field of a NakedEntitySpecification.
  */
-class NakedField extends AbstractFacetHolder
+class OneToOneAssociation extends AbstractFacetHolder implements NakedObjectAssociation
 {
     /**
      * @var string
@@ -28,12 +28,16 @@ class NakedField extends AbstractFacetHolder
     /**
      * @var string
      */
-    private $_name;
+    private $_id;
 
-    public function __construct($type = '', $name = '')
+    /**
+     * @param string $type
+     * @param string $id    unambiguos identifier
+     */
+    public function __construct($type = '', $id = '')
     {
         $this->_type = $type;
-        $this->_name = $name;
+        $this->_id = $id;
     }
 
     public function getType()
@@ -41,8 +45,22 @@ class NakedField extends AbstractFacetHolder
         return $this->_type;
     }
 
-    public function getName()
+    /**
+     * {@inheritdoc}
+     */
+    public function getId()
     {
-        return $this->_name;
+        return $this->_id;
+    }
+
+    /**
+     * FIX: use the PropertySetter Facet
+     */
+    public function setAssociation(NakedObject $inObject, NakedObject $associate)
+    {
+        $inObject = $inObject->getObject();
+        $associate = $associate->getObject();
+        $setter = 'set' . ucfirst($this->_id);
+        $inObject->$setter($associate);
     }
 }

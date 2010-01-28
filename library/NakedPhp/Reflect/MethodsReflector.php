@@ -15,9 +15,9 @@
 
 namespace NakedPhp\Reflect;
 use NakedPhp\Metadata\NakedEntitySpecification;
-use NakedPhp\Metadata\NakedMethod;
+use NakedPhp\Metadata\NakedObjectAction;
 use NakedPhp\Metadata\NakedParam;
-use NakedPhp\Metadata\NakedField;
+use NakedPhp\Metadata\OneToOneAssociation;
 
 class MethodsReflector
 {
@@ -37,6 +37,7 @@ class MethodsReflector
         $reflector = new \ReflectionClass($className);
         $methods = array();
         foreach ($reflector->getMethods() as $method) {
+            /** @var ReflectionMethod $method */
             if ($this->_isHidden($method->getDocComment())) {
                 continue;
             }
@@ -69,7 +70,7 @@ class MethodsReflector
             if (!$returnAnnotationFound) {
                 $return = 'string';
             }
-            $methods[$methodName] = new NakedMethod($methodName, $params, $return);
+            $methods[$methodName] = new NakedObjectAction($methodName, $params, $return);
         }
 
         return $methods; 

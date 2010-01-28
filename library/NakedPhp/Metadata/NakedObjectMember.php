@@ -10,23 +10,15 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Persistence
+ * @package    NakedPhp_Metadata
  */
 
-namespace NakedPhp\Persistence;
+namespace NakedPhp\Metadata;
 
-class Storage
+interface NakedObjectMember extends FacetHolder
 {
-    private $_em;
-
-    public function __construct(\Doctrine\ORM\EntityManager $entityManager)
-    {
-        $this->_em = $entityManager; 
-    }
-
-    public function __call($method, array $arguments)
-    {
-        return call_user_func_array(array($this->_em, $method), $arguments);
-    }
+    /**
+     * @return string   unambiguos identifier
+     */
+    public function getId();
 }
-

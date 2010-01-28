@@ -1,4 +1,8 @@
 <?php
+if (!($this->object instanceof NakedPhp\Metadata\NakedEntity)) {
+    echo $this->displayObject($this->object);
+    return;
+}
 $this->headTitle((string) $this->object);
 ?>
 <h1 class="icon <?php echo $this->object->getClassName(); ?>"><?php echo $this->object; ?></h1>

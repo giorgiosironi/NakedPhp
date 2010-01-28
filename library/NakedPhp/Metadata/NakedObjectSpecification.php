@@ -19,7 +19,7 @@ namespace NakedPhp\Metadata;
  * Wraps properties about a domain class.
  * @abstract    not declared abstract to allow testing of base functionality
  */
-class NakedObjectSpecification extends AbstractFacetHolder
+class NakedObjectSpecification extends AbstractFacetHolder implements ActionContainer
 {
     /**
      * @var string
@@ -27,14 +27,13 @@ class NakedObjectSpecification extends AbstractFacetHolder
     protected $_className;
 
     /**
-     * @var array of NakedMethod instances
+     * @var array of NakedObjectAction instances
      */
     protected $_methods;
 
     /**
      * @param string $className
-     * @param array $methods        NakedMethod instances; keys are method names
-     * @param array $hiddenMethods
+     * @param array $methods        NakedObjectAction instances; keys are method names
      */
     public function __construct($className = '', array $methods = array())
     {
@@ -43,7 +42,7 @@ class NakedObjectSpecification extends AbstractFacetHolder
     }
 
     /**
-     * @return array $methods    NakedMethod instances; keys are method names
+     * @return array NakedObjectAction
      */
     public function getMethods()
     {
@@ -51,9 +50,7 @@ class NakedObjectSpecification extends AbstractFacetHolder
     }
 
     /**
-     * Convenience method.
-     * @param string $name
-     * @return NakedMethod
+     * {@inheritdoc}
      */
     public function getMethod($name)
     {
@@ -62,9 +59,7 @@ class NakedObjectSpecification extends AbstractFacetHolder
     }
 
     /**
-     * Convenience method.
-     * @param string $name
-     * @return boolean
+     * {@inheritdoc}
      */
     public function hasMethod($name)
     {

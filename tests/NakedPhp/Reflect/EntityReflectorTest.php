@@ -15,8 +15,8 @@
 
 namespace NakedPhp\Reflect;
 use NakedPhp\Metadata\NakedEntitySpecification;
-use NakedPhp\Metadata\NakedField;
-use NakedPhp\Metadata\NakedMethod;
+use NakedPhp\Metadata\OneToOneAssociation;
+use NakedPhp\Metadata\NakedObjectAction;
 use NakedPhp\Metadata\Facet;
 use NakedPhp\Metadata\Facet\Action\Invocation;
 
@@ -29,14 +29,14 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
     {
         $this->_methodsReflector = $this->getMock('NakedPhp\Reflect\MethodsReflector', array('analyze'));
         $methods = array(
-            'sendMessage' => new NakedMethod('sendMessage'),
-            'getName' => new NakedMethod('getName'),
-            'setName' => new NakedMethod('setName'),
-            'getStatus' => new NakedMethod('getStatus', array(), 'string'),
-            'choicesStatus' => new NakedMethod('choicesStatus', array(), 'array'),
-            'disableStatus' => new NakedMethod('disableStatus', array(), 'boolean'),
-            'validateStatus' => new NakedMethod('validateStatus', array(), 'boolean'),
-            'hideStatus' => new NakedMethod('hideStatus', array(), 'boolean')
+            'sendMessage' => new NakedObjectAction('sendMessage'),
+            'getName' => new NakedObjectAction('getName'),
+            'setName' => new NakedObjectAction('setName'),
+            'getStatus' => new NakedObjectAction('getStatus', array(), 'string'),
+            'choicesStatus' => new NakedObjectAction('choicesStatus', array(), 'array'),
+            'disableStatus' => new NakedObjectAction('disableStatus', array(), 'boolean'),
+            'validateStatus' => new NakedObjectAction('validateStatus', array(), 'boolean'),
+            'hideStatus' => new NakedObjectAction('hideStatus', array(), 'boolean')
         );
         $this->_methodsReflector->expects($this->once())
                                 ->method('analyze')
@@ -79,8 +79,8 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
     {
         $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
         $fields = $result->getFields();
-        $this->assertTrue($fields['status'] instanceof NakedField);
-        $this->assertEquals('status', $fields['status']->getName());
+        $this->assertTrue($fields['status'] instanceof OneToOneAssociation);
+        $this->assertEquals('status', $fields['status']->getId());
         $this->assertEquals('string', $fields['status']->getType());
     }
 

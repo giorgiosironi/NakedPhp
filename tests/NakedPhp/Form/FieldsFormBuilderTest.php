@@ -15,7 +15,7 @@
 
 namespace NakedPhp\Form;
 use NakedPhp\Stubs\NakedEntityStub;
-use NakedPhp\Metadata\NakedField;
+use NakedPhp\Metadata\OneToOneAssociation;
 use NakedPhp\Metadata\Facet\Disabled;
 use NakedPhp\Metadata\Facet\Property\Choices;
 use NakedPhp\Metadata\Facet\Property\Validate;
@@ -31,9 +31,9 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $this->_formBuilder = new FieldsFormBuilder();
         $this->_fields = array(
-            'first' => new NakedField('string', 'first'),
-            'second' => new NakedField('integer', 'second'),
-            'oneRelation' => new NakedField('NakedPhp\Stubs\User', 'oneRelation'),
+            'first' => new OneToOneAssociation('string', 'first'),
+            'second' => new OneToOneAssociation('integer', 'second'),
+            'oneRelation' => new OneToOneAssociation('NakedPhp\Stubs\User', 'oneRelation'),
         );
     }
 
@@ -70,7 +70,7 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
     public function testCreatesSelectForLimitedChoices()
     {
         $entity = new NakedEntityStub($this);
-        $field = new NakedField('string', 'limitedField');
+        $field = new OneToOneAssociation('string', 'limitedField');
         $field->addFacet(new Choices('limitedField'));
         $element = $this->_formBuilder->createElement($entity, $field);
         $this->assertTrue($element instanceof \Zend_Form_Element_Select);
@@ -86,7 +86,7 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
     public function testDisablesInputProgrammatically()
     {
         $entity = new NakedEntityStub($this);
-        $field = new NakedField('string', 'myField');
+        $field = new OneToOneAssociation('string', 'myField');
         $field->addFacet(new Disabled('myField'));
         $element = $this->_formBuilder->createElement($entity, $field);
         $this->assertEquals('disabled', $element->getAttrib('disabled'));
@@ -100,7 +100,7 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
     public function testShowsTooltipOnDisabledInputs()
     {
         $entity = new NakedEntityStub($this);
-        $field = new NakedField('string', 'myOtherField');
+        $field = new OneToOneAssociation('string', 'myOtherField');
         $field->addFacet(new Disabled('myOtherField'));
         $element = $this->_formBuilder->createElement($entity, $field);
 
@@ -119,7 +119,7 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
     public function testValidatesInputProgrammatically()
     {
         $entity = new NakedEntityStub($this);
-        $field = new NakedField('string', 'myField');
+        $field = new OneToOneAssociation('string', 'myField');
         $field->addFacet(new Validate('myField'));
         $element = $this->_formBuilder->createElement($entity, $field);
         $this->assertFalse($element->isValid('foo'));

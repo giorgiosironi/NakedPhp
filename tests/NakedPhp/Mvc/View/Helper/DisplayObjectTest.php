@@ -16,7 +16,7 @@
 namespace NakedPhp\Mvc\View\Helper;
 use NakedPhp\Stubs\NakedEntityStub;
 use NakedPhp\Metadata\NakedEntitySpecification;
-use NakedPhp\Metadata\NakedField;
+use NakedPhp\Metadata\OneToOneAssociation;
 use NakedPhp\Metadata\Facet\Hidden;
 
 class DisplayObjectTest extends \PHPUnit_Framework_TestCase
@@ -31,8 +31,8 @@ class DisplayObjectTest extends \PHPUnit_Framework_TestCase
             'firstName' => 'Giorgio',
             'lastName' => 'Sironi'
         ));
-        $this->_object->setField('firstName', new NakedField('string', 'firstName'));
-        $this->_object->setField('lastName', new NakedField('string', 'lastName'));
+        $this->_object->setField('firstName', new OneToOneAssociation('string', 'firstName'));
+        $this->_object->setField('lastName', new OneToOneAssociation('string', 'lastName'));
         $this->_helper = new DisplayObject();
     }
 
@@ -60,6 +60,18 @@ class DisplayObjectTest extends \PHPUnit_Framework_TestCase
     public function hideFirstName()
     {
         return true;
+    }
+
+    public function testDisplaysACollectionAsATable()
+    {
+        $second = clone($this->_object);
+        $second->setState(array('firstName' => 'Isaac', 'lastName' => 'Asimov'));
+        $collection = new \ArrayIterator(array($this->_object, $second));
+
+        $result = $this->_helper->displayObject($collection);
+
+        $this->assertQuery($result, 'table');
+        $this->assertQueryContentContains($result, 'table tr td', 'Isaac');
     }
 
     /**

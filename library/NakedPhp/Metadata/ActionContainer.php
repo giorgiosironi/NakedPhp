@@ -16,29 +16,26 @@
 namespace NakedPhp\Metadata;
 
 /**
- * Interface for classes that wrap an entity object.
+ * Wraps @see NakedObjectAction instances.
  */
-interface NakedEntity extends NakedObject, \IteratorAggregate
+interface ActionContainer
 {
     /**
-     * @return NakedEntitySpecification
+     * @return array $methods    NakedObjectAction instances; keys are method names
      */
-    public function getClass();
+    public function getMethods();
 
     /**
-     * @return array    field names are keys
-     */
-    public function getState();
-
-    /**
-     * @param array $data   field names are keys; works also with objects and
-     *                      objects wrapped in NakedBareEntity
-     */
-    public function setState(array $data);
-
-    /**
+     * Convenience method.
      * @param string $name
-     * @return OneToOneAssociation
+     * @return NakedObjectAction
      */
-    public function getField($name);
+    public function getMethod($name);
+
+    /**
+     * Convenience method.
+     * @param string $name
+     * @return boolean
+     */
+    public function hasMethod($name);
 }

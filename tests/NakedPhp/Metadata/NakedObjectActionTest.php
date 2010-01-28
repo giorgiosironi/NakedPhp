@@ -15,29 +15,29 @@
 
 namespace NakedPhp\Metadata;
 
-class NakedMethodTest extends \PHPUnit_Framework_TestCase
+class NakedObjectActionTest extends \PHPUnit_Framework_TestCase
 {
-    public function testRetainsName()
+    public function testRetainsId()
     {
-        $method = new NakedMethod('doSomething');
-        $this->assertEquals('doSomething', $method->getName());
+        $method = new NakedObjectAction('doSomething');
+        $this->assertEquals('doSomething', $method->getId());
     }
 
     public function testRetainsParamsList()
     {
-        $method = new NakedMethod('doSomething', $params = array('one', 'two'));
+        $method = new NakedObjectAction('doSomething', $params = array('one', 'two'));
         $this->assertEquals($params, $method->getParams());
     }
 
     public function testRetainsReturnType()
     {
-        $method = new NakedMethod('doSomething', $params = array(), 'string');
+        $method = new NakedObjectAction('doSomething', $params = array(), 'string');
         $this->assertEquals('string', $method->getReturn());
     }
 
     public function testImplementsFacetHolderInterface()
     {
-        $field = new NakedMethod();
+        $field = new NakedObjectAction();
         $helper = new \NakedPhp\Test\FacetHolder($this);
         $helper->testIsFacetHolder($field);
     }

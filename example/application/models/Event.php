@@ -13,14 +13,44 @@
  * @package    Example_Model
  */
 
+/**
+ * @Entity
+ */
 class Example_Model_Event
 {
+    /**
+     * @Id @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
+    private $_id;
+    /**
+     * @Column(type="string")
+     */
     private $_name;
+    /**
+     * @Column(type="string")
+     */
     private $_description;
-    private $_user;
+    /**
+     * @Column(type="string")
+     */
+    private $_user = '';
+    /**
+     * @Column(type="string")
+     */
     private $_type;
+    /**
+     * @ManyToOne(targetEntity="Example_Model_Place")
+     * @JoinColumn(name="place_id", referencedColumnName="_id")
+     */
     private $_place;
+    /**
+     * @Column(type="string")
+     */
     private $_startTime;
+    /**
+     * @Column(type="string")
+     */
     private $_endTime;
 
     /**
@@ -99,7 +129,11 @@ class Example_Model_Event
 
     public function setPlace(Example_Model_Place $place)
     {
+        if ($this->_place === $place) {
+            return;
+        }
         $this->_place = $place;
+        $this->_place->addEvent($this);
     }
 
     /**

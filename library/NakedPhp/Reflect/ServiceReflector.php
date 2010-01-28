@@ -15,7 +15,7 @@
 
 namespace NakedPhp\Reflect;
 use NakedPhp\Metadata\NakedServiceSpecification;
-use NakedPhp\Metadata\NakedMethod;
+use NakedPhp\Metadata\NakedObjectAction;
 use NakedPhp\Metadata\NakedParam;
 use NakedPhp\Metadata\Facet\Action\Invocation;
 

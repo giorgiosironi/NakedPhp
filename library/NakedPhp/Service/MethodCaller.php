@@ -16,7 +16,7 @@
 namespace NakedPhp\Service;
 use NakedPhp\Metadata\NakedObject;
 use NakedPhp\Metadata\NakedObjectSpecification;
-use NakedPhp\Metadata\NakedMethod;
+use NakedPhp\Metadata\NakedObjectAction;
 
 interface MethodCaller
 {
@@ -32,7 +32,7 @@ interface MethodCaller
     /**
      * Builds the list of all methods visible to the end user.
      * @param NakedObjectSpecification $class    the type of the entity considered
-     * @return array                     NakedMethod instances
+     * @return array                     NakedObjectAction instances
      */
     public function getApplicableMethods(NakedObjectSpecification $class);
 
@@ -40,7 +40,7 @@ interface MethodCaller
      * Returns metadata about a method.
      * @param NakedObjectSpecification $class     class to search the method on
      * @param string $methodName
-     * @return NakedMethod          or null if not found
+     * @return NakedObjectAction          or null if not found
      */
     public function getMethod(NakedObjectSpecification $no, $methodName);
 

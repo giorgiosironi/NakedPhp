@@ -15,12 +15,12 @@
 
 namespace NakedPhp\Metadata;
 
-class NakedMethod extends AbstractFacetHolder
+class NakedObjectAction extends AbstractFacetHolder implements NakedObjectMember
 {
     /**
      * @var string
      */
-    private $_name;
+    private $_id;
 
     /**
      * @var array   NakedParam instances
@@ -32,16 +32,21 @@ class NakedMethod extends AbstractFacetHolder
      */
     private $_returnType;
 
-    public function __construct($name = '', array $params = array(), $return = 'void')
+    /**
+     * @param string $id
+     * @param array $params
+     * @param string $returnType
+     */
+    public function __construct($id = '', array $params = array(), $returnType = 'void')
     {
-        $this->_name = $name;
+        $this->_id = $id;
         $this->_params = $params;
-        $this->_returnType = $return;
+        $this->_returnType = $returnType;
     }
 
-    public function getName()
+    public function getId()
     {
-        return $this->_name;
+        return $this->_id;
     }
 
     public function getParams()
@@ -56,6 +61,6 @@ class NakedMethod extends AbstractFacetHolder
 
     public function __toString()
     {
-        return $this->getName();
+        return $this->getId();
     }
 }

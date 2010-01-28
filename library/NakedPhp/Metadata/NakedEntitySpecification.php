@@ -19,10 +19,10 @@ namespace NakedPhp\Metadata;
  * Wraps properties about a entity class like fields, methods and metadata.
  * An entity is defined as a stateful class.
  */
-class NakedEntitySpecification extends NakedObjectSpecification
+class NakedEntitySpecification extends NakedObjectSpecification implements PropertyContainer
 {
     /**
-     * @var array of NakedField instances
+     * @var array of OneToOneAssociation instances
      */
     protected $_fields;
 
@@ -30,17 +30,15 @@ class NakedEntitySpecification extends NakedObjectSpecification
      * @param string $className
      * @param array $methods
      * @param array $fields
-     * @param array $hiddenMethods  methods not visible to the user but useful
-     *                              for the framework
      */
-    public function __construct($className = '', array $methods = array(), array $fields = array(), $hiddenMethods = array())
+    public function __construct($className = '', array $methods = array(), array $fields = array())
     {
-        parent::__construct($className, $methods, $hiddenMethods);
+        parent::__construct($className, $methods);
         $this->_fields = $fields;
     }
 
     /**
-     * @return array of @see NakedField instances
+     * {@inheritdoc}
      */
     public function getFields()
     {
@@ -48,8 +46,7 @@ class NakedEntitySpecification extends NakedObjectSpecification
     }
 
     /**
-     * @param string $name
-     * @return NakedField
+     * {@inheritdoc}
      */
     public function getField($name)
     {

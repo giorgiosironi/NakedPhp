@@ -47,6 +47,16 @@ class Example_Model_Place
     private $_phone;
 
     /**
+     * @OneToMany(targetEntity="Example_Model_Place", mappedBy="_place")
+     */
+    private $_events;
+
+    public function __construct()
+    {
+        $this->_events = new Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
      * @return string   the name
      */
     public function getName()
@@ -85,7 +95,6 @@ class Example_Model_Place
         $this->_category = $category;
     }
 
-
     /**
      * @return string
      * */
@@ -123,6 +132,23 @@ class Example_Model_Place
     public function setPhone($phone)
     {
         $this->_phone = $phone;
+    }
+
+    public function addEvent(Example_Model_Event $event)
+    {
+        if ($this->_events->contains($event)) {
+            return;
+        }
+        $this->_events->add($event);
+        $event->setPlace($this);
+    }
+
+    /**
+     * @return Doctrine\Common\Collections\Collection
+     */
+    public function getEvents()
+    {
+        return $this->_events;
     }
 
     /**

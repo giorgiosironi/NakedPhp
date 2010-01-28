@@ -112,6 +112,10 @@ class Controller extends \Zend_Controller_Action
      */
     public final function viewAction()
     {
+        if ($field = $this->_request->getParam('field')) {
+            $state = $this->_completeObject->getState();
+            $this->view->object = $state[$field];
+        }
     }
 
     /**
@@ -173,7 +177,7 @@ class Controller extends \Zend_Controller_Action
     public function saveAction()
     {
         $storage = $this->_factory->getPersistenceStorage();
-        $storage->process($this->_unwrappedContainer);
+        $storage->save($this->_unwrappedContainer);
         $this->view->entities = array(
             'new' => array(),
             'detached' => array(),

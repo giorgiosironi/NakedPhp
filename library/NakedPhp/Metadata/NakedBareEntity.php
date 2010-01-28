@@ -52,11 +52,8 @@ class NakedBareEntity extends AbstractNakedObject implements NakedEntity
     public function setState(array $data)
     {
         foreach ($data as $fieldName => $value) {
-            if ($value instanceof self) {
-                $value = $value->_wrapped;
-            }
-            $setter = 'set' . ucfirst($fieldName);
-            $this->_wrapped->$setter($value);
+            $field = $this->_class->getField($fieldName);
+            $field->setAssociation($this, $value);
         }
     }
 

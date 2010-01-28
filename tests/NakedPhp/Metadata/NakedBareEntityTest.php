@@ -43,25 +43,33 @@ class NakedBareEntityTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('nickname' => 'dummy'), $no->getState());
     }
 
+    /**
+     * FIX: NakedBareEntity should not be used for scalar.
+     * Think of a new adapter that implements NakedObject.
+     */
     public function testSetsTheStateOfTheObject()
     {
-        $data = array('nickname' => 'dummy');
-        $user = $this->getMock('NakedPhp\Stubs\User', array('setNickname'));
-        $user->expects($this->once())
-             ->method('setNickname')
-             ->with('dummy');
-        $no = new NakedBareEntity($user, null);
+        $data = array('nickname' => new NakedBareEntity('dummy'));
+        $field = $this->getMock('NakedPhp\Metadata\OneToOneAssociation');
+        $field->expects($this->once())
+              ->method('setAssociation');
+        $class = new NakedEntitySpecification(null, array(), array('nickname' => $field));
+        $no = new NakedBareEntity(null, $class);
         $no->setState($data);
     }
 
     public function testSetsTheStateOfTheObjectAlsoWithARelation()
     {
-        $data = array('phonenumber' => new NakedBareEntity($phonenumber = new Phonenumber));
-        $user = $this->getMock('NakedPhp\Stubs\User', array('setPhonenumber'));
-        $user->expects($this->once())
-             ->method('setPhonenumber')
-             ->with($phonenumber);
-        $no = new NakedBareEntity($user, null);
+        $data = array('phonenumber' => $phonenumber = new NakedBareEntity(new Phonenumber));
+
+        $field = $this->getMock('NakedPhp\Metadata\OneToOneAssociation');
+        $class = new NakedEntitySpecification(null, array(), array('phonenumber' => $field));
+        $no = new NakedBareEntity(null, $class);
+
+        $field->expects($this->once())
+              ->method('setAssociation')
+              ->with($no, $phonenumber);
+
         $no->setState($data);
     }
 

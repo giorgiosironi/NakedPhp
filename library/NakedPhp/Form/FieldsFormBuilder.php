@@ -15,13 +15,13 @@
 
 namespace NakedPhp\Form;
 use NakedPhp\Metadata\NakedEntity;
-use NakedPhp\Metadata\NakedField;
+use NakedPhp\Metadata\OneToOneAssociation;
 
 class FieldsFormBuilder
 {
     /**
      * @param NakedEntity $entity
-     * @param array $fields         NakedField instances
+     * @param array $fields         OneToOneAssociation instances
      */
     public function createForm(NakedEntity $entity, $fields)
     {
@@ -43,20 +43,21 @@ class FieldsFormBuilder
     }
 
     /**
-     * @param NakedField $field     single field
+     * @param OneToOneAssociation $field     single field
      * @return Zend_Form_Element
      */
-    public function createElement(NakedEntity $entity, NakedField $field)
+    public function createElement(NakedEntity $entity, OneToOneAssociation $field)
     {
+        $id = $field->getId();
         if ($this->_isObjectField($field)) {
-            $element =  new ObjectSelect($field->getName());
+            $element =  new ObjectSelect($id);
         } else {
             if ($choicesFacet = $field->getFacet('Property\Choices')) {
                 $choices = $choicesFacet->getChoices($entity); 
-                $element = new \Zend_Form_Element_Select($field->getName());
+                $element = new \Zend_Form_Element_Select($id);
                 $element->setMultiOptions($choices);
             } else {
-                $element = new \Zend_Form_Element_Text($field->getName());
+                $element = new \Zend_Form_Element_Text($id);
             }
         }
 
@@ -95,7 +96,7 @@ class FieldsFormBuilder
         return $element;
     }
 
-    protected function _isObjectField(NakedField $field)
+    protected function _isObjectField(OneToOneAssociation $field)
     {
         return ucfirst($field->getType()) == $field->getType();
     }

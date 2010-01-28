@@ -120,6 +120,6 @@ class Factory
     public function getPersistenceStorage()
     {
         require_once __DIR__ . '/../../example/bin/cli-config.php';
-        return new Persistence\Storage($em);
+        return new Storage\Doctrine($em);
     }
 }

@@ -16,6 +16,10 @@
         <exec command="phpdoc -d library/NakedPhp/ -t ${docRoot} #TODO phpdoc phing task" dir="${srcRoot}" passthru="true" />
     </target>
 
+    <target name="build-example">
+        <exec command="php example/bin/doctrine schema-tool --re-create --config=example/bin/cli-config.php" dir="${srcRoot}" passthru="true" />
+    </target>
+
     <target name="zf-import">
         <delete>
             <fileset dir="${srcRoot}library/Zend/">

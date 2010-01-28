@@ -16,25 +16,14 @@
 namespace NakedPhp\Metadata;
 
 /**
- * Interface for classes that wrap an entity object.
+ * Wraps properties about a entity class (@see OneToOneAssociation, @see OneToManyAssociation).
  */
-interface NakedEntity extends NakedObject, \IteratorAggregate
+interface PropertyContainer
 {
     /**
-     * @return NakedEntitySpecification
+     * @return array of @see OneToOneAssociation instances
      */
-    public function getClass();
-
-    /**
-     * @return array    field names are keys
-     */
-    public function getState();
-
-    /**
-     * @param array $data   field names are keys; works also with objects and
-     *                      objects wrapped in NakedBareEntity
-     */
-    public function setState(array $data);
+    public function getFields();
 
     /**
      * @param string $name

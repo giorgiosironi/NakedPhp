@@ -15,9 +15,9 @@
 
 namespace NakedPhp\Reflect;
 use NakedPhp\Metadata\NakedEntitySpecification;
-use NakedPhp\Metadata\NakedMethod;
+use NakedPhp\Metadata\NakedObjectAction;
 use NakedPhp\Metadata\NakedParam;
-use NakedPhp\Metadata\NakedField;
+use NakedPhp\Metadata\OneToOneAssociation;
 use NakedPhp\Metadata\Facet\Action\Invocation;
 use NakedPhp\Metadata\Facet\Disabled;
 use NakedPhp\Metadata\Facet\Hidden;
@@ -43,11 +43,11 @@ class EntityReflector
         $methods = $this->_methodsReflector->analyze($className);
         $fields = array();
         foreach ($methods as $method) {
-            $methodName = $method->getName();
+            $methodName = $method->getId();
             if ($this->_isGetter($methodName)) {
-                $name = str_replace('get', '', $method->getName());
+                $name = str_replace('get', '', $method->getId());
                 $fieldName = lcfirst($name);
-                $fields[$fieldName] = new NakedField($method->getReturn(), $fieldName);
+                $fields[$fieldName] = new OneToOneAssociation($method->getReturn(), $fieldName);
                 continue;
             }
             if ($this->_isSetter($methodName)) {
@@ -82,8 +82,8 @@ class EntityReflector
     /**
      * Defines user visible methods, according to which are not used for
      * metadata on $fields.
-     * @param array $methods    NakedMethod instances indexed by name
-     * @param array $fields     NakedField instances indexed by name
+     * @param array $methods    NakedObjectAction instances indexed by name
+     * @param array $fields     OneToOneAssociation instances indexed by name
      */
     protected function _generateFacets(array $methods, array $fields)
     {
