@@ -33,7 +33,8 @@ class NakedObjectMethodDecorator implements NakedObject, \IteratorAggregate
     }
 
     /**
-     * @return NakedObjectSpecification
+     * {@inheritdoc}
+     * Proxies to wrapped entity.
      */
     public function getSpecification()
     {
@@ -41,7 +42,8 @@ class NakedObjectMethodDecorator implements NakedObject, \IteratorAggregate
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
+     * Proxies to wrapped entity.
      */
     public function getClassName()
     {
@@ -50,6 +52,16 @@ class NakedObjectMethodDecorator implements NakedObject, \IteratorAggregate
 
     /**
      * {@inheritdoc}
+     * Proxies to wrapped entity.
+     */
+    public function isService()
+    {
+        return $this->_entity->isService();
+    }
+
+    /**
+     * {@inheritdoc}
+     * Proxies to wrapped entity.
      */
     public function getObject()
     {
@@ -99,7 +111,7 @@ class NakedObjectMethodDecorator implements NakedObject, \IteratorAggregate
 
     /**
      * {@inheritdoc}
-     * Proxies to wrapped entity.
+     * Proxies to wrapped entity with the aid of the MethodCaller.
      */
     public function getObjectActions()
     {
@@ -108,7 +120,7 @@ class NakedObjectMethodDecorator implements NakedObject, \IteratorAggregate
 
     /**
      * {@inheritdoc}
-     * Proxies to wrapped entity.
+     * Proxies to wrapped entity with the aid of the MethodCaller.
      * Convenience method.
      */
     public function getObjectAction($methodName)
@@ -119,7 +131,7 @@ class NakedObjectMethodDecorator implements NakedObject, \IteratorAggregate
 
     /**
      * {@inheritdoc}
-     * Proxies to wrapped entity.
+     * Proxies to wrapped entity with the aid of the MethodCaller.
      * Convenience method.
      */
     public function hasMethod($methodName)
@@ -128,11 +140,19 @@ class NakedObjectMethodDecorator implements NakedObject, \IteratorAggregate
         return isset($methods[$methodName]);
     }
 
+    /**
+     * {@inheritdoc}
+     * Proxies to wrapped entity with the aid of the MethodCaller.
+     */
     public function __call($methodName, array $arguments = array())
     {
         return $this->_caller->call($this->_entity, $methodName, $arguments);
     }
 
+    /**
+     * {@inheritdoc}
+     * Proxies to wrapped entity.
+     */
     public function getIterator()
     {
         return $this->_entity->getIterator();
@@ -164,5 +184,4 @@ class NakedObjectMethodDecorator implements NakedObject, \IteratorAggregate
     {
         return $this->_entity->getFacets($type);
     }
-
 }

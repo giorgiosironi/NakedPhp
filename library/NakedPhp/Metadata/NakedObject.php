@@ -31,6 +31,11 @@ interface NakedObject extends ActionContainer, AssociationContainer, FacetHolder
     public function getClassName();
 
     /**
+     * @return boolean
+     */
+    public function isService();
+
+    /**
      * @return object   the wrapped instance
      */
     public function getObject();

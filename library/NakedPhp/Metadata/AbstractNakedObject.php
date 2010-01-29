@@ -27,19 +27,34 @@ abstract class AbstractNakedObject implements NakedObject
     protected $_class;
 
     /**
-     * @return string   the class name of the wrapped object
+     * {@inheritdoc}
+     * Convenience method.
      */
     public function getClassName()
     {
         return $this->_class->getClassName();
     }
 
+    /**
+     * {@inheritdoc}
+     * Convenience method.
+     */
+    public function isService()
+    {
+        return $this->_class->isService();
+    }
+
+    /**
+     * {@inheritdoc}
+     * Convenience method.
+     */
     public function getObjectActions()
     {
         return $this->_class->getObjectActions(); 
     }
 
     /**
+     * {@inheritdoc}
      * Convenience method.
      */
     public function getObjectAction($methodName)
@@ -49,6 +64,7 @@ abstract class AbstractNakedObject implements NakedObject
     }
 
     /**
+     * {@inheritdoc}
      * Convenience method.
      */
     public function hasMethod($methodName)
@@ -59,6 +75,7 @@ abstract class AbstractNakedObject implements NakedObject
 
     /**
      * {@inheritdoc}
+     * Convenience method.
      */
     public function getFields()
     {
@@ -67,6 +84,7 @@ abstract class AbstractNakedObject implements NakedObject
 
     /**
      * {@inheritdoc}
+     * Convenience method.
      */
     public function getField($name)
     {

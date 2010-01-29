@@ -17,17 +17,19 @@ namespace NakedPhp\Metadata;
 use NakedPhp\Stubs\NakedObjectSpecificationStub;
 use NakedPhp\Test\Delegation;
 
+/**
+ * TODO: maybe is is possible to inherit some behavior from AbstractNakedObjectTest
+ */
 class NakedObjectMethodDecoratorTest extends \NakedPhp\Test\TestCase
 {
-    private $_original;
-    private $_completeObject;
-    private $_delegation;
+    protected $_object;
+    protected $_delegation;
 
     public function setUp()
     {
-        $this->_original = $this->_getBareEntityMock();
-        $this->_completeObject = new NakedObjectMethodDecorator($this->_original);
-        $this->_delegation = new Delegation($this, $this->_original);
+        $original = $this->_getBareEntityMock();
+        $this->_object = new NakedObjectMethodDecorator($original);
+        $this->_delegation = new Delegation($this, $original);
     }
 
     public function testDelegatesToTheInnerEntityForClassMetadata()
@@ -35,37 +37,42 @@ class NakedObjectMethodDecoratorTest extends \NakedPhp\Test\TestCase
         $class = new NakedObjectSpecificationStub();
         $this->_delegation->getterIs('getSpecification', $class);
 
-        $this->assertSame($class, $this->_completeObject->getSpecification());
+        $this->assertSame($class, $this->_object->getSpecification());
+    }
+
+    public function testDelegatesToTheInnerEntityForClassType()
+    {
+        $this->_delegation->getterIs('isService', 'aBoolean');
+        $this->assertSame('aBoolean', $this->_object->isService());
     }
 
     public function testDelegatesToTheInnerEntityForStringRepresentation()
     {
         $this->_delegation->getterIs('__toString', 'STUBBED');
 
-        $this->assertSame('STUBBED', (string) $this->_completeObject);
+        $this->assertSame('STUBBED', (string) $this->_object);
     }
 
     public function testDelegatesToTheInnerEntityForUnwrapping()
     {
         $this->_delegation->getterIs('getObject', $entity = new \stdClass);
 
-        $this->assertSame($entity, $this->_completeObject->getObject());
+        $this->assertSame($entity, $this->_object->getObject());
     }
 
     public function testDelegatesToTheInnerEntityForObtainingFieldMetadata()
     {
         $this->_delegation->getterIs('getField', 'STUBBED');
 
-        $this->assertSame('STUBBED', $this->_completeObject->getField('foo'));
+        $this->assertSame('STUBBED', $this->_object->getField('foo'));
     }
-
 
     public function testDelegatesToTheInnerEntityForObtainingState()
     {
         $state = array('nickname' => 'dummy');
         $this->_delegation->getterIs('getState', $state);
 
-        $this->assertEquals($state, $this->_completeObject->getState());
+        $this->assertEquals($state, $this->_object->getState());
     }
 
     public function testDelegatesToTheInnerEntityForSettingTheState()
@@ -73,7 +80,7 @@ class NakedObjectMethodDecoratorTest extends \NakedPhp\Test\TestCase
         $data = array('nickname' => 'dummy');
         $this->_delegation->setterIs('setState', $data);
 
-        $this->_completeObject->setState($data);
+        $this->_object->setState($data);
     }
 
     public function testDelegatesToTheInnerEntityForFacetHolding()
@@ -81,20 +88,20 @@ class NakedObjectMethodDecoratorTest extends \NakedPhp\Test\TestCase
         $this->_delegation->getterIs('getFacet', 'foo');
         $this->_delegation->getterIs('getFacets', array('foo', 'bar'));
 
-        $this->assertEquals('foo', $this->_completeObject->getFacet('Dummy'));
-        $this->assertEquals(array('foo', 'bar'), $this->_completeObject->getFacets('Dummy'));
+        $this->assertEquals('foo', $this->_object->getFacet('Dummy'));
+        $this->assertEquals(array('foo', 'bar'), $this->_object->getFacets('Dummy'));
     }
 
     public function testIsTraversable()
     {
-        $this->assertTrue($this->_completeObject instanceof \Traversable);
+        $this->assertTrue($this->_object instanceof \Traversable);
     }
 
     public function testIsTraversableDelegatingToTheInnerEntityIterator()
     {
         $this->_delegation->getterIs('getIterator', 'dummy');
 
-        $this->assertEquals('dummy', $this->_completeObject->getIterator());
+        $this->assertEquals('dummy', $this->_object->getIterator());
     }
 
     public function testDelegatesToTheMergerForObtainingApplicableMethods()

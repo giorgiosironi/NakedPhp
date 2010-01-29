@@ -41,6 +41,12 @@ abstract class AbstractNakedObjectTest extends TestCase
         $this->assertEquals('FooClass', $this->_object->getClassName());
     }
 
+    public function testDelegatesTypeAccessToTheInnerSpecification()
+    {
+        $this->_delegation->getterIs('isService', 'aBoolean');
+        $this->assertEquals('aBoolean', $this->_object->isService());
+    }
+
     public function testDelegatesFieldsListToTheInnerSpecification()
     {
         $this->_delegation->getterIs('getFields', $expected = array('name' => 'Name'));
