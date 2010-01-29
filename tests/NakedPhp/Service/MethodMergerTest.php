@@ -96,7 +96,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     public function testKeepsInvocationFacetOnRebuiltMethods()
     {
         $this->_makeProcessMethodAvailable();
-        $this->_serviceClass->getMethod('process')->addFacet(new Invocation('process'));
+        $this->_serviceClass->getObjectAction('process')->addFacet(new Invocation('process'));
         $class = $this->_getEmptyEntityClass();
         $methods = $this->_methodMerger->getApplicableMethods($class);
 
@@ -198,7 +198,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->_methodMerger->hasMethod($class, 'doSomething'));
         $this->assertSame($expectedMethod,
-                          $this->_methodMerger->getMethod($class, 'doSomething'));
+                          $this->_methodMerger->getObjectAction($class, 'doSomething'));
     }
 
     public function testExtractsBuiltMetadataForAServiceMethod()
@@ -215,7 +215,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
 
         $class = $this->_getEmptyEntityClass();
         $this->assertTrue($this->_methodMerger->hasMethod($class, 'block'));
-        $method = $this->_methodMerger->getMethod($class, 'block');
+        $method = $this->_methodMerger->getObjectAction($class, 'block');
         $this->assertEquals(array('days' => $days), $method->getParams());
     }
 
@@ -228,7 +228,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         $class = $this->_getEntityClassWithCreateNewMethod();
 
         $this->assertTrue($this->_methodMerger->hasMethod($class, 'createNew'));
-        $method = $this->_methodMerger->getMethod($class, 'createNew');
+        $method = $this->_methodMerger->getObjectAction($class, 'createNew');
         $this->assertEquals(array('name' => new NakedParam('string', 'name')), $method->getParams());
     }
 

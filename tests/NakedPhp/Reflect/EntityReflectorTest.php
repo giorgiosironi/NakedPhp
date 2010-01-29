@@ -57,7 +57,7 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
     public function testListsBusinessMethodsOfAnEntityObjectAsFacets()
     {
         $class = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $facet = $class->getMethod('sendMessage')->getFacet('Action\Invocation');
+        $facet = $class->getObjectAction('sendMessage')->getFacet('Action\Invocation');
         $this->assertTrue($facet instanceof Invocation);
     }
 

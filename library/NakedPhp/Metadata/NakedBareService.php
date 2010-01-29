@@ -28,7 +28,7 @@ class NakedBareService extends AbstractNakedObject implements NakedService
     /**
      * @return NakedServiceSpecification
      */
-    public function getClass()
+    public function getSpecification()
     {
         return $this->_class;
     }

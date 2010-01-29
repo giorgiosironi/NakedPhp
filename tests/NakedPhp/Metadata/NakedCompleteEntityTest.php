@@ -32,9 +32,9 @@ class NakedCompleteEntityTest extends \NakedPhp\Test\TestCase
     public function testDelegatesToTheInnerEntityForClassMetadata()
     {
         $class = new NakedEntitySpecification();
-        $this->_delegation->getterIs('getClass', $class);
+        $this->_delegation->getterIs('getSpecification', $class);
 
-        $this->assertSame($class, $this->_completeObject->getClass());
+        $this->assertSame($class, $this->_completeObject->getSpecification());
     }
 
     public function testDelegatesToTheInnerEntityForStringRepresentation()
@@ -107,8 +107,8 @@ class NakedCompleteEntityTest extends \NakedPhp\Test\TestCase
              ->will($this->returnValue(array('dummy' => 'DummyMethod')));
         $no = new NakedCompleteEntity($bareNo, $merger);
 
-        $this->assertEquals(array('dummy' => 'DummyMethod'), $no->getMethods());
-        $this->assertEquals('DummyMethod', $no->getMethod('dummy'));
+        $this->assertEquals(array('dummy' => 'DummyMethod'), $no->getObjectActions());
+        $this->assertEquals('DummyMethod', $no->getObjectAction('dummy'));
         $this->assertTrue($no->hasMethod('dummy'));
         $this->assertFalse($no->hasMethod('notExistentMethodName'));
     }

@@ -32,7 +32,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
 
     public function testReadsAnnotationsOfMethods()
     {
-        $methods = $this->_result->getMethods();
+        $methods = $this->_result->getObjectActions();
         $sendMessage = $methods['sendMessage'];
         $this->assertEquals(array('title' => new NakedParam('string', 'title'),
                                   'text' => new NakedParam('string', 'text')),

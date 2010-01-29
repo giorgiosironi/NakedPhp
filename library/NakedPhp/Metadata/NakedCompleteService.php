@@ -37,9 +37,9 @@ class NakedCompleteService implements NakedService
         $this->_caller = $methodCaller;
     }
 
-    public function getClass()
+    public function getSpecification()
     {
-        return $this->_wrapped->getClass();
+        return $this->_wrapped->getSpecification();
     }
 
     public function getClassName()
@@ -55,14 +55,14 @@ class NakedCompleteService implements NakedService
         return $this->_wrapped->getObject();
     }
 
-    public function getMethods()
+    public function getObjectActions()
     {
-        return $this->_wrapped->getMethods();
+        return $this->_wrapped->getObjectActions();
     }
 
-    public function getMethod($methodName)
+    public function getObjectAction($methodName)
     {
-        return $this->_wrapped->getMethod($methodName);
+        return $this->_wrapped->getObjectAction($methodName);
     }
 
     public function hasMethod($methodName)

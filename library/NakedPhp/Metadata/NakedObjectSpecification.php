@@ -19,7 +19,7 @@ namespace NakedPhp\Metadata;
  * Wraps properties about a domain class.
  * @abstract    not declared abstract to allow testing of base functionality
  */
-class NakedObjectSpecification extends AbstractFacetHolder implements ActionContainer
+abstract class NakedObjectSpecification extends AbstractFacetHolder implements ActionContainer
 {
     /**
      * @var string
@@ -44,7 +44,7 @@ class NakedObjectSpecification extends AbstractFacetHolder implements ActionCont
     /**
      * @return array NakedObjectAction
      */
-    public function getMethods()
+    public function getObjectActions()
     {
         return $this->_methods;
     }
@@ -52,9 +52,9 @@ class NakedObjectSpecification extends AbstractFacetHolder implements ActionCont
     /**
      * {@inheritdoc}
      */
-    public function getMethod($name)
+    public function getObjectAction($name)
     {
-        $methods = $this->getMethods();
+        $methods = $this->getObjectActions();
         return $methods[$name];
     }
 
@@ -63,7 +63,7 @@ class NakedObjectSpecification extends AbstractFacetHolder implements ActionCont
      */
     public function hasMethod($name)
     {
-        $methods = $this->getMethods();
+        $methods = $this->getObjectActions();
         return isset($methods[$name]);
     }
 
@@ -79,5 +79,12 @@ class NakedObjectSpecification extends AbstractFacetHolder implements ActionCont
     {
         return $this->getClassName();
     }
+
+    /**
+     * Whether the object is a service with a single instance and should be 
+     * "globally" available to the user in the interface.
+     * @return boolean
+     */
+    abstract public function isService();
 }
 

@@ -23,4 +23,11 @@ namespace NakedPhp\Metadata;
  */
 class NakedServiceSpecification extends NakedObjectSpecification
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function isService()
+    {
+        return true;
+    }
 }

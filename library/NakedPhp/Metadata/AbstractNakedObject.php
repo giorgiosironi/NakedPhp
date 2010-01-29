@@ -49,17 +49,17 @@ class AbstractNakedObject
         return (string) $this->_class;
     }
 
-    public function getMethods()
+    public function getObjectActions()
     {
-        return $this->_class->getMethods(); 
+        return $this->_class->getObjectActions(); 
     }
 
     /**
      * Convenience method.
      */
-    public function getMethod($methodName)
+    public function getObjectAction($methodName)
     {
-        $methods = $this->getMethods();
+        $methods = $this->getObjectActions();
         return $methods[$methodName];
     }
 
@@ -68,7 +68,7 @@ class AbstractNakedObject
      */
     public function hasMethod($methodName)
     {
-        $methods = $this->getMethods();
+        $methods = $this->getObjectActions();
         return isset($methods[$methodName]);
     }
 

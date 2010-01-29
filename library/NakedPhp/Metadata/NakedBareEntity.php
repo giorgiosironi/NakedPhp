@@ -28,7 +28,7 @@ class NakedBareEntity extends AbstractNakedObject implements NakedEntity
     /**
      * @return NakedEntitySpecification
      */
-    public function getClass()
+    public function getSpecification()
     {
         return $this->_class;
     }

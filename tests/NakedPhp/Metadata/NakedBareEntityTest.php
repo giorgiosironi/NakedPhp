@@ -21,7 +21,7 @@ class NakedBareEntityTest extends \PHPUnit_Framework_TestCase
     public function testRetainsClassMetadata()
     {
         $no = new NakedBareEntity($this, $class = new NakedEntitySpecification());
-        $this->assertSame($class, $no->getClass());
+        $this->assertSame($class, $no->getSpecification());
     }
 
     public function testDelegatesFieldManagementToTheInnerClassInstance()
@@ -75,14 +75,14 @@ class NakedBareEntityTest extends \PHPUnit_Framework_TestCase
 
     public function testProxiesToTheClassForObtainingApplicableMethods()
     {
-        $class = $this->getMock('NakedPhp\Metadata\NakedEntitySpecification', array('getMethods'));
+        $class = $this->getMock('NakedPhp\Metadata\NakedEntitySpecification', array('getObjectActions'));
         $class->expects($this->any())
-             ->method('getMethods')
+             ->method('getObjectActions')
              ->will($this->returnValue(array('dummy' => 'DummyMethod')));
 
         $no = new NakedBareEntity($this, $class);
-        $this->assertEquals(array('dummy' => 'DummyMethod'), $no->getMethods());
-        $this->assertEquals('DummyMethod', $no->getMethod('dummy'));
+        $this->assertEquals(array('dummy' => 'DummyMethod'), $no->getObjectActions());
+        $this->assertEquals('DummyMethod', $no->getObjectAction('dummy'));
         $this->assertTrue($no->hasMethod('dummy'));
         $this->assertFalse($no->hasMethod('notExistentMethodName'));
     }

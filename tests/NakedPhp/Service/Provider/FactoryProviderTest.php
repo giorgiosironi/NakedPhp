@@ -82,7 +82,7 @@ class FactoryProviderTest extends \PHPUnit_Framework_TestCase implements \NakedP
     public function testInjectServiceMetadataIntoInstances()
     {
         $service = $this->_provider->getService('SplQueue');
-        $this->assertSame($this->_originalClass, $service->getClass());
+        $this->assertSame($this->_originalClass, $service->getSpecification());
     }
     
     /* self-shunting for ServiceDiscoverer interface */

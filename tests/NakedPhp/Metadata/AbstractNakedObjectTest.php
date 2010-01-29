@@ -34,7 +34,7 @@ class AbstractNakedObjectTest extends \PHPUnit_Framework_TestCase
 
     public function testDelegatesGettingClassNameOfTheDomainObject()
     {
-        $no = new AbstractNakedObject($this, new NakedObjectSpecification('FooClass'));
+        $no = new AbstractNakedObject($this, new NakedEntitySpecification('FooClass'));
         $this->assertEquals('FooClass', $no->getClassName());
     }
 

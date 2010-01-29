@@ -34,14 +34,14 @@ interface NakedObject extends FacetHolder
      * Builds the list of all methods visible to the end user.
      * @return array                     NakedObjectAction instances
      */
-    public function getMethods();
+    public function getObjectActions();
 
     /**
      * Returns metadata about a visible method.
      * @param string $methodName
      * @return NakedObjectAction          or null if not found
      */
-    public function getMethod($methodName);
+    public function getObjectAction($methodName);
 
     /**
      * Finds out if a visible method exists.

@@ -23,7 +23,7 @@ interface NakedEntity extends NakedObject, \IteratorAggregate
     /**
      * @return NakedEntitySpecification
      */
-    public function getClass();
+    public function getSpecification();
 
     /**
      * @return array    field names are keys

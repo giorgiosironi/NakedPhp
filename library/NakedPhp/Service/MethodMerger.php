@@ -42,14 +42,14 @@ class MethodMerger implements MethodCaller
     {
         assert('is_string($methodName)');
 
-        $class = $no->getClass();
+        $class = $no->getSpecification();
 
         if ($class->hasMethod($methodName)) {
-            $parameters = $this->_addServices($class->getMethod($methodName), $parameters);
+            $parameters = $this->_addServices($class->getObjectAction($methodName), $parameters);
             $result = call_user_func_array(array($no, $methodName), $parameters);
         } else {
             $service = $this->_findService($methodName);
-            $method = $service->getClass()->getMethod($methodName);
+            $method = $service->getSpecification()->getObjectAction($methodName);
             $params = $this->_mergeParameters($method, $no, $parameters);
             $result = call_user_func_array(array($service, $methodName), $params);
         }
@@ -121,7 +121,7 @@ class MethodMerger implements MethodCaller
 
         $classMethods = array();
         $serviceClasses = $this->_serviceProvider->getServiceClasses();
-        foreach ($class->getMethods() as $methodName => $method) {
+        foreach ($class->getObjectActions() as $methodName => $method) {
             foreach ($method->getParams() as $param) {
                 $type = $param->getType();
                 if (isset($serviceClasses[$type])) {
@@ -144,7 +144,7 @@ class MethodMerger implements MethodCaller
     {
         $methods = array();
         foreach ($this->_serviceProvider->getServiceClasses() as $serviceClass) {
-            foreach ($serviceClass->getMethods() as $method) {
+            foreach ($serviceClass->getObjectActions() as $method) {
                 $methodName = (string) $method;
                 $methods[$methodName] = $method;
             }
@@ -159,7 +159,7 @@ class MethodMerger implements MethodCaller
     protected function _findService($methodName)
     {
         foreach ($this->_serviceProvider->getServiceClasses() as $serviceName => $serviceClass) {
-            $methods = $serviceClass->getMethods();
+            $methods = $serviceClass->getObjectActions();
             if (isset($methods[$methodName])) {
                 return $this->_serviceProvider->getService($serviceName);
             }
@@ -192,7 +192,7 @@ class MethodMerger implements MethodCaller
      * {@inheritdoc}
      * Convenience method.
      */
-    public function getMethod(NakedObjectSpecification $class, $methodName)
+    public function getObjectAction(NakedObjectSpecification $class, $methodName)
     {
         $methods = $this->_getAllMethods($class);
         return $methods[$methodName];

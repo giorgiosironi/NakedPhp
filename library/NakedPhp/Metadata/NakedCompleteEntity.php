@@ -36,9 +36,9 @@ class NakedCompleteEntity implements NakedEntity
     /**
      * @return NakedEntitySpecification
      */
-    public function getClass()
+    public function getSpecification()
     {
-        return $this->_entity->getClass();
+        return $this->_entity->getSpecification();
     }
 
     /**
@@ -93,9 +93,9 @@ class NakedCompleteEntity implements NakedEntity
      * {@inheritdoc}
      * Proxies to wrapped entity.
      */
-    public function getMethods()
+    public function getObjectActions()
     {
-        return $this->_caller->getApplicableMethods($this->_entity->getClass());
+        return $this->_caller->getApplicableMethods($this->_entity->getSpecification());
     }
 
     /**
@@ -103,9 +103,9 @@ class NakedCompleteEntity implements NakedEntity
      * Proxies to wrapped entity.
      * Convenience method.
      */
-    public function getMethod($methodName)
+    public function getObjectAction($methodName)
     {
-        $methods = $this->getMethods();
+        $methods = $this->getObjectActions();
         return $methods[$methodName];
     }
 
@@ -116,7 +116,7 @@ class NakedCompleteEntity implements NakedEntity
      */
     public function hasMethod($methodName)
     {
-        $methods = $this->getMethods();
+        $methods = $this->getObjectActions();
         return isset($methods[$methodName]);
     }
 

@@ -58,14 +58,14 @@ class ServiceReflectorTest extends \PHPUnit_Framework_TestCase
     public function testListsBusinessMethodsOfAServiceObjectAsFacets()
     {
         $class = $this->_reflector->analyze('NakedPhp\Stubs\UserFactory');
-        $facet = $class->getMethod('createUser')->getFacet('Action\Invocation');
+        $facet = $class->getObjectAction('createUser')->getFacet('Action\Invocation');
         $this->assertTrue($facet instanceof Invocation);
     }
 
     public function testListBusinessMethodsOfAServiceObject()
     {
         $this->_result = $this->_reflector->analyze('NakedPhp\Stubs\UserFactory');
-        $methods = $this->_result->getMethods();
+        $methods = $this->_result->getObjectActions();
         $this->assertEquals('createUser', (string) current($methods));
         $this->assertTrue(isset($methods['createUser']));
     }

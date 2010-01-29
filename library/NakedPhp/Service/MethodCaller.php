@@ -42,7 +42,7 @@ interface MethodCaller
      * @param string $methodName
      * @return NakedObjectAction          or null if not found
      */
-    public function getMethod(NakedObjectSpecification $no, $methodName);
+    public function getObjectAction(NakedObjectSpecification $no, $methodName);
 
     /**
      * Finds out if a method exists.

@@ -18,7 +18,7 @@ namespace NakedPhp\Metadata;
 /**
  * Wraps properties about a entity class (@see OneToOneAssociation, @see OneToManyAssociation).
  */
-interface PropertyContainer
+interface AssociationContainer
 {
     /**
      * @return array of @see OneToOneAssociation instances

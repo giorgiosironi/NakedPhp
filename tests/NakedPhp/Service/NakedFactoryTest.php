@@ -51,7 +51,7 @@ class NakedFactoryTest extends \PHPUnit_Framework_TestCase
                                     ->method('analyze')
                                     ->will($this->returnValue($class));
         $no = $this->_factory->createBare(new \stdClass);
-        $this->assertSame($class, $no->getClass());
+        $this->assertSame($class, $no->getSpecification());
     }
 
     public function testWrapsAServiceInANakedServiceInstance()
@@ -73,7 +73,7 @@ class NakedFactoryTest extends \PHPUnit_Framework_TestCase
                                     ->method('analyze')
                                     ->will($this->returnValue($class));
         $no = $this->_factory->createBare(new \stdClass);
-        $this->assertSame($class, $no->getClass());
+        $this->assertSame($class, $no->getSpecification());
     }
 
     public function testDoesNotWrapScalarValues()

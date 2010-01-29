@@ -76,8 +76,8 @@ class Controller extends \Zend_Controller_Action
                 $this->_completeObject = $this->_factory->createCompleteEntity($bareObject);
             }
             $this->_objectKey = $objectKey;
-            $this->view->methods = $this->_completeObject->getMethods();
-            $this->_class = $this->_completeObject->getClass();
+            $this->_class = $this->_completeObject->getSpecification();
+            $this->view->methods = $this->_completeObject->getObjectActions();
             $this->view->object = $this->_completeObject;
         }
     }
@@ -151,7 +151,7 @@ class Controller extends \Zend_Controller_Action
         $this->_contextContainer->remember($this->_helper->Url->url());
         $methodName = $this->_request->getParam('method');
         $this->view->methodName = $methodName;
-        $method = $this->_completeObject->getMethod($methodName);
+        $method = $this->_completeObject->getObjectAction($methodName);
         if (count($method->getParams())) {
             $formBuilder = $this->_factory->getMethodFormBuilder();
             $form = $formBuilder->createForm($method);
@@ -192,14 +192,13 @@ class Controller extends \Zend_Controller_Action
     protected function _redirectToObject($object)
     {
         $completeObject = $this->_nakedFactory->createBare($object);
-        if ($completeObject instanceof NakedEntity) {
-            $index = $this->_unwrappedContainer->add($object);
-            $type = 'entity';
-        } else if ($completeObject instanceof NakedService) {
-            $index = (string) $completeObject->getClass();
+        $specification = $completeObject->getSpecification();
+        if ($specification->isService()) {
+            $index = (string) $completeObject->getSpecification();
             $type = 'service';
         } else {
-            throw new Exception("Unrecognized object to redirect to.");
+            $index = $this->_unwrappedContainer->add($object);
+            $type = 'entity';
         }
 
         if (count($this->_contextContainer)) {

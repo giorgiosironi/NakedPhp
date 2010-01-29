@@ -15,8 +15,15 @@
 
 namespace NakedPhp\Metadata;
 
-class NakedServiceSpecificationTest extends \PHPUnit_Framework_TestCase
+class NakedServiceSpecificationTest extends NakedObjectSpecificationTest
 {
+    protected $_className = 'NakedPhp\Metadata\NakedServiceSpecification';
+
+    public function testIsAService()
+    {
+        $spec = new NakedServiceSpecification();
+        $this->assertTrue($spec->isService());
+    }
     /**
      * FIX: delete if there is nothing to test here
      */

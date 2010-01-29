@@ -27,7 +27,7 @@ class FieldsFormBuilder
     {
         assert('is_array($fields) or $fields instanceof Traversable');
         $form = new \Zend_Form();
-        $class = $entity->getClass();
+        $class = $entity->getSpecification();
         $form->setAttrib('class', "nakedphp_entity $class");
         foreach ($fields as $name => $field) {
             $element = $this->createElement($entity, $field);

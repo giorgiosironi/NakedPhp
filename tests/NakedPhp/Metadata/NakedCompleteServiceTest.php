@@ -34,10 +34,10 @@ class NakedCompleteServiceTest extends \NakedPhp\Test\TestCase
     public function testDelegatesToWrappedServiceForClassMetadata()
     {
         $class = new NakedServiceSpecification();
-        $this->_delegation->getterIs('getClass', $class);
+        $this->_delegation->getterIs('getSpecification', $class);
         $this->_delegation->getterIs('getClassName', 'FooClass');
 
-        $this->assertSame($class, $this->_completeObject->getClass());
+        $this->assertSame($class, $this->_completeObject->getSpecification());
         $this->assertEquals('FooClass', $this->_completeObject->getClassName());
     }
 
@@ -57,12 +57,12 @@ class NakedCompleteServiceTest extends \NakedPhp\Test\TestCase
 
     public function testDelegatesToWrappedServiceForMethodsMetadata()
     {
-        $this->_delegation->getterIs('getMethods', array('key' => 'doSomething'));
-        $this->_delegation->getterIs('getMethod', 'doSomething');
+        $this->_delegation->getterIs('getObjectActions', array('key' => 'doSomething'));
+        $this->_delegation->getterIs('getObjectAction', 'doSomething');
         $this->_delegation->getterIs('hasMethod', true);
 
-        $this->assertEquals(array('key' => 'doSomething'), $this->_completeObject->getMethods());
-        $this->assertEquals('doSomething', $this->_completeObject->getMethod('key'));
+        $this->assertEquals(array('key' => 'doSomething'), $this->_completeObject->getObjectActions());
+        $this->assertEquals('doSomething', $this->_completeObject->getObjectAction('key'));
         $this->assertTrue($this->_completeObject->hasMethod('key'));
     }
 

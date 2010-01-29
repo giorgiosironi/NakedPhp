@@ -15,8 +15,16 @@
 
 namespace NakedPhp\Metadata;
 
-class NakedEntitySpecificationTest extends \PHPUnit_Framework_TestCase
+class NakedEntitySpecificationTest extends NakedObjectSpecificationTest
 {
+    protected $_className = 'NakedPhp\Metadata\NakedEntitySpecification';
+
+    public function testIsNotAService()
+    {
+        $nc = new NakedEntitySpecification();
+        $this->assertFalse($nc->isService());
+    }
+
     public function testRetainsFieldsList()
     {
         $nc = new NakedEntitySpecification('', array(), $fields = array('Name', 'Role'));

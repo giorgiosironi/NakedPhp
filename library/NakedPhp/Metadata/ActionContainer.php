@@ -23,14 +23,14 @@ interface ActionContainer
     /**
      * @return array $methods    NakedObjectAction instances; keys are method names
      */
-    public function getMethods();
+    public function getObjectActions();
 
     /**
      * Convenience method.
      * @param string $name
      * @return NakedObjectAction
      */
-    public function getMethod($name);
+    public function getObjectAction($name);
 
     /**
      * Convenience method.

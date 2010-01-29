@@ -61,7 +61,7 @@ class EmptyConstructorsProviderTest extends \PHPUnit_Framework_TestCase implemen
     public function testInjectServiceMetadataIntoInstances()
     {
         $service = $this->_provider->getService('stdClass');
-        $this->assertSame($this->_originalClass, $service->getClass());
+        $this->assertSame($this->_originalClass, $service->getSpecification());
     }
     
     /* self-shunting */

@@ -23,5 +23,5 @@ interface NakedService extends NakedObject
     /**
      * @return NakedServiceSpecification
      */
-    public function getClass();
+    public function getSpecification();
 }
