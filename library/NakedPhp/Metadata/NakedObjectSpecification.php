@@ -19,72 +19,20 @@ namespace NakedPhp\Metadata;
  * Wraps properties about a domain class.
  * @abstract    not declared abstract to allow testing of base functionality
  */
-abstract class NakedObjectSpecification extends AbstractFacetHolder implements ActionContainer
+interface NakedObjectSpecification extends FacetHolder, ActionContainer
 {
-    /**
-     * @var string
-     */
-    protected $_className;
-
-    /**
-     * @var array of NakedObjectAction instances
-     */
-    protected $_methods;
-
-    /**
-     * @param string $className
-     * @param array $methods        NakedObjectAction instances; keys are method names
-     */
-    public function __construct($className = '', array $methods = array())
-    {
-        $this->_className = $className;
-        $this->_methods = $methods;
-    }
-
-    /**
-     * @return array NakedObjectAction
-     */
-    public function getObjectActions()
-    {
-        return $this->_methods;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getObjectAction($name)
-    {
-        $methods = $this->getObjectActions();
-        return $methods[$name];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hasMethod($name)
-    {
-        $methods = $this->getObjectActions();
-        return isset($methods[$name]);
-    }
-
     /**
      * @return string   the fully qualified class name
      */
-    public function getClassName()
-    {
-        return $this->_className;
-    }
+    public function getClassName();
 
-    public function __toString()
-    {
-        return $this->getClassName();
-    }
+    public function __toString();
 
     /**
      * Whether the object is a service with a single instance and should be 
      * "globally" available to the user in the interface.
      * @return boolean
      */
-    abstract public function isService();
+    public function isService();
 }
 

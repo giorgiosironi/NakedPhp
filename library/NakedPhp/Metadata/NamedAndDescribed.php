@@ -16,18 +16,18 @@
 namespace NakedPhp\Metadata;
 
 /**
- * Wraps properties about a service domain class.
- * A service is defined as a stateless object, with a bunch of methods
- * that takes as parameters scalars and entities or value objects.
- * Other services should be required in the constructor.
+ * Wraps info about a method or constructor param.
  */
-class NakedServiceSpecification extends AbstractNakedObjectSpecification
+interface NamedAndDescribed
 {
     /**
-     * {@inheritdoc}
+     * @return string
      */
-    public function isService()
-    {
-        return true;
-    }
+    public function getName();
+        
+    /**
+     * TODO: add
+     * @return string
+     * public function getDescription();
+     */
 }
