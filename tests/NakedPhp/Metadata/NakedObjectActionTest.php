@@ -26,13 +26,13 @@ class NakedObjectActionTest extends \PHPUnit_Framework_TestCase
     public function testRetainsParamsList()
     {
         $method = new NakedObjectAction('doSomething', $params = array('one', 'two'));
-        $this->assertEquals($params, $method->getParams());
+        $this->assertEquals($params, $method->getParameters());
     }
 
     public function testRetainsReturnType()
     {
         $method = new NakedObjectAction('doSomething', $params = array(), 'string');
-        $this->assertEquals('string', $method->getReturn());
+        $this->assertEquals('string', $method->getReturnType());
     }
 
     public function testImplementsFacetHolderInterface()

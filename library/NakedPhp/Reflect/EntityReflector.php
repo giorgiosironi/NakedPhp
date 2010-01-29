@@ -16,7 +16,7 @@
 namespace NakedPhp\Reflect;
 use NakedPhp\Metadata\NakedEntitySpecification;
 use NakedPhp\Metadata\NakedObjectAction;
-use NakedPhp\Metadata\NakedParam;
+use NakedPhp\Metadata\NakedObjectActionParameter;
 use NakedPhp\Metadata\OneToOneAssociation;
 use NakedPhp\Metadata\Facet\Action\Invocation;
 use NakedPhp\Metadata\Facet\Disabled;
@@ -47,7 +47,7 @@ class EntityReflector
             if ($this->_isGetter($methodName)) {
                 $name = str_replace('get', '', $method->getId());
                 $fieldName = lcfirst($name);
-                $fields[$fieldName] = new OneToOneAssociation($method->getReturn(), $fieldName);
+                $fields[$fieldName] = new OneToOneAssociation($method->getReturnType(), $fieldName);
                 continue;
             }
             if ($this->_isSetter($methodName)) {

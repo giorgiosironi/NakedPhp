@@ -68,7 +68,7 @@ class MethodMerger implements MethodCaller
     {
         $completeParameters = array(); 
         $serviceClasses = $this->_serviceProvider->getServiceClasses();
-        foreach ($method->getParams() as $name => $param) {
+        foreach ($method->getParameters() as $name => $param) {
             $type = $param->getType();
             if (isset($serviceClasses[$type])) {
                 $completeParameters[$name] = $this->_serviceProvider->getService($type);
@@ -90,7 +90,7 @@ class MethodMerger implements MethodCaller
     protected function _mergeParameters(NakedObjectAction $method, NakedObject $entity, array $parameters)
     {
         $completeParameters = array();
-        foreach ($method->getParams() as $param) {
+        foreach ($method->getParameters() as $param) {
             if ($param->getType() == $entity->getClassName()) {
                 $completeParameters[] = $entity->getObject();
             } else {
@@ -111,7 +111,7 @@ class MethodMerger implements MethodCaller
     {
         $servicesMethods = array();
         foreach ($this->_getAllServicesMethods() as $methodName => $method) {
-            foreach ($method->getParams() as $param) {
+            foreach ($method->getParameters() as $param) {
                 if ($param->getType() == $class->getClassName()) {
                     $servicesMethods[$methodName] = $this->_buildFakeMethod($method, $class);
                     break;
@@ -122,7 +122,7 @@ class MethodMerger implements MethodCaller
         $classMethods = array();
         $serviceClasses = $this->_serviceProvider->getServiceClasses();
         foreach ($class->getObjectActions() as $methodName => $method) {
-            foreach ($method->getParams() as $param) {
+            foreach ($method->getParameters() as $param) {
                 $type = $param->getType();
                 if (isset($serviceClasses[$type])) {
                     $classMethods[$methodName] = $this->_buildFakeMethod($method, $serviceClasses[$type]);
@@ -174,12 +174,12 @@ class MethodMerger implements MethodCaller
     {
         $methodName = (string) $method;
         $newParams = array();
-        foreach ($method->getParams() as $key => $param) {
+        foreach ($method->getParameters() as $key => $param) {
             if ($param->getType() != $class->getClassName()) { 
                 $newParams[$key] = $param;
             }
         }
-        $newMethod = new NakedObjectAction($methodName, $newParams, $method->getReturn());
+        $newMethod = new NakedObjectAction($methodName, $newParams, $method->getReturnType());
 
         if ($method->getFacet('Action\Invocation')) {
             $newMethod->addFacet(new Invocation($methodName));

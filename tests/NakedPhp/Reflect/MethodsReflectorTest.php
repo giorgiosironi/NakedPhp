@@ -70,14 +70,14 @@ class MethodsReflectorTest extends \PHPUnit_Framework_TestCase
     {
         $this->setMockAnnotations();
         $methods = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $this->assertEquals('integer', $methods['getStatus']->getReturn());
+        $this->assertEquals('integer', $methods['getStatus']->getReturnType());
     }
 
     public function testAssumesTheDefaultParametersTypeAsStringIfNoAnnotationsAreDefined()
     {
         $this->setMockAnnotations(array());
         $methods = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $params = $methods['validatePhonenumber']->getParams();
+        $params = $methods['validatePhonenumber']->getParameters();
         $this->assertEquals('string', $params['phonenumber']->getType());
     }
 
@@ -85,7 +85,7 @@ class MethodsReflectorTest extends \PHPUnit_Framework_TestCase
     {
         $this->setMockAnnotations(array());
         $methods = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $return = $methods['validatePhonenumber']->getReturn();
+        $return = $methods['validatePhonenumber']->getReturnType();
         $this->assertEquals('string', $return);
     }
 

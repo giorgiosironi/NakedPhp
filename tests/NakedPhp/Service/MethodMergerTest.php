@@ -19,7 +19,7 @@ use NakedPhp\Metadata\NakedEntitySpecification;
 use NakedPhp\Metadata\NakedBareService;
 use NakedPhp\Metadata\NakedServiceSpecification;
 use NakedPhp\Metadata\NakedObjectAction;
-use NakedPhp\Metadata\NakedParam;
+use NakedPhp\Metadata\NakedObjectActionParameter;
 use NakedPhp\Metadata\Facet\Action\Invocation;
 use NakedPhp\Stubs\User;
 
@@ -55,8 +55,8 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
              ->will($this->returnValue('dummy'));
 
         $method = new NakedObjectAction('sendMessage', array(
-            'title' => new NakedParam('string', 'title'),
-            'text' => new NakedParam('string', 'text')
+            'title' => new NakedObjectActionParameter('string', 'title'),
+            'text' => new NakedObjectActionParameter('string', 'text')
         ));
         $entity = new NakedBareEntity($mock, new NakedEntitySpecification('', array('sendMessage' => $method)));
 
@@ -109,7 +109,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         $this->_makeProcessMethodAvailable();
         $class = $this->_getEmptyEntityClass();
         $methods = $this->_methodMerger->getApplicableMethods($class);
-        $params = $methods['process']->getParams();
+        $params = $methods['process']->getParameters();
         $this->assertEquals(0, count($params));
     }
 
@@ -138,7 +138,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     {
         $this->_serviceClass = new NakedServiceSpecification('', array(
             'process' => new NakedObjectAction('process', array(
-                'objectToProcess' => new NakedParam('NakedPhp\Stubs\User', 'objectToProcess')
+                'objectToProcess' => new NakedObjectActionParameter('NakedPhp\Stubs\User', 'objectToProcess')
             ))
         ));
         $this->_setAvailableServiceClasses(array(
@@ -177,8 +177,8 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     {
         return new NakedEntitySpecification('NakedPhp\Stubs\User', array(
             'createNew' => new NakedObjectAction('createNew', array(
-                'userFactory' => new NakedParam('NakedPhp\Stubs\UserFactory', 'userFactory'),
-                'name' => $name = new NakedParam('string', 'name')
+                'userFactory' => new NakedObjectActionParameter('NakedPhp\Stubs\UserFactory', 'userFactory'),
+                'name' => $name = new NakedObjectActionParameter('string', 'name')
             ))
         ));
     }
@@ -205,8 +205,8 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     {
         $this->_serviceClass = new NakedServiceSpecification('', array(
             'block' => new NakedObjectAction('block', array(
-                'user' => new NakedParam('NakedPhp\Stubs\User', 'user'),
-                'days' => $days = new NakedParam('integer', 'days')
+                'user' => new NakedObjectActionParameter('NakedPhp\Stubs\User', 'user'),
+                'days' => $days = new NakedObjectActionParameter('integer', 'days')
             ))
         ));
         $this->_setAvailableServiceClasses(array(
@@ -216,7 +216,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         $class = $this->_getEmptyEntityClass();
         $this->assertTrue($this->_methodMerger->hasMethod($class, 'block'));
         $method = $this->_methodMerger->getObjectAction($class, 'block');
-        $this->assertEquals(array('days' => $days), $method->getParams());
+        $this->assertEquals(array('days' => $days), $method->getParameters());
     }
 
     public function testExtractsBuiltMetadataForAEntityMethodWhichRequireAService()
@@ -229,7 +229,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->_methodMerger->hasMethod($class, 'createNew'));
         $method = $this->_methodMerger->getObjectAction($class, 'createNew');
-        $this->assertEquals(array('name' => new NakedParam('string', 'name')), $method->getParams());
+        $this->assertEquals(array('name' => new NakedObjectActionParameter('string', 'name')), $method->getParameters());
     }
 
     public function testSupportsMetadataBuildingWhenMoreThanOneParameterIsAService()

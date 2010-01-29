@@ -23,7 +23,7 @@ class NakedObjectAction extends AbstractFacetHolder implements NakedObjectMember
     private $_id;
 
     /**
-     * @var array   NakedParam instances
+     * @var array   NakedObjectActionParameter instances
      */
     private $_params;
 
@@ -49,12 +49,12 @@ class NakedObjectAction extends AbstractFacetHolder implements NakedObjectMember
         return $this->_id;
     }
 
-    public function getParams()
+    public function getParameters()
     {
         return $this->_params;
     }
 
-    public function getReturn()
+    public function getReturnType()
     {
         return $this->_returnType;
     }

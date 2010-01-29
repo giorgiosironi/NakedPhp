@@ -16,7 +16,7 @@
 namespace NakedPhp\Reflect\Functional;
 use NakedPhp\Reflect\EntityReflector;
 use NakedPhp\Reflect\ReflectFactory;
-use NakedPhp\Metadata\NakedParam;
+use NakedPhp\Metadata\NakedObjectActionParameter;
 
 class UserTest extends \PHPUnit_Framework_TestCase
 {
@@ -34,13 +34,13 @@ class UserTest extends \PHPUnit_Framework_TestCase
     {
         $methods = $this->_result->getObjectActions();
         $sendMessage = $methods['sendMessage'];
-        $this->assertEquals(array('title' => new NakedParam('string', 'title'),
-                                  'text' => new NakedParam('string', 'text')),
-                            $sendMessage->getParams());
-        $this->assertEquals('void', $sendMessage->getReturn());
+        $this->assertEquals(array('title' => new NakedObjectActionParameter('string', 'title'),
+                                  'text' => new NakedObjectActionParameter('string', 'text')),
+                            $sendMessage->getParameters());
+        $this->assertEquals('void', $sendMessage->getReturnType());
         $deactivate = $methods['deactivate'];
-        $this->assertEquals(array(), $deactivate->getParams());
-        $this->assertEquals('boolean', $deactivate->getReturn());
+        $this->assertEquals(array(), $deactivate->getParameters());
+        $this->assertEquals('boolean', $deactivate->getReturnType());
     }
 
     public function testGeneratesFieldsFromGetters()

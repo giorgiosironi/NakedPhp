@@ -152,7 +152,7 @@ class Controller extends \Zend_Controller_Action
         $methodName = $this->_request->getParam('method');
         $this->view->methodName = $methodName;
         $method = $this->_completeObject->getObjectAction($methodName);
-        if (count($method->getParams())) {
+        if (count($method->getParameters())) {
             $formBuilder = $this->_factory->getMethodFormBuilder();
             $form = $formBuilder->createForm($method);
             if ($this->_request->isPost() && $form->isValid($this->_request->getPost())) {

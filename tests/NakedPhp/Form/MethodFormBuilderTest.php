@@ -15,7 +15,7 @@
 
 namespace NakedPhp\Form;
 use NakedPhp\Metadata\NakedObjectAction;
-use NakedPhp\Metadata\NakedParam;
+use NakedPhp\Metadata\NakedObjectActionParameter;
 
 class MethodFormBuilderTest extends \PHPUnit_Framework_TestCase
 {
@@ -28,8 +28,8 @@ class MethodFormBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $this->_formBuilder = new MethodFormBuilder();
         $this->_params = array(
-                      'first' => new NakedParam('string', 'first'),
-                      'second' => new NakedParam('integer', 'second')
+                      'first' => new NakedObjectActionParameter('string', 'first'),
+                      'second' => new NakedObjectActionParameter('integer', 'second')
         );
         $this->_method = new NakedObjectAction('doSomething', $this->_params, 'boolean');
         $this->_form = $this->_formBuilder->createForm($this->_method);

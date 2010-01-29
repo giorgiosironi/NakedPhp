@@ -16,7 +16,7 @@
 namespace NakedPhp\Reflect;
 use NakedPhp\Metadata\NakedEntitySpecification;
 use NakedPhp\Metadata\NakedObjectAction;
-use NakedPhp\Metadata\NakedParam;
+use NakedPhp\Metadata\NakedObjectActionParameter;
 use NakedPhp\Metadata\OneToOneAssociation;
 
 class MethodsReflector
@@ -54,7 +54,7 @@ class MethodsReflector
             $parametersAnnotationsFound = $returnAnnotationFound = false;
             foreach ($annotations as $ann) {
                 if ($ann['annotation'] == 'param') {
-                    $params[$ann['name']] = new NakedParam($ann['type'], $ann['name']);
+                    $params[$ann['name']] = new NakedObjectActionParameter($ann['type'], $ann['name']);
                     $parametersAnnotationsFound = true;
                 } else if ($ann['annotation'] == 'return') {
                     $return = $ann['type'];
@@ -64,7 +64,7 @@ class MethodsReflector
             if (!$parametersAnnotationsFound) {
                 foreach ($method->getParameters() as $param) {
                     $name = $param->getName();
-                    $params[$name] = new NakedParam('string', $name);
+                    $params[$name] = new NakedObjectActionParameter('string', $name);
                 }
             }
             if (!$returnAnnotationFound) {

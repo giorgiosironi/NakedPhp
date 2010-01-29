@@ -18,7 +18,7 @@ namespace NakedPhp\Metadata;
 /**
  * Wraps info about a method or constructor param.
  */
-final class NakedParam
+final class NakedObjectActionParameter implements NamedAndDescribed
 {
     /**
      * @var string
@@ -29,11 +29,6 @@ final class NakedParam
      * @var string
      */
     private $_name;
-
-    /**
-     * @var boolean  whether the parameter has a default or has to be specified
-     */
-    private $_default;
 
     public function __construct($type, $name, $default = false)
     {
@@ -50,10 +45,5 @@ final class NakedParam
     public function getName()
     {
         return $this->_name;
-    }
-
-    public function getDefault()
-    {
-        return $this->_default;
     }
 }

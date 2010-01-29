@@ -15,18 +15,12 @@
 
 namespace NakedPhp\Metadata;
 
-class NakedParamTest extends \PHPUnit_Framework_TestCase
+class NakedObjectActionParameterTest extends \PHPUnit_Framework_TestCase
 {
     public function testRetainsTypeAndName()
     {
-        $param = new NakedParam('array', 'info');
+        $param = new NakedObjectActionParameter('array', 'info');
         $this->assertEquals('array', (string) $param->getType());
         $this->assertEquals('info', $param->getName());
-    }
-
-    public function testIsNotDefaultByDefault()
-    {
-        $param = new NakedParam('array', 'info');
-        $this->assertFalse($param->getDefault());
     }
 }
