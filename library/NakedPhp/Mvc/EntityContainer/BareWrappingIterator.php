@@ -14,7 +14,8 @@
  */
 
 namespace NakedPhp\Mvc\EntityContainer;
-use NakedPhp\Metadata\NakedBareEntity;
+use NakedPhp\Metadata\NakedBareObject;
+use NakedPhp\Metadata\NakedFactory;
 
 class BareWrappingIterator implements \IteratorAggregate
 {
@@ -22,7 +23,7 @@ class BareWrappingIterator implements \IteratorAggregate
     protected $_container;
     protected $_factory;
 
-    public function __construct(UnwrappedContainer $container, \NakedPhp\Service\NakedFactory $factory)
+    public function __construct(UnwrappedContainer $container, NakedFactory $factory)
     {
         $this->_container = $container;
         $this->_factory = $factory;

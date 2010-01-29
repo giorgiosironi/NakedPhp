@@ -14,7 +14,6 @@
  */
 
 namespace NakedPhp\Reflect;
-use NakedPhp\Metadata\NakedEntitySpecification;
 use NakedPhp\Metadata\NakedObjectAction;
 use NakedPhp\Metadata\NakedObjectActionParameter;
 use NakedPhp\Metadata\OneToOneAssociation;
@@ -30,7 +29,7 @@ class MethodsReflector
  
     /**
      * @param string $className
-     * @return NakedEntitySpecification
+     * @return array    NakedObjectAction instances
      */
     public function analyze($className)
     {

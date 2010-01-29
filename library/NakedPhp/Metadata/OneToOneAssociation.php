@@ -16,7 +16,7 @@
 namespace NakedPhp\Metadata;
 
 /**
- * Wraps info about a field of a NakedEntitySpecification.
+ * Wraps info about a field of a NakedObjectSpecification.
  */
 class OneToOneAssociation extends AbstractFacetHolder implements NakedObjectAssociation
 {

@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Metadata\Facet\Property;
-use NakedPhp\Metadata\NakedBareEntity;
+use NakedPhp\Metadata\NakedBareObject;
 
 class SetterTest extends \PHPUnit_Framework_TestCase
 {
@@ -28,9 +28,9 @@ class SetterTest extends \PHPUnit_Framework_TestCase
 
     public function testSetsAScalarAsFieldValue()
     {
-        $no = new NakedBareEntity($this);
+        $no = new NakedBareObject($this);
         $facet = new Setter('myProperty');
-        $facet->setProperty($no, new NakedBareEntity('dummy'));
+        $facet->setProperty($no, new NakedBareObject('dummy'));
         $this->assertEquals('dummy', $this->_value);
     }
     

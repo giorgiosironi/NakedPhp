@@ -15,26 +15,25 @@
 
 namespace NakedPhp\Metadata;
 use NakedPhp\Service\MethodCaller;
-use NakedPhp\Service\NakedFactory;
 
 /**
- * Wraps a NakedBareEntity object, providing automatic injection of services
+ * Wraps a NakedBareObject object, providing automatic injection of services
  * as methods parameters (Decorator pattern).
  * Should not be serialized. Store the inner object instead (@see getObject()).
  */
-class NakedCompleteEntity implements NakedEntity
+class NakedObjectMethodDecorator implements NakedObject, \IteratorAggregate
 {
     protected $_entity;
     protected $_caller;
 
-    public function __construct(NakedBareEntity $entity = null, MethodCaller $methodCaller = null)
+    public function __construct(NakedBareObject $entity = null, MethodCaller $methodCaller = null)
     {
         $this->_entity = $entity;
         $this->_caller = $methodCaller;
     }
 
     /**
-     * @return NakedEntitySpecification
+     * @return NakedObjectSpecification
      */
     public function getSpecification()
     {
@@ -87,6 +86,15 @@ class NakedCompleteEntity implements NakedEntity
     public function getField($name)
     {
         return $this->_entity->getField($name);
+    }
+
+    /**
+     * {@inheritdoc}
+     * Proxies to wrapped entity.
+     */
+    public function getFields()
+    {
+        return $this->_entity->getFields();
     }
 
     /**

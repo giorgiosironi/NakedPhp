@@ -37,8 +37,8 @@ class OneToOneAssociationTest extends \PHPUnit_Framework_TestCase
 
     public function testSetsAFieldOfTheObject()
     {
-        $object = new NakedBareEntity($this);
-        $associate = new NakedBareEntity($expected = new User);
+        $object = new NakedBareObject($this);
+        $associate = new NakedBareObject($expected = new User);
 
         $field = new OneToOneAssociation('string', 'bestFriend');
         $field->setAssociation($object, $associate);

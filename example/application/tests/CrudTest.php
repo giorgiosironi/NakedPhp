@@ -23,6 +23,8 @@ class Example_CrudTest extends Example_AbstractTest
         $this->assertQueryContentContains('#methods a', 'createCity');
         $this->assertQueryContentContains('#methods a', 'createPlaceCategory');
         $this->assertQueryContentContains('#methods a', 'createPlace');
+        $this->assertNotQuery('#object .button.edit');
+        $this->assertNotQuery('#object .button.remove');
     }
 
     /**
@@ -53,6 +55,8 @@ class Example_CrudTest extends Example_AbstractTest
         $this->assertQueryContentContains('#nakedphp_session', 'New York');
         $this->assertQueryContentContains('.nakedphp_entity.Example_Model_City .name',
                                           'New York');
+        $this->assertQuery('#object .button.edit');
+        $this->assertQuery('#object .button.remove');
     }
 
     /**

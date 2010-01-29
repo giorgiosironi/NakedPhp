@@ -16,37 +16,22 @@
 namespace NakedPhp\Metadata;
 
 /**
- * Decorator for a domain object.
- * Wraps the object itself.
- * @abstract    not marked as abstract to allow testing of base behavior
+ * Decorator for a domain object. Wraps the object itself and its specification.
+ * Here are centralized all delegations to the NakedObjectSpecification object to avoid duplication.
  */
-class AbstractNakedObject
+abstract class AbstractNakedObject implements NakedObject
 {
-    /**
-     * POPO to wrap.
-     */
-    protected $_wrapped;
-
     /**
      * @var NakedObjectSpecification
      */
     protected $_class;
 
     /**
-     * @param object $wrapped   domain object to wrap.
-     */
-    public function __construct($wrapped = null, NakedObjectSpecification $class = null)
-    {
-        $this->_wrapped = $wrapped;
-        $this->_class   = $class;
-    }
-
-    /**
      * @return string   the class name of the wrapped object
      */
     public function getClassName()
     {
-        return (string) $this->_class;
+        return $this->_class->getClassName();
     }
 
     public function getObjectActions()
@@ -73,44 +58,19 @@ class AbstractNakedObject
     }
 
     /**
-     * implements decoration of wrapped object
+     * {@inheritdoc}
      */
-    public function __call($name, array $args = array())
+    public function getFields()
     {
-        if (method_exists($this->_wrapped, $name)) {
-            return call_user_func_array(array($this->_wrapped, $name), $args);
-        }
-        throw new Exception("Method $name does not exist.");
-    }
-
-    /**
-     * @param object $object
-     * @return boolean  true if $object is the same domain object wrapped
-     */
-    public function isWrapping($object)
-    {
-        return $this->_wrapped === $object;
+        return $this->_class->getFields();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getObject()
+    public function getField($name)
     {
-        return $this->_wrapped;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __toString()
-    {
-        if (method_exists($this->_wrapped, '__toString')) {
-            $result = (string) $this->_wrapped;
-        } else {
-            $result = 'OBJECT';
-        }
-        return $result;
+        return $this->_class->getField($name);
     }
     
     /**

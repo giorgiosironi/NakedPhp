@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Form;
-use NakedPhp\Metadata\NakedEntity;
+use NakedPhp\Metadata\NakedObject;
 
 class StateManager
 {
@@ -25,7 +25,7 @@ class StateManager
     );
 
     /**
-     * @param Traversable $entityContainer  a container of NakedEntity instances
+     * @param Traversable $entityContainer  a container of NakedObject instances
      */
     public function __construct(\Traversable $entityContainer)
     {
@@ -52,11 +52,11 @@ class StateManager
     }
 
     /**
-     * @param NakedEntity $entity
+     * @param NakedObject $entity
      * @param Zend_Form $form   form to get values from
      * @return StateManager     provides a fluent interface
      */
-    public function setEntityState(NakedEntity $entity, \Zend_Form $form)
+    public function setEntityState(NakedObject $entity, \Zend_Form $form)
     {
         $state = array();
         foreach ($form->getValues() as $name => $value) {
@@ -78,10 +78,10 @@ class StateManager
 
     /**
      * @param Zend_Form $form
-     * @param NakedEntity $entity
+     * @param NakedObject $entity
      * @return StateManager     provides a fluent interface
      */
-    public function setFormState(\Zend_Form $form, NakedEntity $entity)
+    public function setFormState(\Zend_Form $form, NakedObject $entity)
     {
         $state = $entity->getState();
         foreach ($form as $name => $element) {
@@ -122,11 +122,11 @@ class StateManager
     }
 
     /**
-     * @param NakedEntity
+     * @param NakedObject
      * @param string
      * @return boolean
      */
-    protected function _isOfNormalizedClassName(NakedEntity $object, $normalizedClassName)
+    protected function _isOfNormalizedClassName(NakedObject $object, $normalizedClassName)
     {
         $objectClassName = $object->getClassName();
         return strtr($objectClassName, $this->_normalization) == $normalizedClassName;

@@ -14,12 +14,12 @@
  */
 
 namespace NakedPhp\Stubs;
-use NakedPhp\Metadata\NakedBareEntity;
+use NakedPhp\Metadata\NakedBareObject;
 use NakedPhp\Metadata\NakedObjectAction;
 use NakedPhp\Metadata\OneToOneAssociation;
 use NakedPhp\Metadata\Facet;
 
-class NakedEntityStub extends NakedBareEntity
+class NakedObjectStub extends NakedBareObject
 {
     protected $_className;
     protected $_state;
@@ -45,9 +45,19 @@ class NakedEntityStub extends NakedBareEntity
         return $this->_state;
     }
     
+    public function setFields(array $fields)
+    {
+        $this->_fields = $fields;
+    }
+
     public function setField($name, OneToOneAssociation $field)
     {
         return $this->_fields[$name] = $field;
+    }
+
+    public function getFields()
+    {
+        return $this->_fields;
     }
 
     public function getField($name)

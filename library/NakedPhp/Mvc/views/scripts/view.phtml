@@ -1,5 +1,5 @@
 <?php
-if (!($this->object instanceof NakedPhp\Metadata\NakedEntity)) {
+if ($this->object->getSpecification()->isService()) {
     echo $this->displayObject($this->object);
     return;
 }

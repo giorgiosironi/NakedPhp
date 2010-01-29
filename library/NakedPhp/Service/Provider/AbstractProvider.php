@@ -30,7 +30,7 @@ abstract class AbstractProvider implements \NakedPhp\Service\ServiceProvider
     }
 
     /**
-     * @return array    NakedServiceSpecification instances
+     * {@inheritdoc}
      */
     public function getServiceClasses()
     {
@@ -44,11 +44,11 @@ abstract class AbstractProvider implements \NakedPhp\Service\ServiceProvider
     /**
      * @param object $instance          a service object
      * @param string $fullClassName     the full class name of the object
-     * @return NakedBareService
+     * @return NakedBareObject
      */
     protected function _wrap($instance, $fullClassName)
     {
         $nakedClass = $this->_reflector->analyze($fullClassName);
-        return new \NakedPhp\Metadata\NakedBareService($instance, $nakedClass);
+        return new \NakedPhp\Metadata\NakedBareObject($instance, $nakedClass);
     }
 }

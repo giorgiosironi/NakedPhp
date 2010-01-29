@@ -18,8 +18,13 @@ namespace NakedPhp\Metadata;
 /**
  * Interface for classes that wrap a domain object.
  */
-interface NakedObject extends FacetHolder
+interface NakedObject extends ActionContainer, AssociationContainer, FacetHolder
 {
+    /**
+     * @return NakedObjectSpecification
+     */
+    public function getSpecification();
+
     /**
      * @return string
      */
@@ -31,24 +36,17 @@ interface NakedObject extends FacetHolder
     public function getObject();
 
     /**
-     * Builds the list of all methods visible to the end user.
-     * @return array                     NakedObjectAction instances
+     * FIX: does not belong to all objects.
+     * @return array    field names are keys
      */
-    public function getObjectActions();
+    public function getState();
 
     /**
-     * Returns metadata about a visible method.
-     * @param string $methodName
-     * @return NakedObjectAction          or null if not found
+     * FIX: does not belong to all objects.
+     * @param array $data   field names are keys; works also with objects and
+     *                      objects wrapped in NakedBareObject
      */
-    public function getObjectAction($methodName);
-
-    /**
-     * Finds out if a visible method exists.
-     * @param string $methodName
-     * @return boolean
-     */
-    public function hasMethod($methodName);
+    public function setState(array $data);
 
     /**
      * Magic method to call the wrapped object ones.

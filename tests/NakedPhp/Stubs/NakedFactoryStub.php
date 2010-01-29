@@ -15,7 +15,7 @@
 
 namespace NakedPhp\Stubs;
 
-class NakedFactoryStub extends \NakedPhp\Service\NakedFactory
+class NakedFactoryStub implements \NakedPhp\Metadata\NakedFactory
 {
     public function createBare($object)
     {

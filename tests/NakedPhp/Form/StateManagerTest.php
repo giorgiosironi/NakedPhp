@@ -14,8 +14,9 @@
  */
 
 namespace NakedPhp\Form;
-use NakedPhp\Metadata\NakedBareEntity;
-use NakedPhp\Metadata\NakedEntitySpecification;
+use NakedPhp\Metadata\NakedBareObject;
+use NakedPhp\Stubs\NakedObjectSpecificationStub;
+use NakedPhp\Stubs\NakedObjectStub;
 use NakedPhp\Stubs\User;
 use NakedPhp\Stubs\Phonenumber;
 
@@ -28,10 +29,10 @@ class StateManagerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $userClass = new NakedEntitySpecification('NakedPhp\Stubs\User');
-        $userEntity = new NakedBareEntity(new User('Snoopy'), $userClass);
-        $this->_anotherUserEntity = new NakedBareEntity($this->_anotherUser = new User('PetitPrince'), $userClass);
-        $phonenumberEntity = new NakedBareEntity(new Phonenumber(), null);
+        $userClass = new NakedObjectSpecificationStub('NakedPhp\Stubs\User');
+        $userEntity = new NakedBareObject(new User('Snoopy'), $userClass);
+        $this->_anotherUserEntity = new NakedBareObject($this->_anotherUser = new User('PetitPrince'), $userClass);
+        $phonenumberEntity = new NakedObjectStub(new Phonenumber());
         $iterator = new \ArrayIterator(array(
             10 => $userEntity,
             20 => $this->_anotherUserEntity,
@@ -105,7 +106,7 @@ class StateManagerTest extends \PHPUnit_Framework_TestCase
 
     private function _getMockEntity($expectedState = null)
     {
-        $mock = $this->getMock('NakedPhp\\Metadata\\NakedBareEntity', array(), array(), '', false);
+        $mock = $this->getMock('NakedPhp\\Metadata\\NakedBareObject', array(), array(), '', false);
         if ($expectedState !== null) {
             $mock->expects($this->once())
                  ->method('setState')

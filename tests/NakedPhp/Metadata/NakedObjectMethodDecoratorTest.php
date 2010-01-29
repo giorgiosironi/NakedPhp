@@ -14,9 +14,10 @@
  */
 
 namespace NakedPhp\Metadata;
+use NakedPhp\Stubs\NakedObjectSpecificationStub;
 use NakedPhp\Test\Delegation;
 
-class NakedCompleteEntityTest extends \NakedPhp\Test\TestCase
+class NakedObjectMethodDecoratorTest extends \NakedPhp\Test\TestCase
 {
     private $_original;
     private $_completeObject;
@@ -25,13 +26,13 @@ class NakedCompleteEntityTest extends \NakedPhp\Test\TestCase
     public function setUp()
     {
         $this->_original = $this->_getBareEntityMock();
-        $this->_completeObject = new NakedCompleteEntity($this->_original);
+        $this->_completeObject = new NakedObjectMethodDecorator($this->_original);
         $this->_delegation = new Delegation($this, $this->_original);
     }
 
     public function testDelegatesToTheInnerEntityForClassMetadata()
     {
-        $class = new NakedEntitySpecification();
+        $class = new NakedObjectSpecificationStub();
         $this->_delegation->getterIs('getSpecification', $class);
 
         $this->assertSame($class, $this->_completeObject->getSpecification());
@@ -98,14 +99,14 @@ class NakedCompleteEntityTest extends \NakedPhp\Test\TestCase
 
     public function testDelegatesToTheMergerForObtainingApplicableMethods()
     {
-        $class = new NakedEntitySpecification('DummyClass');
-        $bareNo = new NakedBareEntity($this, $class);
+        $class = new NakedObjectSpecificationStub('DummyClass');
+        $bareNo = new NakedBareObject($this, $class);
         $merger = $this->_getMergerMock(array('getApplicableMethods'));
         $merger->expects($this->any())
              ->method('getApplicableMethods')
              ->with($class)
              ->will($this->returnValue(array('dummy' => 'DummyMethod')));
-        $no = new NakedCompleteEntity($bareNo, $merger);
+        $no = new NakedObjectMethodDecorator($bareNo, $merger);
 
         $this->assertEquals(array('dummy' => 'DummyMethod'), $no->getObjectActions());
         $this->assertEquals('DummyMethod', $no->getObjectAction('dummy'));
@@ -115,20 +116,20 @@ class NakedCompleteEntityTest extends \NakedPhp\Test\TestCase
 
     public function testDelegatesToTheMergerForCallingMethods()
     {
-        $bareNo = new NakedBareEntity();
+        $bareNo = new NakedBareObject();
         $merger = $this->_getMergerMock();
         $merger->expects($this->once())
              ->method('call')
              ->with($bareNo, 'methodName', array('foo', 'bar'))
              ->will($this->returnValue('dummy'));
-        $no = new NakedCompleteEntity($bareNo, $merger);
+        $no = new NakedObjectMethodDecorator($bareNo, $merger);
 
         $this->assertEquals('dummy', $no->__call('methodName', array('foo', 'bar')));
     }
 
     private function _getBareEntityMock()
     {
-        return $this->getMock('NakedPhp\Metadata\NakedBareEntity');
+        return $this->getMock('NakedPhp\Metadata\NakedBareObject');
     }
 
     private function _getMergerMock(array $methods = array('call'))

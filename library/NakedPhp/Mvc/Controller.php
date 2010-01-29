@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Mvc;
-use NakedPhp\Metadata\NakedEntity;
+use NakedPhp\Metadata\NakedObject;
 use NakedPhp\Metadata\NakedService;
 
 class Controller extends \Zend_Controller_Action
@@ -108,7 +108,7 @@ class Controller extends \Zend_Controller_Action
     }
 
     /**
-     * This action shows a NakedEntity or NakedService object.
+     * This action shows a NakedObject or NakedService object.
      */
     public final function viewAction()
     {
@@ -119,7 +119,7 @@ class Controller extends \Zend_Controller_Action
     }
 
     /**
-     * This action allows editing of a NakedEntity object.
+     * This action allows editing of a NakedObject object.
      */
     public final function editAction()
     {
@@ -144,7 +144,7 @@ class Controller extends \Zend_Controller_Action
     }
 
     /**
-     * This action allows to call a method on a NakedEntity or NakedService object.
+     * This action allows to call a method on a NakedObject or NakedService object.
      */
     public final function callAction()
     {
@@ -186,7 +186,7 @@ class Controller extends \Zend_Controller_Action
     }
 
     /**
-     * This method redirects to the view action of a NakedEntity or NakedService object.
+     * This method redirects to the view action of a NakedObject or NakedService object.
      * @param object    native object of the Domain Model
      */
     protected function _redirectToObject($object)

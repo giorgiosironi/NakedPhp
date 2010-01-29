@@ -14,16 +14,16 @@
  */
 
 namespace NakedPhp\Form;
-use NakedPhp\Metadata\NakedEntity;
+use NakedPhp\Metadata\NakedObject;
 use NakedPhp\Metadata\OneToOneAssociation;
 
 class FieldsFormBuilder
 {
     /**
-     * @param NakedEntity $entity
+     * @param NakedObject $entity
      * @param array $fields         OneToOneAssociation instances
      */
-    public function createForm(NakedEntity $entity, $fields)
+    public function createForm(NakedObject $entity, $fields)
     {
         assert('is_array($fields) or $fields instanceof Traversable');
         $form = new \Zend_Form();
@@ -46,7 +46,7 @@ class FieldsFormBuilder
      * @param OneToOneAssociation $field     single field
      * @return Zend_Form_Element
      */
-    public function createElement(NakedEntity $entity, OneToOneAssociation $field)
+    public function createElement(NakedObject $entity, OneToOneAssociation $field)
     {
         $id = $field->getId();
         if ($this->_isObjectField($field)) {

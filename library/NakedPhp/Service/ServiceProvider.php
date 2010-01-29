@@ -22,7 +22,7 @@ namespace NakedPhp\Service;
 interface ServiceProvider
 {
     /**
-     * @return array    NakedServiceSpecification instances
+     * @return array    NakedObjectSpecification instances of service classes
      */
     public function getServiceClasses();
 

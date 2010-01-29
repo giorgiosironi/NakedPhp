@@ -36,7 +36,7 @@ class EntityReflector
     /**
      * TODO: refactor in generic FacetFactory implementations
      * @param string $className
-     * @return NakedEntitySpecification
+     * @return NakedObjectSpecification
      */
     public function analyze($className)
     {

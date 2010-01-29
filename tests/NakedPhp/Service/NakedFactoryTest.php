@@ -14,10 +14,8 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedBareEntity;
-use NakedPhp\Metadata\NakedEntitySpecification;
-use NakedPhp\Metadata\NakedService;
-use NakedPhp\Metadata\NakedServiceSpecification;
+use NakedPhp\Metadata\NakedObject;
+use NakedPhp\Stubs\NakedObjectSpecificationStub;
 
 class NakedFactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -32,13 +30,13 @@ class NakedFactoryTest extends \PHPUnit_Framework_TestCase
         $this->_factory = new NakedFactory($this->_entityReflectorMock, $this->_serviceReflectorMock);
     }
 
-    public function testWrapsAnEntityInANakedBareEntityInstance()
+    public function testWrapsAnEntityInANakedObjectInstance()
     {
         $this->_serviceReflectorMock->expects($this->any())
                                     ->method('isService')
                                     ->will($this->returnValue(false));
         $no = $this->_factory->createBare(new \stdClass);
-        $this->assertTrue($no instanceof NakedBareEntity);
+        $this->assertTrue($no instanceof NakedObject);
     }
 
     public function testGeneratesMetadataForEntities()
@@ -46,7 +44,7 @@ class NakedFactoryTest extends \PHPUnit_Framework_TestCase
         $this->_serviceReflectorMock->expects($this->any())
                                     ->method('isService')
                                     ->will($this->returnValue(false));
-        $class = new NakedEntitySpecification();
+        $class = new NakedObjectSpecificationStub();
         $this->_entityReflectorMock->expects($this->any())
                                     ->method('analyze')
                                     ->will($this->returnValue($class));
@@ -54,21 +52,12 @@ class NakedFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($class, $no->getSpecification());
     }
 
-    public function testWrapsAServiceInANakedServiceInstance()
-    {
-        $this->_serviceReflectorMock->expects($this->any())
-                                    ->method('isService')
-                                    ->will($this->returnValue(true));
-        $no = $this->_factory->createBare(new \stdClass);
-        $this->assertTrue($no instanceof NakedService);
-    }
-
     public function testGeneratesMetadataForServices()
     {
         $this->_serviceReflectorMock->expects($this->any())
                                     ->method('isService')
                                     ->will($this->returnValue(true));
-        $class = new NakedServiceSpecification();
+        $class = new NakedObjectSpecificationStub();
         $this->_serviceReflectorMock->expects($this->any())
                                     ->method('analyze')
                                     ->will($this->returnValue($class));

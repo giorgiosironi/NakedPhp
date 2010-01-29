@@ -14,14 +14,14 @@
  */
 
 namespace NakedPhp\Service\Provider;
-use NakedPhp\Metadata\NakedServiceSpecification;
-use NakedPhp\Metadata\NakedService;
+use NakedPhp\Stubs\NakedObjectSpecificationStub;
+use NakedPhp\Metadata\NakedObject;
 
 class FactoryProviderTest extends \PHPUnit_Framework_TestCase implements \NakedPhp\Service\ServiceDiscoverer
 {
     private $_serviceClasses = array('stdClass', 'SplQueue');
 
-    /** @var NakedPhp\Metadata\NakedServiceSpecification */
+    /** @var NakedPhp\Metadata\NakedObjectSpecification */
     private $_originalClass;
 
     /**
@@ -31,7 +31,7 @@ class FactoryProviderTest extends \PHPUnit_Framework_TestCase implements \NakedP
     
     public function setUp()
     {
-        $this->_originalClass = new NakedServiceSpecification();
+        $this->_originalClass = new NakedObjectSpecificationStub();
         $serviceReflectorMock = $this->getMock('NakedPhp\Reflect\ServiceReflector', array('analyze'));
         $serviceReflectorMock->expects($this->any())
                              ->method('analyze')
@@ -65,7 +65,7 @@ class FactoryProviderTest extends \PHPUnit_Framework_TestCase implements \NakedP
         $this->_assertIsTheFactoryQueue($ns);
     }
 
-    private function _assertIsTheFactoryQueue(NakedService $ns)
+    private function _assertIsTheFactoryQueue(NakedObject $ns)
     {
         $value = $ns->__call('dequeue');
         $this->assertEquals('insertedDuringConstruction', $value);

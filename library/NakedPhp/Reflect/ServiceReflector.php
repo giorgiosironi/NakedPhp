@@ -32,7 +32,7 @@ class ServiceReflector
 
     /**
      * @param string $className
-     * @return NakedServiceSpecification
+     * @return NakedObjectSpecification
      */
     public function analyze($className)
     {

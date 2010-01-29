@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Mvc\EntityContainer;
-use NakedPhp\Metadata\NakedBareEntity;
+use NakedPhp\Metadata\NakedFactory;
 
 class BareWrappingIteratorTest extends \PHPUnit_Framework_TestCase
 {
@@ -23,29 +23,32 @@ class BareWrappingIteratorTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $wrappedContainer = new UnwrappedContainer();
-        $factory = $this->getMock('NakedPhp\Service\NakedFactory');
-        $factory->expects($this->any())
-                ->method('createBare')
-                ->will($this->returnCallback(array($this, 'factoryMethod')));
         $this->_originalObject = new \stdClass;
+        $wrappedContainer = new UnwrappedContainer();
         $expectedKey = $wrappedContainer->add($this->_originalObject);
+
+        $factory = new NakedFactoryStub();
         $this->_entityContainer = new BareWrappingIterator($wrappedContainer, $factory);
     }
     
-    public function factoryMethod()
-    {
-        return new NakedBareEntity('expectedEntity');
-    }
-
     public function testWrapsElementOnIteration()
     {
         $count = 0;
         foreach ($this->_entityContainer as $key => $entity) {
             $count++;
             $this->assertEquals(1, $key);
-            $this->assertEquals(new NakedBareEntity('expectedEntity'), $entity);
+            $this->assertEquals($count, $entity);
         }
         $this->assertEquals(1, $count);
+    }
+}
+
+class NakedFactoryStub implements NakedFactory
+{
+    private $_counter = 0;
+
+    public function createBare($object)
+    {
+        return ++$this->_counter;
     }
 }

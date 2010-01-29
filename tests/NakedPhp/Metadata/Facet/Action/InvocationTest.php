@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Metadata\Facet\Action;
-use NakedPhp\Metadata\NakedBareEntity;
+use NakedPhp\Metadata\NakedBareObject;
 
 class InvocationTest extends \PHPUnit_Framework_TestCase
 {
@@ -26,7 +26,7 @@ class InvocationTest extends \PHPUnit_Framework_TestCase
 
     public function testInvokesTheHookMethod()
     {
-        $no = new NakedBareEntity($this);
+        $no = new NakedBareObject($this);
         $facet = new Invocation('myAction');
         $result = $facet->invoke($no, array('foo', 'bar'));
         $this->assertEquals('dummy', $result);

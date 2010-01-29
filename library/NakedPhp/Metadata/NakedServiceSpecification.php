@@ -26,6 +26,22 @@ class NakedServiceSpecification extends AbstractNakedObjectSpecification
     /**
      * {@inheritdoc}
      */
+    public function getFields()
+    {
+        return array();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getField($name)
+    {
+        throw new Exception("Attempting to access field $name over a service object.");
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isService()
     {
         return true;

@@ -14,13 +14,11 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedBareEntity;
-use NakedPhp\Metadata\NakedEntitySpecification;
-use NakedPhp\Metadata\NakedBareService;
-use NakedPhp\Metadata\NakedServiceSpecification;
+use NakedPhp\Metadata\NakedBareObject;
 use NakedPhp\Metadata\NakedObjectAction;
 use NakedPhp\Metadata\NakedObjectActionParameter;
 use NakedPhp\Metadata\Facet\Action\Invocation;
+use NakedPhp\Stubs\NakedObjectSpecificationStub;
 use NakedPhp\Stubs\User;
 
 class MethodMergerTest extends \PHPUnit_Framework_TestCase
@@ -58,7 +56,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
             'title' => new NakedObjectActionParameter('string', 'title'),
             'text' => new NakedObjectActionParameter('string', 'text')
         ));
-        $entity = new NakedBareEntity($mock, new NakedEntitySpecification('', array('sendMessage' => $method)));
+        $entity = new NakedBareObject($mock, new NakedObjectSpecificationStub('', array('sendMessage' => $method)));
 
         $result = $this->_methodMerger->call($entity, 'sendMessage', array('Title', 'text...'));
 
@@ -68,7 +66,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     public function testListsMethodOfTheObjectClass()
     {
         $this->_setAvailableServiceClasses(array());
-        $class = new NakedEntitySpecification('NakedPhp\Stubs\User', array('doSomething' => new NakedObjectAction('doSomething')));
+        $class = new NakedObjectSpecificationStub('NakedPhp\Stubs\User', array('doSomething' => new NakedObjectAction('doSomething')));
 
         $methods = $this->_methodMerger->getApplicableMethods($class);
         $this->assertTrue(isset($methods['doSomething']));
@@ -116,14 +114,14 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     public function testCallsAServiceMethodAsIfItWereOnTheEntityClass()
     {
         $this->_makeProcessMethodAvailable();
-        $service = new NakedBareService($this, $this->_serviceClass);
+        $service = new NakedBareObject($this, $this->_serviceClass);
         $this->_providerMock->expects($this->once())
                             ->method('getService')
                             ->with('theService')
                             ->will($this->returnValue($service));
         $class = $this->_getEmptyEntityClass();
         $this->_entity = new \NakedPhp\Stubs\User;
-        $user = new NakedBareEntity($this->_entity, $class);
+        $user = new NakedBareObject($this->_entity, $class);
         $methods = $this->_methodMerger->call($user, 'process');
         $this->assertTrue($this->_callbackCalled);
     }
@@ -136,7 +134,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
 
     private function _makeProcessMethodAvailable()
     {
-        $this->_serviceClass = new NakedServiceSpecification('', array(
+        $this->_serviceClass = new NakedObjectSpecificationStub('', array(
             'process' => new NakedObjectAction('process', array(
                 'objectToProcess' => new NakedObjectActionParameter('NakedPhp\Stubs\User', 'objectToProcess')
             ))
@@ -149,7 +147,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     public function testCallsAEntityMethodAutomaticallyInjectingServices()
     {
         $this->_setAvailableServiceClasses(array(
-            'NakedPhp\Stubs\UserFactory' => new NakedServiceSpecification('NakedPhp\Stubs\UserFactory')
+            'NakedPhp\Stubs\UserFactory' => new NakedObjectSpecificationStub('NakedPhp\Stubs\UserFactory')
         ));
         $service = new \NakedPhp\Stubs\UserFactory();
         $this->_providerMock->expects($this->once())
@@ -158,7 +156,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
                             ->will($this->returnValue($service));
 
         $class = $this->_getEntityClassWithCreateNewMethod();
-        $no = new NakedBareEntity($this, $class);
+        $no = new NakedBareObject($this, $class);
 
         $methods = $this->_methodMerger->getApplicableMethods($class);
         $this->assertNull($methods['createNew']->getFacet('Action\Invocation'));
@@ -175,7 +173,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
 
     private function _getEntityClassWithCreateNewMethod()
     {
-        return new NakedEntitySpecification('NakedPhp\Stubs\User', array(
+        return new NakedObjectSpecificationStub('NakedPhp\Stubs\User', array(
             'createNew' => new NakedObjectAction('createNew', array(
                 'userFactory' => new NakedObjectActionParameter('NakedPhp\Stubs\UserFactory', 'userFactory'),
                 'name' => $name = new NakedObjectActionParameter('string', 'name')
@@ -185,7 +183,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
 
     private function _getEmptyEntityClass()
     {
-        return  new NakedEntitySpecification('NakedPhp\Stubs\User', array());
+        return  new NakedObjectSpecificationStub('NakedPhp\Stubs\User', array());
     }
 
     public function testExtractsMetadataForAMethod()
@@ -194,7 +192,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         $methods = array(
             'doSomething' => $expectedMethod = new NakedObjectAction(''),
         );
-        $class = new NakedEntitySpecification('NakedPhp\Stubs\User', $methods);
+        $class = new NakedObjectSpecificationStub('NakedPhp\Stubs\User', $methods);
 
         $this->assertTrue($this->_methodMerger->hasMethod($class, 'doSomething'));
         $this->assertSame($expectedMethod,
@@ -203,7 +201,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
 
     public function testExtractsBuiltMetadataForAServiceMethod()
     {
-        $this->_serviceClass = new NakedServiceSpecification('', array(
+        $this->_serviceClass = new NakedObjectSpecificationStub('', array(
             'block' => new NakedObjectAction('block', array(
                 'user' => new NakedObjectActionParameter('NakedPhp\Stubs\User', 'user'),
                 'days' => $days = new NakedObjectActionParameter('integer', 'days')
@@ -222,7 +220,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     public function testExtractsBuiltMetadataForAEntityMethodWhichRequireAService()
     {
         $this->_setAvailableServiceClasses(array(
-            'NakedPhp\Stubs\UserFactory' => new NakedServiceSpecification('NakedPhp\Stubs\UserFactory')
+            'NakedPhp\Stubs\UserFactory' => new NakedObjectSpecificationStub('NakedPhp\Stubs\UserFactory')
         ));
 
         $class = $this->_getEntityClassWithCreateNewMethod();

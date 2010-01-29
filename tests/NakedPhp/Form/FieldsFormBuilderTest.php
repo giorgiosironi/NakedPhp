@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Form;
-use NakedPhp\Stubs\NakedEntityStub;
+use NakedPhp\Stubs\NakedObjectStub;
 use NakedPhp\Metadata\OneToOneAssociation;
 use NakedPhp\Metadata\Facet\Disabled;
 use NakedPhp\Metadata\Facet\Property\Choices;
@@ -39,7 +39,7 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
 
     private function _getForm()
     {
-        $entity = new NakedEntityStub($this);
+        $entity = new NakedObjectStub($this);
         return $this->_formBuilder->createForm($entity, $this->_fields);
     }
 
@@ -69,7 +69,7 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function testCreatesSelectForLimitedChoices()
     {
-        $entity = new NakedEntityStub($this);
+        $entity = new NakedObjectStub($this);
         $field = new OneToOneAssociation('string', 'limitedField');
         $field->addFacet(new Choices('limitedField'));
         $element = $this->_formBuilder->createElement($entity, $field);
@@ -85,7 +85,7 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function testDisablesInputProgrammatically()
     {
-        $entity = new NakedEntityStub($this);
+        $entity = new NakedObjectStub($this);
         $field = new OneToOneAssociation('string', 'myField');
         $field->addFacet(new Disabled('myField'));
         $element = $this->_formBuilder->createElement($entity, $field);
@@ -99,7 +99,7 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function testShowsTooltipOnDisabledInputs()
     {
-        $entity = new NakedEntityStub($this);
+        $entity = new NakedObjectStub($this);
         $field = new OneToOneAssociation('string', 'myOtherField');
         $field->addFacet(new Disabled('myOtherField'));
         $element = $this->_formBuilder->createElement($entity, $field);
@@ -118,7 +118,7 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function testValidatesInputProgrammatically()
     {
-        $entity = new NakedEntityStub($this);
+        $entity = new NakedObjectStub($this);
         $field = new OneToOneAssociation('string', 'myField');
         $field->addFacet(new Validate('myField'));
         $element = $this->_formBuilder->createElement($entity, $field);

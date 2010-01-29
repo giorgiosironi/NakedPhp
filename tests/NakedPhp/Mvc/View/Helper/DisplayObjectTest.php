@@ -14,8 +14,7 @@
  */
 
 namespace NakedPhp\Mvc\View\Helper;
-use NakedPhp\Stubs\NakedEntityStub;
-use NakedPhp\Metadata\NakedEntitySpecification;
+use NakedPhp\Stubs\NakedObjectStub;
 use NakedPhp\Metadata\OneToOneAssociation;
 use NakedPhp\Metadata\Facet\Hidden;
 
@@ -26,7 +25,7 @@ class DisplayObjectTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_object = new NakedEntityStub($this);
+        $this->_object = new NakedObjectStub($this);
         $this->_object->setState(array(
             'firstName' => 'Giorgio',
             'lastName' => 'Sironi'

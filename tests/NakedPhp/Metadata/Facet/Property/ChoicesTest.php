@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Metadata\Facet\Property;
-use NakedPhp\Metadata\NakedBareEntity;
+use NakedPhp\Metadata\NakedBareObject;
 
 class ChoicesTest extends \PHPUnit_Framework_TestCase
 {
@@ -26,7 +26,7 @@ class ChoicesTest extends \PHPUnit_Framework_TestCase
 
     public function testReturnChoicesEstablishedFromTheHookMethod()
     {
-        $no = new NakedBareEntity($this);
+        $no = new NakedBareObject($this);
         $facet = new Choices('myProperty');
         $choices = $facet->getChoices($no);
         $this->assertEquals(array('foo', 'bar'), $choices);

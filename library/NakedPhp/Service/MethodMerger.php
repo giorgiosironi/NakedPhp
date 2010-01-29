@@ -154,7 +154,7 @@ class MethodMerger implements MethodCaller
 
     /**
      * @param string $methodName    method name to search for
-     * @return NakedService         the service name
+     * @return NakedObject          the service name
      */
     protected function _findService($methodName)
     {

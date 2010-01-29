@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Metadata\Facet;
-use NakedPhp\Metadata\NakedBareEntity;
+use NakedPhp\Metadata\NakedBareObject;
 
 class DisabledTest extends \PHPUnit_Framework_TestCase
 {
@@ -26,7 +26,7 @@ class DisabledTest extends \PHPUnit_Framework_TestCase
 
     public function testReturnsReasonEstablishedFromTheHookMethod()
     {
-        $no = new NakedBareEntity($this);
+        $no = new NakedBareObject($this);
         $facet = new Disabled('myProperty');
         $reason = $facet->disabledReason($no);
         $this->assertEquals('Not available.', $reason);

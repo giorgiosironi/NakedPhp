@@ -14,46 +14,43 @@
  */
 
 namespace NakedPhp\Metadata;
+use NakedPhp\Stubs\NakedObjectSpecificationStub;
+use NakedPhp\Test\TestCase;
 
-class AbstractNakedObjectTest extends \PHPUnit_Framework_TestCase
+/**
+ * Implementation of NakedObject (Decorators too) should have a test case that extends this class.
+ * They should define the $_object and $_delegation members. $_object should wrap $this.
+ */
+abstract class AbstractNakedObjectTest extends TestCase
 {
-    public function testIsADecoratorForTheDomainObject()
+    /** @var NakedObject */
+    protected $_object;
+    /** @var NakedPhp\Test\Delegation */
+    protected $_delegation;
+
+    abstract protected function _loadDelegation();
+
+    public function setUp()
     {
-        $no = new AbstractNakedObject($this, null);
-        $this->assertEquals('cannedResponse', $no->dummyMethod());
+        $this->_loadDelegation();
     }
 
-    /**
-     * @expectedException NakedPhp\Metadata\Exception
-     */
-    public function testRaiseExceptionWhenUnexistentMethodIsCalled()
+    public function testDelegatesAccessToClassNameToTheInnerSpecification()
     {
-        $no = new AbstractNakedObject($this, null);
-        $no->foobar();
+        $this->_delegation->getterIs('getClassName', 'FooClass');
+        $this->assertEquals('FooClass', $this->_object->getClassName());
     }
 
-    public function testDelegatesGettingClassNameOfTheDomainObject()
+    public function testDelegatesFieldsListToTheInnerSpecification()
     {
-        $no = new AbstractNakedObject($this, new NakedEntitySpecification('FooClass'));
-        $this->assertEquals('FooClass', $no->getClassName());
+        $this->_delegation->getterIs('getFields', $expected = array('name' => 'Name'));
+        $this->assertSame($expected, $this->_object->getFields());
     }
 
-    public function testReturnsACommonStringRepresentationForUnconvertibleObjects()
+    public function testDelegatesSingleFieldAccessToTheInnerSpecification()
     {
-        $no = new AbstractNakedObject($this, null);
-        $this->assertEquals('OBJECT', (string) $no);
+        $this->_delegation->getterIs('getField', 'Name');
+        $this->assertSame('Name', $this->_object->getField('name'));
     }
 
-    public function testContainsItsWrappedObject()
-    {
-        $no = new AbstractNakedObject($this, null);
-        $this->assertFalse($no->isWrapping(new \stdClass));
-        $this->assertTrue($no->isWrapping($this));
-    }
-
-    /** self-shunting */
-    public function dummyMethod()
-    {
-        return 'cannedResponse';
-    }
 }

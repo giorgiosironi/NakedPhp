@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Metadata\Facet\Property;
-use NakedPhp\Metadata\NakedBareEntity;
+use NakedPhp\Metadata\NakedBareObject;
 
 class ValidateTest extends \PHPUnit_Framework_TestCase
 {
@@ -26,7 +26,7 @@ class ValidateTest extends \PHPUnit_Framework_TestCase
 
     public function testReturnsValidStateEstablishedFromTheHookMethod()
     {
-        $no = new NakedBareEntity($this);
+        $no = new NakedBareObject($this);
         $facet = new Validate('myProperty');
         $valid = $facet->invalidReason($no, 42);
         $this->assertFalse($valid);

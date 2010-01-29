@@ -23,7 +23,7 @@ class AbstractFactoryAndRepository
     protected $_em;
 
     /**
-     * @var string  the name of the managed @see NakedEntitySpecification
+     * @var string  the name of the managed @Entity marked class
      */
     protected $_entityClassName;
     
