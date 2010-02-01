@@ -16,7 +16,7 @@
 namespace NakedPhp\Reflect\Functional;
 use NakedPhp\Reflect\EntityReflector;
 use NakedPhp\Reflect\ReflectFactory;
-use NakedPhp\Metadata\NakedObjectActionParameter;
+use NakedPhp\MetaModel\NakedObjectActionParameter;
 
 class UserTest extends \PHPUnit_Framework_TestCase
 {

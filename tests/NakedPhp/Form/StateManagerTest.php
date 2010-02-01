@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Form;
-use NakedPhp\Metadata\NakedBareObject;
+use NakedPhp\MetaModel\NakedBareObject;
 use NakedPhp\Stubs\NakedObjectSpecificationStub;
 use NakedPhp\Stubs\NakedObjectStub;
 use NakedPhp\Stubs\User;
@@ -106,7 +106,7 @@ class StateManagerTest extends \PHPUnit_Framework_TestCase
 
     private function _getMockEntity($expectedState = null)
     {
-        $mock = $this->getMock('NakedPhp\\Metadata\\NakedBareObject', array(), array(), '', false);
+        $mock = $this->getMock('NakedPhp\\MetaModel\\NakedBareObject', array(), array(), '', false);
         if ($expectedState !== null) {
             $mock->expects($this->once())
                  ->method('setState')

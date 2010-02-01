@@ -20,7 +20,7 @@ class EmptyConstructorsProviderTest extends \PHPUnit_Framework_TestCase implemen
 {
     private $_serviceClasses = array('stdClass', 'SplQueue');
 
-    /** @var NakedPhp\Metadata\NakedObjectSpecification */
+    /** @var NakedPhp\MetaModel\NakedObjectSpecification */
     private $_originalClass;
 
     /**
@@ -50,7 +50,7 @@ class EmptyConstructorsProviderTest extends \PHPUnit_Framework_TestCase implemen
         $ns->enqueue('foo');
     }
 
-    public function testProvidesServiceMetadata()
+    public function testProvidesServiceMetaModel()
     {
         $classes = $this->_provider->getServiceClasses();
         foreach ($classes as $serviceClass) {
@@ -58,7 +58,7 @@ class EmptyConstructorsProviderTest extends \PHPUnit_Framework_TestCase implemen
         }
     }
 
-    public function testInjectServiceMetadataIntoInstances()
+    public function testInjectServiceMetaModelIntoInstances()
     {
         $service = $this->_provider->getService('stdClass');
         $this->assertSame($this->_originalClass, $service->getSpecification());

@@ -14,10 +14,10 @@
  */
 
 namespace NakedPhp\Reflect;
-use NakedPhp\Metadata\NakedServiceSpecification;
-use NakedPhp\Metadata\NakedObjectAction;
-use NakedPhp\Metadata\NakedObjectActionParameter;
-use NakedPhp\Metadata\Facet\Action\Invocation;
+use NakedPhp\MetaModel\NakedServiceSpecification;
+use NakedPhp\MetaModel\NakedObjectAction;
+use NakedPhp\MetaModel\NakedObjectActionParameter;
+use NakedPhp\MetaModel\Facet\Action\Invocation;
 
 class ServiceReflector
 {

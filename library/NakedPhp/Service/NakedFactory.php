@@ -14,11 +14,11 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedBareObject;
+use NakedPhp\MetaModel\NakedBareObject;
 use NakedPhp\Reflect\EntityReflector;
 use NakedPhp\Reflect\ServiceReflector;
 
-class NakedFactory implements \NakedPhp\Metadata\NakedFactory
+class NakedFactory implements \NakedPhp\MetaModel\NakedFactory
 {
     protected $_entityReflector;
     protected $_serviceReflector;

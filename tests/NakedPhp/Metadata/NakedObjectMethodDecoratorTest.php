@@ -10,10 +10,10 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Metadata
+ * @package    NakedPhp_MetaModel
  */
 
-namespace NakedPhp\Metadata;
+namespace NakedPhp\MetaModel;
 use NakedPhp\Stubs\NakedObjectSpecificationStub;
 use NakedPhp\Test\Delegation;
 
@@ -32,7 +32,7 @@ class NakedObjectMethodDecoratorTest extends \NakedPhp\Test\TestCase
         $this->_delegation = new Delegation($this, $original);
     }
 
-    public function testDelegatesToTheInnerEntityForClassMetadata()
+    public function testDelegatesToTheInnerEntityForClassMetaModel()
     {
         $class = new NakedObjectSpecificationStub();
         $this->_delegation->getterIs('getSpecification', $class);
@@ -60,7 +60,7 @@ class NakedObjectMethodDecoratorTest extends \NakedPhp\Test\TestCase
         $this->assertSame($entity, $this->_object->getObject());
     }
 
-    public function testDelegatesToTheInnerEntityForObtainingFieldMetadata()
+    public function testDelegatesToTheInnerEntityForObtainingFieldMetaModel()
     {
         $this->_delegation->getterIs('getField', 'STUBBED');
 
@@ -136,7 +136,7 @@ class NakedObjectMethodDecoratorTest extends \NakedPhp\Test\TestCase
 
     private function _getBareEntityMock()
     {
-        return $this->getMock('NakedPhp\Metadata\NakedBareObject');
+        return $this->getMock('NakedPhp\MetaModel\NakedBareObject');
     }
 
     private function _getMergerMock(array $methods = array('call'))

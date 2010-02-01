@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Mvc\EntityContainer;
-use NakedPhp\Metadata\NakedFactory;
+use NakedPhp\MetaModel\NakedFactory;
 
 class BareWrappingIteratorTest extends \PHPUnit_Framework_TestCase
 {

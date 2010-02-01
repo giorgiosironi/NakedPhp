@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedObject;
+use NakedPhp\MetaModel\NakedObject;
 use NakedPhp\Stubs\NakedObjectSpecificationStub;
 
 class NakedFactoryTest extends \PHPUnit_Framework_TestCase
@@ -39,7 +39,7 @@ class NakedFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($no instanceof NakedObject);
     }
 
-    public function testGeneratesMetadataForEntities()
+    public function testGeneratesMetaModelForEntities()
     {
         $this->_serviceReflectorMock->expects($this->any())
                                     ->method('isService')
@@ -52,7 +52,7 @@ class NakedFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($class, $no->getSpecification());
     }
 
-    public function testGeneratesMetadataForServices()
+    public function testGeneratesMetaModelForServices()
     {
         $this->_serviceReflectorMock->expects($this->any())
                                     ->method('isService')

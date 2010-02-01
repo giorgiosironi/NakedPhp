@@ -14,9 +14,9 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedObject;
-use NakedPhp\Metadata\NakedObjectSpecification;
-use NakedPhp\Metadata\NakedObjectAction;
+use NakedPhp\MetaModel\NakedObject;
+use NakedPhp\MetaModel\NakedObjectSpecification;
+use NakedPhp\MetaModel\NakedObjectAction;
 
 interface MethodCaller
 {

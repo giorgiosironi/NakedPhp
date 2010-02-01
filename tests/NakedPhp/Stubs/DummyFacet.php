@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Stubs;
-use NakedPhp\Metadata\Facet;
+use NakedPhp\MetaModel\Facet;
 
 class DummyFacet implements Facet
 {

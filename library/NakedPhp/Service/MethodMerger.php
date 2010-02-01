@@ -14,10 +14,10 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedObject;
-use NakedPhp\Metadata\NakedObjectSpecification;
-use NakedPhp\Metadata\NakedObjectAction;
-use NakedPhp\Metadata\Facet\Action\Invocation;
+use NakedPhp\MetaModel\NakedObject;
+use NakedPhp\MetaModel\NakedObjectSpecification;
+use NakedPhp\MetaModel\NakedObjectAction;
+use NakedPhp\MetaModel\Facet\Action\Invocation;
 
 /**
  * Merge services methods who take an entity as methods on the entity;

@@ -14,10 +14,10 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\Metadata\NakedBareObject;
-use NakedPhp\Metadata\NakedObjectAction;
-use NakedPhp\Metadata\NakedObjectActionParameter;
-use NakedPhp\Metadata\Facet\Action\Invocation;
+use NakedPhp\MetaModel\NakedBareObject;
+use NakedPhp\MetaModel\NakedObjectAction;
+use NakedPhp\MetaModel\NakedObjectActionParameter;
+use NakedPhp\MetaModel\Facet\Action\Invocation;
 use NakedPhp\Stubs\NakedObjectSpecificationStub;
 use NakedPhp\Stubs\User;
 
@@ -186,7 +186,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         return  new NakedObjectSpecificationStub('NakedPhp\Stubs\User', array());
     }
 
-    public function testExtractsMetadataForAMethod()
+    public function testExtractsMetaModelForAMethod()
     {
         $this->_setAvailableServiceClasses(array());
         $methods = array(
@@ -199,7 +199,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
                           $this->_methodMerger->getObjectAction($class, 'doSomething'));
     }
 
-    public function testExtractsBuiltMetadataForAServiceMethod()
+    public function testExtractsBuiltMetaModelForAServiceMethod()
     {
         $this->_serviceClass = new NakedObjectSpecificationStub('', array(
             'block' => new NakedObjectAction('block', array(
@@ -217,7 +217,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('days' => $days), $method->getParameters());
     }
 
-    public function testExtractsBuiltMetadataForAEntityMethodWhichRequireAService()
+    public function testExtractsBuiltMetaModelForAEntityMethodWhichRequireAService()
     {
         $this->_setAvailableServiceClasses(array(
             'NakedPhp\Stubs\UserFactory' => new NakedObjectSpecificationStub('NakedPhp\Stubs\UserFactory')
@@ -230,7 +230,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('name' => new NakedObjectActionParameter('string', 'name')), $method->getParameters());
     }
 
-    public function testSupportsMetadataBuildingWhenMoreThanOneParameterIsAService()
+    public function testSupportsMetaModelBuildingWhenMoreThanOneParameterIsAService()
     {
         $this->markTestIncomplete();
     }

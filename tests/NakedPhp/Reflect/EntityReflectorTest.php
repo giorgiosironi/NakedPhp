@@ -14,10 +14,10 @@
  */
 
 namespace NakedPhp\Reflect;
-use NakedPhp\Metadata\OneToOneAssociation;
-use NakedPhp\Metadata\NakedObjectAction;
-use NakedPhp\Metadata\Facet;
-use NakedPhp\Metadata\Facet\Action\Invocation;
+use NakedPhp\MetaModel\OneToOneAssociation;
+use NakedPhp\MetaModel\NakedObjectAction;
+use NakedPhp\MetaModel\Facet;
+use NakedPhp\MetaModel\Facet\Action\Invocation;
 
 class EntityReflectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -44,7 +44,7 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
         $this->_reflector = new EntityReflector($this->_methodsReflector);
     }
 
-    public function testCreatesAClassMetadataObject()
+    public function testCreatesAClassMetaModelObject()
     {
         $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
         $this->assertFalse($result->isService());
@@ -74,7 +74,7 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(isset($fields['status']));
     }
 
-    public function testGathersMetadataOnTheField()
+    public function testGathersMetaModelOnTheField()
     {
         $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
         $fields = $result->getFields();

@@ -14,15 +14,15 @@
  */
 
 namespace NakedPhp\Reflect;
-use NakedPhp\Metadata\NakedEntitySpecification;
-use NakedPhp\Metadata\NakedObjectAction;
-use NakedPhp\Metadata\NakedObjectActionParameter;
-use NakedPhp\Metadata\OneToOneAssociation;
-use NakedPhp\Metadata\Facet\Action\Invocation;
-use NakedPhp\Metadata\Facet\Disabled;
-use NakedPhp\Metadata\Facet\Hidden;
-use NakedPhp\Metadata\Facet\Property\Choices;
-use NakedPhp\Metadata\Facet\Property\Validate;
+use NakedPhp\MetaModel\NakedEntitySpecification;
+use NakedPhp\MetaModel\NakedObjectAction;
+use NakedPhp\MetaModel\NakedObjectActionParameter;
+use NakedPhp\MetaModel\OneToOneAssociation;
+use NakedPhp\MetaModel\Facet\Action\Invocation;
+use NakedPhp\MetaModel\Facet\Disabled;
+use NakedPhp\MetaModel\Facet\Hidden;
+use NakedPhp\MetaModel\Facet\Property\Choices;
+use NakedPhp\MetaModel\Facet\Property\Validate;
 
 class EntityReflector
 {

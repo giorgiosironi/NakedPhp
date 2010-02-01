@@ -10,12 +10,12 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Metadata
+ * @package    NakedPhp_MetaModel
  */
 
-namespace NakedPhp\Metadata\Facet\Property;
-use NakedPhp\Metadata\Facet;
-use NakedPhp\Metadata\NakedObject;
+namespace NakedPhp\MetaModel\Facet\Property;
+use NakedPhp\MetaModel\Facet;
+use NakedPhp\MetaModel\NakedObject;
 
 class Setter implements Facet
 {

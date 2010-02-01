@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Form;
-use NakedPhp\Metadata\NakedObjectAction;
+use NakedPhp\MetaModel\NakedObjectAction;
 
 class MethodFormBuilder
 {

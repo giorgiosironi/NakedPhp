@@ -15,13 +15,13 @@
 
 namespace NakedPhp\Service\Provider;
 use NakedPhp\Stubs\NakedObjectSpecificationStub;
-use NakedPhp\Metadata\NakedObject;
+use NakedPhp\MetaModel\NakedObject;
 
 class FactoryProviderTest extends \PHPUnit_Framework_TestCase implements \NakedPhp\Service\ServiceDiscoverer
 {
     private $_serviceClasses = array('stdClass', 'SplQueue');
 
-    /** @var NakedPhp\Metadata\NakedObjectSpecification */
+    /** @var NakedPhp\MetaModel\NakedObjectSpecification */
     private $_originalClass;
 
     /**
@@ -71,7 +71,7 @@ class FactoryProviderTest extends \PHPUnit_Framework_TestCase implements \NakedP
         $this->assertEquals('insertedDuringConstruction', $value);
     }
 
-    public function testProvidesServiceMetadata()
+    public function testProvidesServiceMetaModel()
     {
         $classes = $this->_provider->getServiceClasses();
         foreach ($classes as $serviceClass) {
@@ -79,7 +79,7 @@ class FactoryProviderTest extends \PHPUnit_Framework_TestCase implements \NakedP
         }
     }
 
-    public function testInjectServiceMetadataIntoInstances()
+    public function testInjectServiceMetaModelIntoInstances()
     {
         $service = $this->_provider->getService('SplQueue');
         $this->assertSame($this->_originalClass, $service->getSpecification());

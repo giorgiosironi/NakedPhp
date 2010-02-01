@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Form;
-use NakedPhp\Metadata\NakedObject;
+use NakedPhp\MetaModel\NakedObject;
 
 class StateManager
 {

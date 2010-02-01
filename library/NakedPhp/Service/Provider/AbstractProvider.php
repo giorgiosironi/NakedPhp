@@ -49,6 +49,6 @@ abstract class AbstractProvider implements \NakedPhp\Service\ServiceProvider
     protected function _wrap($instance, $fullClassName)
     {
         $nakedClass = $this->_reflector->analyze($fullClassName);
-        return new \NakedPhp\Metadata\NakedBareObject($instance, $nakedClass);
+        return new \NakedPhp\MetaModel\NakedBareObject($instance, $nakedClass);
     }
 }

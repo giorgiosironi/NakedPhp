@@ -14,10 +14,10 @@
  */
 
 namespace NakedPhp\Stubs;
-use NakedPhp\Metadata\NakedBareObject;
-use NakedPhp\Metadata\NakedObjectAction;
-use NakedPhp\Metadata\OneToOneAssociation;
-use NakedPhp\Metadata\Facet;
+use NakedPhp\MetaModel\NakedBareObject;
+use NakedPhp\MetaModel\NakedObjectAction;
+use NakedPhp\MetaModel\OneToOneAssociation;
+use NakedPhp\MetaModel\Facet;
 
 class NakedObjectStub extends NakedBareObject
 {

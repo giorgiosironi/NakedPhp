@@ -15,10 +15,10 @@
 
 namespace NakedPhp\Form;
 use NakedPhp\Stubs\NakedObjectStub;
-use NakedPhp\Metadata\OneToOneAssociation;
-use NakedPhp\Metadata\Facet\Disabled;
-use NakedPhp\Metadata\Facet\Property\Choices;
-use NakedPhp\Metadata\Facet\Property\Validate;
+use NakedPhp\MetaModel\OneToOneAssociation;
+use NakedPhp\MetaModel\Facet\Disabled;
+use NakedPhp\MetaModel\Facet\Property\Choices;
+use NakedPhp\MetaModel\Facet\Property\Validate;
 
 class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
 {

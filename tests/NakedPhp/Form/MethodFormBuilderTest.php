@@ -14,8 +14,8 @@
  */
 
 namespace NakedPhp\Form;
-use NakedPhp\Metadata\NakedObjectAction;
-use NakedPhp\Metadata\NakedObjectActionParameter;
+use NakedPhp\MetaModel\NakedObjectAction;
+use NakedPhp\MetaModel\NakedObjectActionParameter;
 
 class MethodFormBuilderTest extends \PHPUnit_Framework_TestCase
 {

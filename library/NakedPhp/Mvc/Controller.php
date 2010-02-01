@@ -14,8 +14,8 @@
  */
 
 namespace NakedPhp\Mvc;
-use NakedPhp\Metadata\NakedObject;
-use NakedPhp\Metadata\NakedService;
+use NakedPhp\MetaModel\NakedObject;
+use NakedPhp\MetaModel\NakedService;
 
 class Controller extends \Zend_Controller_Action
 {

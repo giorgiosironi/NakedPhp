@@ -79,7 +79,7 @@ class Factory
 
     /**
      * TODO: make private if possible
-     * @return Metadata\NakedFactory
+     * @return MetaModel\NakedFactory
      */
     public function getNakedFactory()
     {
@@ -105,18 +105,18 @@ class Factory
     /**
      * @return NakedObjectMethodDecorator
      */
-    public function createCompleteEntity(Metadata\NakedBareObject $entity)
+    public function createCompleteEntity(MetaModel\NakedBareObject $entity)
     {
-        return new Metadata\NakedObjectMethodDecorator($entity, $this->getMethodMerger());
+        return new MetaModel\NakedObjectMethodDecorator($entity, $this->getMethodMerger());
     }
 
     /**
      * TODO: unify with @see createCompleteEntity
      * @return NakedObjectMethodDecorator
      */
-    public function createCompleteService(Metadata\NakedBareObject $entity)
+    public function createCompleteService(MetaModel\NakedBareObject $entity)
     {
-        return new Metadata\NakedObjectMethodDecorator($entity, $this->getMethodMerger());
+        return new MetaModel\NakedObjectMethodDecorator($entity, $this->getMethodMerger());
     }
 
     public function getPersistenceStorage()

@@ -14,8 +14,8 @@
  */
 
 namespace NakedPhp\Mvc\EntityContainer;
-use NakedPhp\Metadata\NakedBareObject;
-use NakedPhp\Metadata\NakedFactory;
+use NakedPhp\MetaModel\NakedBareObject;
+use NakedPhp\MetaModel\NakedFactory;
 
 class BareWrappingIterator implements \IteratorAggregate
 {

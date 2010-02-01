@@ -10,10 +10,10 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Metadata
+ * @package    NakedPhp_MetaModel
  */
 
-namespace NakedPhp\Metadata;
+namespace NakedPhp\MetaModel;
 use NakedPhp\Stubs\NakedObjectSpecificationStub;
 use NakedPhp\Stubs\Phonenumber;
 use NakedPhp\Test\Delegation;
@@ -37,7 +37,7 @@ class NakedBareObjectTest extends AbstractNakedObjectTest
         $this->assertTrue($no->isWrapping($this));
     }
 
-    public function testRetainsClassMetadata()
+    public function testRetainsClassMetaModel()
     {
         $no = new NakedBareObject($this, $class = new NakedObjectSpecificationStub());
         $this->assertSame($class, $no->getSpecification());
@@ -60,7 +60,7 @@ class NakedBareObjectTest extends AbstractNakedObjectTest
     }
 
     /**
-     * @expectedException NakedPhp\Metadata\Exception
+     * @expectedException NakedPhp\MetaModel\Exception
      */
     public function testRaiseExceptionWhenUnexistentMethodIsCalled()
     {
@@ -88,7 +88,7 @@ class NakedBareObjectTest extends AbstractNakedObjectTest
     public function testSetsTheStateOfTheObject()
     {
         $data = array('nickname' => new NakedBareObject('dummy'));
-        $field = $this->getMock('NakedPhp\Metadata\OneToOneAssociation');
+        $field = $this->getMock('NakedPhp\MetaModel\OneToOneAssociation');
         $field->expects($this->once())
               ->method('setAssociation');
         $class = new NakedObjectSpecificationStub(null, array());
@@ -101,7 +101,7 @@ class NakedBareObjectTest extends AbstractNakedObjectTest
     {
         $data = array('phonenumber' => $phonenumber = new NakedBareObject(new Phonenumber));
 
-        $field = $this->getMock('NakedPhp\Metadata\OneToOneAssociation');
+        $field = $this->getMock('NakedPhp\MetaModel\OneToOneAssociation');
         $class = new NakedObjectSpecificationStub(null, array());
         $class->setFields(array('phonenumber' => $field));
         $no = new NakedBareObject(null, $class);

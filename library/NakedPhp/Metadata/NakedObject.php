@@ -10,10 +10,10 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Metadata
+ * @package    NakedPhp_MetaModel
  */
 
-namespace NakedPhp\Metadata;
+namespace NakedPhp\MetaModel;
 
 /**
  * Interface for classes that wrap a domain object.

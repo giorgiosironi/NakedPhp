@@ -14,8 +14,8 @@
  */
 
 namespace NakedPhp\Reflect;
-use NakedPhp\Metadata\NakedObjectAction;
-use NakedPhp\Metadata\Facet\Action\Invocation;
+use NakedPhp\MetaModel\NakedObjectAction;
+use NakedPhp\MetaModel\Facet\Action\Invocation;
 
 class ServiceReflectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -45,7 +45,7 @@ class ServiceReflectorTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->_reflector->isService('NakedPhp\Stubs\UserFactory'));
     }
 
-    public function testCreatesAClassMetadataObject()
+    public function testCreatesAClassMetaModelObject()
     {
         $this->_result = $this->_reflector->analyze('NakedPhp\Stubs\UserFactory');
         $this->assertTrue($this->_result->isService());

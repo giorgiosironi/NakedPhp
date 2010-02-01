@@ -27,7 +27,7 @@ class FacetHolder
 
     public function testIsFacetHolder($object)
     {
-        $this->_test->assertTrue($object instanceof \NakedPhp\Metadata\FacetHolder);
+        $this->_test->assertTrue($object instanceof \NakedPhp\MetaModel\FacetHolder);
 
         $facet = new DummyFacet();
         $object->addFacet($facet);
