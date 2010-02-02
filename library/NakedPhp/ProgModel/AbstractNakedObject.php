@@ -79,18 +79,18 @@ abstract class AbstractNakedObject implements NakedObject
      * {@inheritdoc}
      * Convenience method.
      */
-    public function getFields()
+    public function getAssociations()
     {
-        return $this->_class->getFields();
+        return $this->_class->getAssociations();
     }
 
     /**
      * {@inheritdoc}
      * Convenience method.
      */
-    public function getField($name)
+    public function getAssociation($name)
     {
-        return $this->_class->getField($name);
+        return $this->_class->getAssociation($name);
     }
     
     /**

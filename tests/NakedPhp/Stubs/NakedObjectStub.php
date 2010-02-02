@@ -55,12 +55,12 @@ class NakedObjectStub extends NakedBareObject
         return $this->_fields[$name] = $field;
     }
 
-    public function getFields()
+    public function getAssociations()
     {
         return $this->_fields;
     }
 
-    public function getField($name)
+    public function getAssociation($name)
     {
         return $this->_fields[$name];
     }

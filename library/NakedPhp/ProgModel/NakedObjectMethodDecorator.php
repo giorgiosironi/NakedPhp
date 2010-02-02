@@ -97,18 +97,18 @@ class NakedObjectMethodDecorator implements NakedObject, \IteratorAggregate
      * {@inheritdoc}
      * Proxies to wrapped entity.
      */
-    public function getField($name)
+    public function getAssociation($name)
     {
-        return $this->_entity->getField($name);
+        return $this->_entity->getAssociation($name);
     }
 
     /**
      * {@inheritdoc}
      * Proxies to wrapped entity.
      */
-    public function getFields()
+    public function getAssociations()
     {
-        return $this->_entity->getFields();
+        return $this->_entity->getAssociations();
     }
 
     /**

@@ -125,7 +125,7 @@ class Controller extends \Zend_Controller_Action
     {
         $this->_contextContainer->remember($this->_helper->Url->url());
         $formBuilder = $this->_factory->getFieldsFormBuilder();
-        $form = $formBuilder->createForm($this->_completeObject, $this->_class->getFields());
+        $form = $formBuilder->createForm($this->_completeObject, $this->_class->getAssociations());
         $stateManager = $this->_factory->getStateManager()
                                        ->populateOptions($form)
                                        ->setFormState($form, $this->_completeObject);

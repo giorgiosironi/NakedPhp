@@ -23,11 +23,11 @@ interface AssociationContainer
     /**
      * @return array of @see OneToOneAssociation instances
      */
-    public function getFields();
+    public function getAssociations();
 
     /**
      * @param string $name
      * @return OneToOneAssociation
      */
-    public function getField($name);
+    public function getAssociation($name);
 }

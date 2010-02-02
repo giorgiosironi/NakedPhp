@@ -60,7 +60,7 @@ class DisplayObject extends \Zend_View_Helper_Abstract
     {
         $array = array();
         foreach ($no as $fieldName => $value) {
-            $field = $no->getField($fieldName);
+            $field = $no->getAssociation($fieldName);
             if ($facet = $field->getFacet('Hidden')) {
                 if ($facet->hiddenReason($no)) {
                     continue;

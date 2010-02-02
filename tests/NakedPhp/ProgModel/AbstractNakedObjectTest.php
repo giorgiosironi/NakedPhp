@@ -49,14 +49,14 @@ abstract class AbstractNakedObjectTest extends TestCase
 
     public function testDelegatesFieldsListToTheInnerSpecification()
     {
-        $this->_delegation->getterIs('getFields', $expected = array('name' => 'Name'));
-        $this->assertSame($expected, $this->_object->getFields());
+        $this->_delegation->getterIs('getAssociations', $expected = array('name' => 'Name'));
+        $this->assertSame($expected, $this->_object->getAssociations());
     }
 
     public function testDelegatesSingleFieldAccessToTheInnerSpecification()
     {
-        $this->_delegation->getterIs('getField', 'Name');
-        $this->assertSame('Name', $this->_object->getField('name'));
+        $this->_delegation->getterIs('getAssociation', 'Name');
+        $this->assertSame('Name', $this->_object->getAssociation('name'));
     }
 
 }

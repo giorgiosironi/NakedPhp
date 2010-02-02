@@ -28,12 +28,12 @@ class NakedEntitySpecificationTest extends NakedObjectSpecificationTest
     public function testRetainsFieldsList()
     {
         $nc = new NakedEntitySpecification('', array(), $fields = array('Name', 'Role'));
-        $this->assertEquals($fields, $nc->getFields());
+        $this->assertEquals($fields, $nc->getAssociations());
     }
 
     public function testGivesAccessToAFieldByName()
     {
         $nc = new NakedEntitySpecification('', array(), array('key' => 'Name', 'Role'));
-        $this->assertEquals('Name', $nc->getField('key'));
+        $this->assertEquals('Name', $nc->getAssociation('key'));
     }
 }

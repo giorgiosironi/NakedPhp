@@ -63,21 +63,21 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
     public function testListsFieldsOfAnEntityObjectThatHaveSetterAndGetter()
     {
         $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $fields = $result->getFields();
+        $fields = $result->getAssociations();
         $this->assertTrue(isset($fields['name']));
     }
 
     public function testListsFieldsOfAnEntityObjectThatHaveGetter()
     {
         $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $fields = $result->getFields();
+        $fields = $result->getAssociations();
         $this->assertTrue(isset($fields['status']));
     }
 
     public function testGathersMetaModelOnTheField()
     {
         $result = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $fields = $result->getFields();
+        $fields = $result->getAssociations();
         $this->assertTrue($fields['status'] instanceof OneToOneAssociation);
         $this->assertEquals('status', $fields['status']->getId());
         $this->assertEquals('string', $fields['status']->getType());
@@ -89,7 +89,7 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
     public function testGenerateFacetsForChoices()
     {
         $class = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $field = $class->getField('status');
+        $field = $class->getAssociation('status');
         $facet = $field->getFacet('Property\Choices');
         $this->assertTrue($facet instanceof Facet);
     }
@@ -100,7 +100,7 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
     public function testGenerateFacetsForDisabledFeatures()
     {
         $class = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $field = $class->getField('status');
+        $field = $class->getAssociation('status');
         $facet = $field->getFacet('Disabled');
         $this->assertTrue($facet instanceof Facet);
     }
@@ -111,7 +111,7 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
     public function testGenerateFacetsForValidation()
     {
         $class = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $field = $class->getField('status');
+        $field = $class->getAssociation('status');
         $facet = $field->getFacet('Property\Validate');
         $this->assertTrue($facet instanceof Facet);
     }
@@ -122,7 +122,7 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
     public function testGenerateFacetsForHiding()
     {
         $class = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $field = $class->getField('status');
+        $field = $class->getAssociation('status');
         $facet = $field->getFacet('Hidden');
         $this->assertTrue($facet instanceof Facet);
     }

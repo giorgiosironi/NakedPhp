@@ -50,7 +50,7 @@ class DisplayObjectTest extends \PHPUnit_Framework_TestCase
 
     public function testHidesFieldsProgrammatically()
     {
-        $this->_object->getField('firstName')->addFacet(new Hidden('firstName'));
+        $this->_object->getAssociation('firstName')->addFacet(new Hidden('firstName'));
         $result = $this->_helper->displayObject($this->_object);
 
         $this->assertQueryContentNotContains($result, 'table tr td', 'firstName');

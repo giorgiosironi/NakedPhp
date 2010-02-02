@@ -25,12 +25,12 @@ class NakedObjectSpecificationStub extends AbstractNakedObjectSpecification
         $this->_fields = $fields;
     }
 
-    public function getFields()
+    public function getAssociations()
     {
         return $this->_fields;
     }
 
-    public function getField($name)
+    public function getAssociation($name)
     {
         return $this->_fields[$name];
     }

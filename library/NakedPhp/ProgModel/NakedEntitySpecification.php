@@ -40,7 +40,7 @@ class NakedEntitySpecification extends AbstractNakedObjectSpecification
     /**
      * {@inheritdoc}
      */
-    public function getFields()
+    public function getAssociations()
     {
         return $this->_fields;
     }
@@ -48,7 +48,7 @@ class NakedEntitySpecification extends AbstractNakedObjectSpecification
     /**
      * {@inheritdoc}
      */
-    public function getField($name)
+    public function getAssociation($name)
     {
         return $this->_fields[$name];
     }

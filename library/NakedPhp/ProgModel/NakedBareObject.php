@@ -49,7 +49,7 @@ class NakedBareObject extends AbstractNakedObject implements \IteratorAggregate
     public function getState()
     {
         $state = array();
-        foreach ($this->_class->getFields() as $name => $field) {
+        foreach ($this->_class->getAssociations() as $name => $field) {
             $getter = 'get' . ucfirst($name);
             $state[$name] = $this->_wrapped->$getter();
         }
@@ -62,7 +62,7 @@ class NakedBareObject extends AbstractNakedObject implements \IteratorAggregate
     public function setState(array $data)
     {
         foreach ($data as $fieldName => $value) {
-            $field = $this->_class->getField($fieldName);
+            $field = $this->_class->getAssociation($fieldName);
             $field->setAssociation($this, $value);
         }
     }

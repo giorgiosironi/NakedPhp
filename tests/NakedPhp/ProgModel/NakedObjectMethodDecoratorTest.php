@@ -62,9 +62,9 @@ class NakedObjectMethodDecoratorTest extends \NakedPhp\Test\TestCase
 
     public function testDelegatesToTheInnerEntityForObtainingFieldMetaModel()
     {
-        $this->_delegation->getterIs('getField', 'STUBBED');
+        $this->_delegation->getterIs('getAssociation', 'STUBBED');
 
-        $this->assertSame('STUBBED', $this->_object->getField('foo'));
+        $this->assertSame('STUBBED', $this->_object->getAssociation('foo'));
     }
 
     public function testDelegatesToTheInnerEntityForObtainingState()

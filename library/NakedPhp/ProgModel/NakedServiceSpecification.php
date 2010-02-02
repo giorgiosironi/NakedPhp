@@ -26,7 +26,7 @@ class NakedServiceSpecification extends AbstractNakedObjectSpecification
     /**
      * {@inheritdoc}
      */
-    public function getFields()
+    public function getAssociations()
     {
         return array();
     }
@@ -34,7 +34,7 @@ class NakedServiceSpecification extends AbstractNakedObjectSpecification
     /**
      * {@inheritdoc}
      */
-    public function getField($name)
+    public function getAssociation($name)
     {
         throw new Exception("Attempting to access field $name over a service object.");
     }
