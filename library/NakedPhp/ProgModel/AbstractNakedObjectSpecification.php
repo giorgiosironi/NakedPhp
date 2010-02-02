@@ -10,15 +10,17 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_MetaModel
+ * @package    NakedPhp_ProgModel
  */
 
-namespace NakedPhp\MetaModel;
+namespace NakedPhp\ProgModel;
+use NakedPhp\MetaModel\NakedObjectSpecification;
 
 /**
  * Wraps properties about a domain class.
+ * FIX: Move AbstractFacetHolder.
  */
-abstract class AbstractNakedObjectSpecification extends AbstractFacetHolder implements NakedObjectSpecification
+abstract class AbstractNakedObjectSpecification extends \NakedPhp\MetaModel\AbstractFacetHolder implements NakedObjectSpecification
 {
     /**
      * @var string

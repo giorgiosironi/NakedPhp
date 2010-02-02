@@ -10,14 +10,14 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_MetaModel
+ * @package    NakedPhp_ProgModel
  */
 
-namespace NakedPhp\MetaModel;
+namespace NakedPhp\ProgModel;
 
 class NakedEntitySpecificationTest extends NakedObjectSpecificationTest
 {
-    protected $_className = 'NakedPhp\MetaModel\NakedEntitySpecification';
+    protected $_className = 'NakedPhp\ProgModel\NakedEntitySpecification';
 
     public function testIsNotAService()
     {

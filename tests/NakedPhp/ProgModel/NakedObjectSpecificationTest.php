@@ -10,10 +10,10 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_MetaModel
+ * @package    NakedPhp_ProgModel
  */
 
-namespace NakedPhp\MetaModel;
+namespace NakedPhp\ProgModel;
 use NakedPhp\Stubs\DummyFacet;
 
 abstract class NakedObjectSpecificationTest extends \PHPUnit_Framework_TestCase

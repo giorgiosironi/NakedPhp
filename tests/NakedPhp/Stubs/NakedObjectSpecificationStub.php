@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Stubs;
-use NakedPhp\MetaModel\AbstractNakedObjectSpecification;
+use NakedPhp\ProgModel\AbstractNakedObjectSpecification;
 
 class NakedObjectSpecificationStub extends AbstractNakedObjectSpecification
 {

@@ -10,39 +10,25 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_MetaModel
+ * @package    NakedPhp_ProgModel
  */
 
-namespace NakedPhp\MetaModel;
+namespace NakedPhp\ProgModel;
 
 /**
- * Wraps properties about a entity class like fields, methods and metadata.
- * An entity is defined as a stateful class.
+ * Wraps properties about a service domain class.
+ * A service is defined as a stateless object, with a bunch of methods
+ * that takes as parameters scalars and entities or value objects.
+ * Other services should be required in the constructor.
  */
-class NakedEntitySpecification extends AbstractNakedObjectSpecification
+class NakedServiceSpecification extends AbstractNakedObjectSpecification
 {
-    /**
-     * @var array of OneToOneAssociation instances
-     */
-    protected $_fields;
-
-    /**
-     * @param string $className
-     * @param array $methods
-     * @param array $fields
-     */
-    public function __construct($className = '', array $methods = array(), array $fields = array())
-    {
-        parent::__construct($className, $methods);
-        $this->_fields = $fields;
-    }
-
     /**
      * {@inheritdoc}
      */
     public function getFields()
     {
-        return $this->_fields;
+        return array();
     }
 
     /**
@@ -50,7 +36,7 @@ class NakedEntitySpecification extends AbstractNakedObjectSpecification
      */
     public function getField($name)
     {
-        return $this->_fields[$name];
+        throw new Exception("Attempting to access field $name over a service object.");
     }
 
     /**
@@ -58,6 +44,6 @@ class NakedEntitySpecification extends AbstractNakedObjectSpecification
      */
     public function isService()
     {
-        return false;
+        return true;
     }
 }

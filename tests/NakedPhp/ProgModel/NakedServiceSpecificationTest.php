@@ -10,26 +10,19 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_MetaModel
+ * @package    NakedPhp_ProgModel
  */
 
-namespace NakedPhp\MetaModel;
+namespace NakedPhp\ProgModel;
 
 class NakedServiceSpecificationTest extends NakedObjectSpecificationTest
 {
-    protected $_className = 'NakedPhp\MetaModel\NakedServiceSpecification';
+    protected $_className = 'NakedPhp\ProgModel\NakedServiceSpecification';
 
     public function testIsAService()
     {
         $spec = new NakedServiceSpecification();
         $this->assertTrue($spec->isService());
-    }
-    /**
-     * FIX: delete if there is nothing to test here
-     */
-    public function testIncomplete()
-    {
-        $this->markTestIncomplete();
     }
 }
 
