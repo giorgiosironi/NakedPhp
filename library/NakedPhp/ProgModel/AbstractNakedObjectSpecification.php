@@ -18,9 +18,8 @@ use NakedPhp\MetaModel\NakedObjectSpecification;
 
 /**
  * Wraps properties about a domain class.
- * FIX: Move AbstractFacetHolder.
  */
-abstract class AbstractNakedObjectSpecification extends \NakedPhp\MetaModel\AbstractFacetHolder implements NakedObjectSpecification
+abstract class AbstractNakedObjectSpecification extends AbstractFacetHolder implements NakedObjectSpecification
 {
     /**
      * @var string

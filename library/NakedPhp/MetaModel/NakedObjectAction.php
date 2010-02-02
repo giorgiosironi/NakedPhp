@@ -15,7 +15,11 @@
 
 namespace NakedPhp\MetaModel;
 
-class NakedObjectAction extends AbstractFacetHolder implements NakedObjectMember
+/**
+ * FIX: move in ProgModel.
+ * FIX: extract interface.
+ */
+class NakedObjectAction extends \NakedPhp\ProgModel\AbstractFacetHolder implements NakedObjectMember
 {
     /**
      * @var string

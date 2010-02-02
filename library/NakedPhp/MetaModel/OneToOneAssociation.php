@@ -17,8 +17,9 @@ namespace NakedPhp\MetaModel;
 
 /**
  * Wraps info about a field of a NakedObjectSpecification.
+ * FIX: Move in ProgModel.
  */
-class OneToOneAssociation extends AbstractFacetHolder implements NakedObjectAssociation
+class OneToOneAssociation extends \NakedPhp\ProgModel\AbstractFacetHolder implements NakedObjectAssociation
 {
     /**
      * @var string
