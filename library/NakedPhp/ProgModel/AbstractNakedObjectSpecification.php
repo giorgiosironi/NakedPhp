@@ -27,13 +27,13 @@ abstract class AbstractNakedObjectSpecification extends AbstractFacetHolder impl
     protected $_className;
 
     /**
-     * @var array of NakedObjectAction instances
+     * @var array of NakedObjectMethod instances
      */
     protected $_methods;
 
     /**
      * @param string $className
-     * @param array $methods        NakedObjectAction instances; keys are method names
+     * @param array $methods        NakedObjectMethod instances; keys are method names
      */
     public function __construct($className = '', array $methods = array())
     {
@@ -42,7 +42,7 @@ abstract class AbstractNakedObjectSpecification extends AbstractFacetHolder impl
     }
 
     /**
-     * @return array NakedObjectAction
+     * @return array NakedObjectMethod
      */
     public function getObjectActions()
     {

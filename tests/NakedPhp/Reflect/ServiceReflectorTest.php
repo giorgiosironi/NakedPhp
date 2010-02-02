@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Reflect;
-use NakedPhp\MetaModel\NakedObjectAction;
+use NakedPhp\ProgModel\NakedObjectMethod;
 use NakedPhp\MetaModel\Facet\Action\Invocation;
 
 class ServiceReflectorTest extends \PHPUnit_Framework_TestCase
@@ -28,7 +28,7 @@ class ServiceReflectorTest extends \PHPUnit_Framework_TestCase
         $this->_parserMock = $this->getMock('NakedPhp\Reflect\DocblockParser', array('contains'));
         $this->_methodsReflectorMock = $this->getMock('NakedPhp\Reflect\MethodsReflector', array('analyze'));
         $methods = array(
-            'createUser' => new NakedObjectAction('createUser', array(), 'UserClass')
+            'createUser' => new NakedObjectMethod('createUser', array(), 'UserClass')
         );
         $this->_methodsReflectorMock->expects($this->any())
                                     ->method('analyze')

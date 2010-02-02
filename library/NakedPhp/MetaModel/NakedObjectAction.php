@@ -15,56 +15,9 @@
 
 namespace NakedPhp\MetaModel;
 
-/**
- * FIX: move in ProgModel.
- * FIX: extract interface.
- */
-class NakedObjectAction extends \NakedPhp\ProgModel\AbstractFacetHolder implements NakedObjectMember
+interface NakedObjectAction extends NakedObjectMember
 {
-    /**
-     * @var string
-     */
-    private $_id;
+    public function getParameters();
 
-    /**
-     * @var array   NakedObjectActionParameter instances
-     */
-    private $_params;
-
-    /**
-     * @var string
-     */
-    private $_returnType;
-
-    /**
-     * @param string $id
-     * @param array $params
-     * @param string $returnType
-     */
-    public function __construct($id = '', array $params = array(), $returnType = 'void')
-    {
-        $this->_id = $id;
-        $this->_params = $params;
-        $this->_returnType = $returnType;
-    }
-
-    public function getId()
-    {
-        return $this->_id;
-    }
-
-    public function getParameters()
-    {
-        return $this->_params;
-    }
-
-    public function getReturnType()
-    {
-        return $this->_returnType;
-    }
-
-    public function __toString()
-    {
-        return $this->getId();
-    }
+    public function getReturnType();
 }

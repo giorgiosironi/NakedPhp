@@ -15,7 +15,7 @@
 
 namespace NakedPhp\Stubs;
 use NakedPhp\ProgModel\NakedBareObject;
-use NakedPhp\MetaModel\NakedObjectAction;
+use NakedPhp\ProgModel\NakedObjectMethod;
 use NakedPhp\ProgModel\OneToOneAssociation;
 use NakedPhp\MetaModel\Facet;
 

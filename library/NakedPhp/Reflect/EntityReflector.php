@@ -15,8 +15,8 @@
 
 namespace NakedPhp\Reflect;
 use NakedPhp\ProgModel\NakedEntitySpecification;
-use NakedPhp\MetaModel\NakedObjectAction;
-use NakedPhp\MetaModel\NakedObjectActionParameter;
+use NakedPhp\ProgModel\NakedObjectMethod;
+use NakedPhp\ProgModel\NakedObjectMethodParameter;
 use NakedPhp\ProgModel\OneToOneAssociation;
 use NakedPhp\MetaModel\Facet\Action\Invocation;
 use NakedPhp\MetaModel\Facet\Disabled;
@@ -82,7 +82,7 @@ class EntityReflector
     /**
      * Defines user visible methods, according to which are not used for
      * metadata on $fields.
-     * @param array $methods    NakedObjectAction instances indexed by name
+     * @param array $methods    NakedObjectMethod instances indexed by name
      * @param array $fields     OneToOneAssociation instances indexed by name
      */
     protected function _generateFacets(array $methods, array $fields)

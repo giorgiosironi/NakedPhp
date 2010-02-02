@@ -16,7 +16,7 @@
 namespace NakedPhp\Service;
 use NakedPhp\MetaModel\NakedObject;
 use NakedPhp\MetaModel\NakedObjectSpecification;
-use NakedPhp\MetaModel\NakedObjectAction;
+use NakedPhp\ProgModel\NakedObjectMethod;
 use NakedPhp\MetaModel\Facet\Action\Invocation;
 
 /**
@@ -60,11 +60,11 @@ class MethodMerger implements MethodCaller
     /**
      * Automatically provides services to inject as method parameters, removing
      * the need for the user to specify them.
-     * @param NakedObjectAction $method   the method on the entity class
+     * @param NakedObjectMethod $method   the method on the entity class
      * @param array $parameters     parameters passed by the user to complete
      * @return array    full array of parameters
      */
-    protected function _addServices(NakedObjectAction $method, array $parameters)
+    protected function _addServices(NakedObjectMethod $method, array $parameters)
     {
         $completeParameters = array(); 
         $serviceClasses = $this->_serviceProvider->getServiceClasses();
@@ -87,7 +87,7 @@ class MethodMerger implements MethodCaller
      * automatically injecting the latter.
      * TODO: factoring out protected methods in a ParameterManager/Parameters class.
      */
-    protected function _mergeParameters(NakedObjectAction $method, NakedObject $entity, array $parameters)
+    protected function _mergeParameters(NakedObjectMethod $method, NakedObject $entity, array $parameters)
     {
         $completeParameters = array();
         foreach ($method->getParameters() as $param) {
@@ -170,7 +170,7 @@ class MethodMerger implements MethodCaller
      * Builds metadata for a method leaving out the $class parameter, which
      * will be then automatically passed.
      */
-    protected function _buildFakeMethod(NakedObjectAction $method, NakedObjectSpecification $class)
+    protected function _buildFakeMethod(NakedObjectMethod $method, NakedObjectSpecification $class)
     {
         $methodName = (string) $method;
         $newParams = array();
@@ -179,7 +179,7 @@ class MethodMerger implements MethodCaller
                 $newParams[$key] = $param;
             }
         }
-        $newMethod = new NakedObjectAction($methodName, $newParams, $method->getReturnType());
+        $newMethod = new NakedObjectMethod($methodName, $newParams, $method->getReturnType());
 
         if ($method->getFacet('Action\Invocation')) {
             $newMethod->addFacet(new Invocation($methodName));
@@ -210,7 +210,7 @@ class MethodMerger implements MethodCaller
 
     /**
      * Returns all methods, visible and hidden ones. To use internally.
-     * @return array NakedObjectAction instances
+     * @return array NakedObjectMethod instances
      */
     protected function _getAllMethods(NakedObjectSpecification $class)
     {

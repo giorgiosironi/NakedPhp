@@ -10,34 +10,34 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_MetaModel
+ * @package    NakedPhp_ProgModel
  */
 
-namespace NakedPhp\MetaModel;
+namespace NakedPhp\ProgModel;
 
-class NakedObjectActionTest extends \PHPUnit_Framework_TestCase
+class NakedObjectMethodTest extends \PHPUnit_Framework_TestCase
 {
     public function testRetainsId()
     {
-        $method = new NakedObjectAction('doSomething');
+        $method = new NakedObjectMethod('doSomething');
         $this->assertEquals('doSomething', $method->getId());
     }
 
     public function testRetainsParamsList()
     {
-        $method = new NakedObjectAction('doSomething', $params = array('one', 'two'));
+        $method = new NakedObjectMethod('doSomething', $params = array('one', 'two'));
         $this->assertEquals($params, $method->getParameters());
     }
 
     public function testRetainsReturnType()
     {
-        $method = new NakedObjectAction('doSomething', $params = array(), 'string');
+        $method = new NakedObjectMethod('doSomething', $params = array(), 'string');
         $this->assertEquals('string', $method->getReturnType());
     }
 
     public function testImplementsFacetHolderInterface()
     {
-        $field = new NakedObjectAction();
+        $field = new NakedObjectMethod();
         $helper = new \NakedPhp\Test\FacetHolder($this);
         $helper->testIsFacetHolder($field);
     }

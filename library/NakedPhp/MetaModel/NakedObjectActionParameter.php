@@ -18,32 +18,7 @@ namespace NakedPhp\MetaModel;
 /**
  * Wraps info about a method or constructor param.
  */
-final class NakedObjectActionParameter implements NamedAndDescribed
+interface NakedObjectActionParameter extends NamedAndDescribed
 {
-    /**
-     * @var string
-     */
-    private $_type;
-
-    /**
-     * @var string
-     */
-    private $_name;
-
-    public function __construct($type, $name, $default = false)
-    {
-        $this->_type = $type;
-        $this->_name = $name;
-        $this->_default = $default;
-    }
-
-    public function getType()
-    {
-        return $this->_type;
-    }
-
-    public function getName()
-    {
-        return $this->_name;
-    }
+    public function getType();
 }
