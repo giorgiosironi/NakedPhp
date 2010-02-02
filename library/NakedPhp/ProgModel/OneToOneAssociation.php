@@ -10,16 +10,18 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_MetaModel
+ * @package    NakedPhp_ProgModel
  */
 
-namespace NakedPhp\MetaModel;
+namespace NakedPhp\ProgModel;
+use NakedPhp\MetaModel\NakedObject;
+use NakedPhp\MetaModel\NakedObjectAssociation;
 
 /**
  * Wraps info about a field of a NakedObjectSpecification.
  * FIX: Move in ProgModel.
  */
-class OneToOneAssociation extends \NakedPhp\ProgModel\AbstractFacetHolder implements NakedObjectAssociation
+class OneToOneAssociation extends AbstractFacetHolder implements NakedObjectAssociation
 {
     /**
      * @var string

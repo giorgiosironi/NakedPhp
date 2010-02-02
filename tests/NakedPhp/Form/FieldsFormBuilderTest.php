@@ -15,7 +15,7 @@
 
 namespace NakedPhp\Form;
 use NakedPhp\Stubs\NakedObjectStub;
-use NakedPhp\MetaModel\OneToOneAssociation;
+use NakedPhp\ProgModel\OneToOneAssociation;
 use NakedPhp\MetaModel\Facet\Disabled;
 use NakedPhp\MetaModel\Facet\Property\Choices;
 use NakedPhp\MetaModel\Facet\Property\Validate;

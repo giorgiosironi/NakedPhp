@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Reflect;
-use NakedPhp\MetaModel\OneToOneAssociation;
+use NakedPhp\ProgModel\OneToOneAssociation;
 use NakedPhp\MetaModel\NakedObjectAction;
 use NakedPhp\MetaModel\Facet;
 use NakedPhp\MetaModel\Facet\Action\Invocation;

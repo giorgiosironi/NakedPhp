@@ -15,8 +15,11 @@
 
 namespace NakedPhp\Form;
 use NakedPhp\MetaModel\NakedObject;
-use NakedPhp\MetaModel\OneToOneAssociation;
+use NakedPhp\ProgModel\OneToOneAssociation;
 
+/**
+ * FIX: Only OneToOneAssociation are supported.
+ */
 class FieldsFormBuilder
 {
     /**

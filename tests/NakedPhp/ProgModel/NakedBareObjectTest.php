@@ -86,7 +86,7 @@ class NakedBareObjectTest extends AbstractNakedObjectTest
     public function testSetsTheStateOfTheObject()
     {
         $data = array('nickname' => new NakedBareObject('dummy'));
-        $field = $this->getMock('NakedPhp\MetaModel\OneToOneAssociation');
+        $field = $this->getMock('NakedPhp\ProgModel\OneToOneAssociation');
         $field->expects($this->once())
               ->method('setAssociation');
         $class = new NakedObjectSpecificationStub(null, array());
@@ -99,7 +99,7 @@ class NakedBareObjectTest extends AbstractNakedObjectTest
     {
         $data = array('phonenumber' => $phonenumber = new NakedBareObject(new Phonenumber));
 
-        $field = $this->getMock('NakedPhp\MetaModel\OneToOneAssociation');
+        $field = $this->getMock('NakedPhp\ProgModel\OneToOneAssociation');
         $class = new NakedObjectSpecificationStub(null, array());
         $class->setFields(array('phonenumber' => $field));
         $no = new NakedBareObject(null, $class);

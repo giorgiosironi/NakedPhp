@@ -15,7 +15,7 @@
 
 namespace NakedPhp\Mvc\View\Helper;
 use NakedPhp\Stubs\NakedObjectStub;
-use NakedPhp\MetaModel\OneToOneAssociation;
+use NakedPhp\ProgModel\OneToOneAssociation;
 use NakedPhp\MetaModel\Facet\Hidden;
 
 class DisplayObjectTest extends \PHPUnit_Framework_TestCase

@@ -16,7 +16,7 @@
 namespace NakedPhp\Reflect;
 use NakedPhp\MetaModel\NakedObjectAction;
 use NakedPhp\MetaModel\NakedObjectActionParameter;
-use NakedPhp\MetaModel\OneToOneAssociation;
+use NakedPhp\ProgModel\OneToOneAssociation;
 
 class MethodsReflector
 {

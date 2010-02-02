@@ -17,7 +17,7 @@ namespace NakedPhp\Reflect;
 use NakedPhp\ProgModel\NakedEntitySpecification;
 use NakedPhp\MetaModel\NakedObjectAction;
 use NakedPhp\MetaModel\NakedObjectActionParameter;
-use NakedPhp\MetaModel\OneToOneAssociation;
+use NakedPhp\ProgModel\OneToOneAssociation;
 use NakedPhp\MetaModel\Facet\Action\Invocation;
 use NakedPhp\MetaModel\Facet\Disabled;
 use NakedPhp\MetaModel\Facet\Hidden;

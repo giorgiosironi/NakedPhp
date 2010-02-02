@@ -27,7 +27,7 @@ interface AssociationContainer
 
     /**
      * @param string $name
-     * @return OneToOneAssociation
+     * @return NakedObjectAssociation
      */
     public function getAssociation($name);
 }
