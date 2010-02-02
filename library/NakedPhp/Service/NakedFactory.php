@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\MetaModel\NakedBareObject;
+use NakedPhp\ProgModel\NakedBareObject;
 use NakedPhp\Reflect\EntityReflector;
 use NakedPhp\Reflect\ServiceReflector;
 

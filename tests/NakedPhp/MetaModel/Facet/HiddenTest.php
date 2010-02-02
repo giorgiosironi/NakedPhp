@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\MetaModel\Facet;
-use NakedPhp\MetaModel\NakedBareObject;
+use NakedPhp\ProgModel\NakedBareObject;
 
 class HiddenTest extends \PHPUnit_Framework_TestCase
 {

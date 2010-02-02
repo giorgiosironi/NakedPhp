@@ -10,10 +10,10 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_MetaModel
+ * @package    NakedPhp_ProgModel
  */
 
-namespace NakedPhp\MetaModel;
+namespace NakedPhp\ProgModel;
 use NakedPhp\Stubs\NakedObjectSpecificationStub;
 use NakedPhp\Test\Delegation;
 
@@ -136,7 +136,7 @@ class NakedObjectMethodDecoratorTest extends \NakedPhp\Test\TestCase
 
     private function _getBareEntityMock()
     {
-        return $this->getMock('NakedPhp\MetaModel\NakedBareObject');
+        return $this->getMock('NakedPhp\ProgModel\NakedBareObject');
     }
 
     private function _getMergerMock(array $methods = array('call'))

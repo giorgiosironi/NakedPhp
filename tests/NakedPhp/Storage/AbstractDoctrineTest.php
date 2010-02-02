@@ -28,7 +28,7 @@ abstract class AbstractDoctrineTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $config = new \Doctrine\ORM\Configuration();
-        $config->setMetaModelCacheImpl(new \Doctrine\Common\Cache\ArrayCache);
+        $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ArrayCache);
         $config->setProxyDir('/NOTUSED/Proxies');
         $config->setProxyNamespace('StubsProxies');
 
@@ -45,7 +45,7 @@ abstract class AbstractDoctrineTest extends \PHPUnit_Framework_TestCase
     {
         $tool = new \Doctrine\ORM\Tools\SchemaTool($this->_em);
         $classes = array(
-            $this->_em->getClassMetaModel('NakedPhp\Stubs\User')
+            $this->_em->getClassMetadata('NakedPhp\Stubs\User')
         );
         $tool->dropSchema($classes);
         $tool->createSchema($classes);

@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Service;
-use NakedPhp\MetaModel\NakedBareObject;
+use NakedPhp\ProgModel\NakedBareObject;
 use NakedPhp\MetaModel\NakedObjectAction;
 use NakedPhp\MetaModel\NakedObjectActionParameter;
 use NakedPhp\MetaModel\Facet\Action\Invocation;

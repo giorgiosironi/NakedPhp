@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\MetaModel\Facet\Action;
-use NakedPhp\MetaModel\NakedBareObject;
+use NakedPhp\ProgModel\NakedBareObject;
 
 class InvocationTest extends \PHPUnit_Framework_TestCase
 {

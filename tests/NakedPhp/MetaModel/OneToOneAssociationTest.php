@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\MetaModel;
+use NakedPhp\ProgModel\NakedBareObject;
 use NakedPhp\Stubs\DummyFacet;
 use NakedPhp\Stubs\User;
 

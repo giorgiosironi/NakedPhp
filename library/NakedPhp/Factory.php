@@ -105,18 +105,18 @@ class Factory
     /**
      * @return NakedObjectMethodDecorator
      */
-    public function createCompleteEntity(MetaModel\NakedBareObject $entity)
+    public function createCompleteEntity(ProgModel\NakedBareObject $entity)
     {
-        return new MetaModel\NakedObjectMethodDecorator($entity, $this->getMethodMerger());
+        return new ProgModel\NakedObjectMethodDecorator($entity, $this->getMethodMerger());
     }
 
     /**
      * TODO: unify with @see createCompleteEntity
      * @return NakedObjectMethodDecorator
      */
-    public function createCompleteService(MetaModel\NakedBareObject $entity)
+    public function createCompleteService(ProgModel\NakedBareObject $entity)
     {
-        return new MetaModel\NakedObjectMethodDecorator($entity, $this->getMethodMerger());
+        return new ProgModel\NakedObjectMethodDecorator($entity, $this->getMethodMerger());
     }
 
     public function getPersistenceStorage()

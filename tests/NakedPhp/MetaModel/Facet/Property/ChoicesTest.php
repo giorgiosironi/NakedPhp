@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\MetaModel\Facet\Property;
-use NakedPhp\MetaModel\NakedBareObject;
+use NakedPhp\ProgModel\NakedBareObject;
 
 class ChoicesTest extends \PHPUnit_Framework_TestCase
 {
