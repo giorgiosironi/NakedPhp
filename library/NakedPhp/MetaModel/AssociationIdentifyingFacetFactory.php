@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\MetaModel;
+use NakedPhp\Reflect\MethodRemover;
 
 interface AssociationIdentifyingFacetFactory extends FacetFactory
 {
@@ -22,5 +23,5 @@ interface AssociationIdentifyingFacetFactory extends FacetFactory
     /**
      * @return array    ReflectionMethod instances
      */
-    public function findAssociationAccessors();
+    public function removePropertyAccessors(MethodRemover $remover);
 }

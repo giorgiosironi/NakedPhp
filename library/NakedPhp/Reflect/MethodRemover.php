@@ -15,6 +15,9 @@
 
 namespace NakedPhp\Reflect;
 
+/**
+ * FIX: move in MetaModel?
+ */
 interface MethodRemover
 {
     /**

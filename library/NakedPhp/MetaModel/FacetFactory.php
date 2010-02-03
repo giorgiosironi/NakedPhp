@@ -24,7 +24,7 @@ interface FacetFactory
      * Prescribes use of this FacetFactory for OBJECT, METHOD, PROPERTY, etc.
      * @return array    NakedObjectFeatureType instances
      */
-    public function getFeatureType();
+    public function getFeatureTypes();
 
     /**
      * Analyze $class and add produced Facets to $facetHolder.
