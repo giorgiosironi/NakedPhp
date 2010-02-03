@@ -17,6 +17,10 @@ namespace NakedPhp\MetaModel\Facet\Property;
 use NakedPhp\MetaModel\Facet;
 use NakedPhp\MetaModel\NakedObject;
 
+/**
+ * TODO: extract interface
+ * TODO: tranform in new Setter(\ReflectionMethod)
+ */
 class Setter implements Facet
 {
     /**

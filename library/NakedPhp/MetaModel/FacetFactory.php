@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\MetaModel;
+use NakedPhp\Reflect\MethodRemover;
 
 /**
  * TODO: add MethodRemover if necessary
@@ -29,13 +30,13 @@ interface FacetFactory
     /**
      * Analyze $class and add produced Facets to $facetHolder.
      */
-    public function processClass(\ReflectionClass $class, FacetHolder $facetHolder);
+    public function processClass(\ReflectionClass $class, MethodRemover $remover, FacetHolder $facetHolder);
 
     /**
      * Analyze $class and $method and add produced Facets to $facetHolder.
      * $method is the method itself for Actions, the getter for Associations.
      */
-    public function processMethod(\ReflectionClass $class, \ReflectionMethod $method, FacetHolder $facetHolder);
+    public function processMethod(\ReflectionClass $class, \ReflectionMethod $method, MethodRemover $remover, FacetHolder $facetHolder);
 
     public function processParams(\ReflectionMethod $method, $paramNum, FacetHolder $facetHolder);
 }

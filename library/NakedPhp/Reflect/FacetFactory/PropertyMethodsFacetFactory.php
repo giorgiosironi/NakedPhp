@@ -15,6 +15,7 @@
 
 namespace NakedPhp\Reflect\FacetFactory;
 use NakedPhp\MetaModel\AssociationIdentifyingFacetFactory;
+use NakedPhp\MetaModel\Facet\Property\Setter;
 use NakedPhp\MetaModel\FacetHolder;
 use NakedPhp\MetaModel\NakedObjectFeatureType;
 use NakedPhp\Reflect\MethodRemover;
@@ -40,7 +41,7 @@ class PropertyMethodsFacetFactory implements AssociationIdentifyingFacetFactory
     /**
      * {@inheritdoc}
      */
-    public function processClass(\ReflectionClass $class, FacetHolder $facetHolder)
+    public function processClass(\ReflectionClass $class, MethodRemover $remover, FacetHolder $facetHolder)
     {
         return false;
     }
@@ -49,7 +50,14 @@ class PropertyMethodsFacetFactory implements AssociationIdentifyingFacetFactory
      * Analyze $class and $method and add produced Facets to $facetHolder.
      * $method is the method itself for Actions, the getter for Associations.
      */
-    public function processMethod(\ReflectionClass $class, \ReflectionMethod $method, FacetHolder $facetHolder) {}
+    public function processMethod(\ReflectionClass $class, \ReflectionMethod $getter, MethodRemover $remover, FacetHolder $facetHolder)
+    {
+        $name = str_replace('get', '', $getter->getName());
+        $fieldName = lcfirst($name);
+        if ($class->getMethod('set' . $name)) {
+            $facetHolder->addFacet(new Setter($fieldName));
+        }
+    }
 
     /**
      * {@inheritdoc}
