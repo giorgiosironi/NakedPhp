@@ -22,7 +22,7 @@ use NakedPhp\Reflect\MethodRemover;
 class PropertyMethodsFacetFactory implements AssociationIdentifyingFacetFactory
 {
     /**
-     * @return array    NakedObjectFeatureType instances
+     * {@inheritdoc}
      */
     public function getFeatureTypes()
     {
@@ -30,7 +30,7 @@ class PropertyMethodsFacetFactory implements AssociationIdentifyingFacetFactory
     }
 
     /**
-     * @return array    ReflectionMethod instances
+     * {@inheritdoc}
      */
     public function removePropertyAccessors(MethodRemover $remover)
     {
@@ -38,9 +38,12 @@ class PropertyMethodsFacetFactory implements AssociationIdentifyingFacetFactory
     }
 
     /**
-     * Analyze $class and add produced Facets to $facetHolder.
+     * {@inheritdoc}
      */
-    public function processClass(\ReflectionClass $class, FacetHolder $facetHolder) {}
+    public function processClass(\ReflectionClass $class, FacetHolder $facetHolder)
+    {
+        return false;
+    }
 
     /**
      * Analyze $class and $method and add produced Facets to $facetHolder.
@@ -48,6 +51,12 @@ class PropertyMethodsFacetFactory implements AssociationIdentifyingFacetFactory
      */
     public function processMethod(\ReflectionClass $class, \ReflectionMethod $method, FacetHolder $facetHolder) {}
 
-    public function processParams(\ReflectionMethod $method, $paramNum, FacetHolder $facetHolder) {}
+    /**
+     * {@inheritdoc}
+     */
+    public function processParams(\ReflectionMethod $method, $paramNum, FacetHolder $facetHolder)
+    {
+        return false;
+    }
 }
 

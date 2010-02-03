@@ -37,8 +37,12 @@ class PropertyMethodsFacetFactoryTest extends \PHPUnit_Framework_TestCase
         $methods = $ff->removePropertyAccessors($removerMock);
         $this->assertEquals('dummy', $methods);
     }
+
 }
 
+/**
+ * TODO: move in a standalone Stub NakedPhp\Stubs\MethodRemover
+ */
 class DummyMethodRemover implements MethodRemover
 {
     public function removeMethods($prefix) {}
