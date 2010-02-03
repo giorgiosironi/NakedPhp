@@ -16,16 +16,13 @@
 namespace NakedPhp\MetaModel;
 
 /**
- * TODO: add MethodRemover if necessary
+ * Enumerative class to represent FacetHolders that 
+ * should be passed to a @see FacetFactory.
  */
-interface FacetFactory
+class NakedObjectFeatureType
 {
-    /**
-     * @return array    NakedObjectFeatureType instances
-     */
-    public function getFeatureType();
-
-    public function processClass(\ReflectionClass $class, FacetHolder $facetHolder);
-    public function processMethod(\ReflectionMethod $method, FacetHolder $facetHolder);
-    public function processParams(\ReflectionMethod $method, FacetHolder $facetHolder);
+    const OBJECT = 'OBJECT';
+    const PROPERTY = 'PROPERTY';
+    const ACTION = 'ACTION';
+    const ACTION_PARAMETER = 'ACTION_PARAMETER';
 }

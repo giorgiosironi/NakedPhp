@@ -15,17 +15,10 @@
 
 namespace NakedPhp\MetaModel;
 
-/**
- * TODO: add MethodRemover if necessary
- */
-interface FacetFactory
+class NakedObjectFeatureTypeTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @return array    NakedObjectFeatureType instances
-     */
-    public function getFeatureType();
-
-    public function processClass(\ReflectionClass $class, FacetHolder $facetHolder);
-    public function processMethod(\ReflectionMethod $method, FacetHolder $facetHolder);
-    public function processParams(\ReflectionMethod $method, FacetHolder $facetHolder);
+    public function testOnlyEnumeratedValuesAreAllowed()
+    {
+        $this->assertEquals('OBJECT', NakedObjectFeatureType::OBJECT);
+    }
 }
