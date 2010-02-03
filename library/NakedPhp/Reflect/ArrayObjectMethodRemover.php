@@ -33,11 +33,14 @@ class ArrayObjectMethodRemover implements MethodRemover
      */
     public function removeMethods($prefix)
     {
+        $removed = array();
         foreach ($this->_methods->getArrayCopy() as $index => $method) {
             $name = $method->getName();
             if (strstr($name, $prefix) === $name) {
+                $removed[] = $method;
                 unset($this->_methods[$index]);
             }
         }
+        return $removed;
     }
 }

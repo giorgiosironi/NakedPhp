@@ -17,13 +17,26 @@ namespace NakedPhp\Reflect;
 
 class ArrayObjectMethodRemoverTest extends \PHPUnit_Framework_TestCase
 {
-    public function testRemovesMethodsWithAGivenPrefix()
+    private $_methods;
+    private $_remover;
+
+    public function setUp()
     {
         $rc = new \ReflectionClass('NakedPhp\Reflect\ExampleClass');
-        $methods = new \ArrayObject($rc->getMethods());
-        $remover = new ArrayObjectMethodRemover($methods);
-        $remover->removeMethods('get');
-        $this->assertFalse($this->_inArray('getField', $methods));
+        $this->_methods = new \ArrayObject($rc->getMethods());
+        $this->_remover = new ArrayObjectMethodRemover($this->_methods);
+    }
+
+    public function testRemovesMethodsWithAGivenPrefix()
+    {
+        $this->_remover->removeMethods('get');
+        $this->assertFalse($this->_inArray('getField', $this->_methods));
+    }
+
+    public function testReturnsMethodsWithAGivenPrefix()
+    {
+        $methods = $this->_remover->removeMethods('get');
+        $this->assertTrue($this->_inArray('getField', $methods));
     }
 
     private function _inArray($methodName, $methods)
