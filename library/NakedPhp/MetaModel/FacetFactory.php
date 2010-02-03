@@ -21,11 +21,21 @@ namespace NakedPhp\MetaModel;
 interface FacetFactory
 {
     /**
+     * Prescribes use of this FacetFactory for OBJECT, METHOD, PROPERTY, etc.
      * @return array    NakedObjectFeatureType instances
      */
     public function getFeatureType();
 
+    /**
+     * Analyze $class and add produced Facets to $facetHolder.
+     */
     public function processClass(\ReflectionClass $class, FacetHolder $facetHolder);
-    public function processMethod(\ReflectionMethod $method, FacetHolder $facetHolder);
-    public function processParams(\ReflectionMethod $method, FacetHolder $facetHolder);
+
+    /**
+     * Analyze $class and $method and add produced Facets to $facetHolder.
+     * $method is the method itself for Actions, the getter for Associations.
+     */
+    public function processMethod(\ReflectionClass $class, \ReflectionMethod $method, FacetHolder $facetHolder);
+
+    public function processParams(\ReflectionMethod $method, $paramNum, FacetHolder $facetHolder);
 }
