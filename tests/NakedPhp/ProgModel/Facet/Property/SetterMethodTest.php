@@ -29,7 +29,7 @@ class SetterMethodTest extends \PHPUnit_Framework_TestCase
     public function testSetsAScalarAsFieldValue()
     {
         $no = new NakedBareObject($this);
-        $facet = new SetterMethod('myProperty');
+        $facet = new SetterMethod('setMyProperty');
         $facet->setProperty($no, new NakedBareObject('dummy'));
         $this->assertEquals('dummy', $this->_value);
     }

@@ -24,25 +24,25 @@ use NakedPhp\MetaModel\NakedObject;
 class SetterMethod implements Setter
 {
     /**
-     * @var string property name
-     * @example 'myField'
+     * @var string method name
+     * @example 'setMyField'
      */
-    private $_propertyName;
+    private $_methodName;
     
     /**
      * @param string
      */
-    public function __construct($propertyName)
+    public function __construct($methodName)
     {
-        $this->_propertyName = $propertyName;
+        $this->_methodName = $methodName;
     }
 
     /**
-     * Sets a value on $no the $this->_propertyName field.
+     * Sets $value on $no by calling $this->_methodName.
      */
     public function setProperty(NakedObject $no, NakedObject $value)
     {
-        $methodName = 'set' . ucfirst($this->_propertyName);
+        $methodName = $this->_methodName;
         $unwrapped = $value->getObject();
         return $no->$methodName($unwrapped);
     }
