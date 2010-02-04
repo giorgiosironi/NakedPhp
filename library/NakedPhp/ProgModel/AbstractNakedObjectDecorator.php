@@ -19,6 +19,8 @@ use NakedPhp\MetaModel\NakedObject;
 
 /**
  * Delegates all methods to the inner entity.
+ * TODO: probably all metadata methods should delegate to
+ * $this->getSpecification() instead of $this->_entity.
  */
 abstract class AbstractNakedObjectDecorator implements NakedObject, \IteratorAggregate
 {
@@ -85,11 +87,12 @@ abstract class AbstractNakedObjectDecorator implements NakedObject, \IteratorAgg
 
     /**
      * {@inheritdoc}
-     * Proxies to wrapped entity.
+     * Proxies to @see $this->getAssociations().
      */
     public function getAssociation($name)
     {
-        return $this->_entity->getAssociation($name);
+        $associations = $this->getAssociations();
+        return $associations[$name];
     }
 
     /**
