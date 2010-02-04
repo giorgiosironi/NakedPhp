@@ -10,17 +10,13 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Reflect
+ * @package    NakedPhp_Stubs
  */
 
-namespace NakedPhp\Reflect;
-use NakedPhp\MetaModel\NakedObjectSpecification;
+namespace NakedPhp\Stubs;
+use NakedPhp\Reflect\MethodRemover;
 
-interface SpecificationLoader
+class DummyMethodRemover implements MethodRemover
 {
-    /**
-     * @param string $className
-     * @return NakedObjectSpecification
-     */
-    public function loadSpecification($className);
+    public function removeMethods($prefix) {}
 }

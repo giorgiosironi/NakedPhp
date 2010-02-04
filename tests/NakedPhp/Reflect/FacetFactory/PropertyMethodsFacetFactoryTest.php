@@ -20,34 +20,42 @@ use NakedPhp\Stubs\FacetHolderStub;
 
 class PropertyMethodsFacetFactoryTest extends \PHPUnit_Framework_TestCase
 {
+    public function setUp()
+    {
+        $this->_facetFactory = new PropertyMethodsFacetFactory();
+    }
     public function testIsAppropriateForSomeFeatureType()
     {
-        $ff = new PropertyMethodsFacetFactory();
         $this->assertEquals(array(NakedObjectFeatureType::PROPERTY),
-                            $ff->getFeatureTypes());
+                            $this->_facetFactory->getFeatureTypes());
     }
 
-    public function testFindsTheAccessorCandidates()
+    public function testFindsTheAccessorCandidatesInMethodThatStartWithGet()
     {
-        $ff = new PropertyMethodsFacetFactory();
-        $removerMock = $this->getMock('NakedPhp\Reflect\FacetFactory\DummyMethodRemover');
+        $removerMock = $this->_getMethodRemoverMock();
         $removerMock->expects($this->once())
                     ->method('removeMethods')
                     ->with('get')
                     ->will($this->returnValue('dummy'));
-        $methods = $ff->removePropertyAccessors($removerMock);
+        $methods = $this->_facetFactory->removePropertyAccessors($removerMock);
         $this->assertEquals('dummy', $methods);
     }
     
     public function testAddsThePropertySetterFacet()
     {
-        $ff = new PropertyMethodsFacetFactory();
         $rc = new \ReflectionClass('NakedPhp\Reflect\FacetFactory\SomeRandomEntityClass');
         $getter = $rc->getMethod('getBar');
-        $removerMock = $this->getMock('NakedPhp\Reflect\FacetFactory\DummyMethodRemover');
+        $removerMock = $this->_getMethodRemoverMock();
         $facetHolder = new FacetHolderStub();
-        $ff->processMethod($rc, $getter, $removerMock, $facetHolder);
+
+        $this->_facetFactory->processMethod($rc, $getter, $removerMock, $facetHolder);
+
         $this->assertNotNull($facetHolder->getFacet('Property\Setter'));
+    }
+
+    private function _getMethodRemoverMock()
+    {
+        return $this->getMock('NakedPhp\Stubs\DummyMethodRemover');
     }
 }
 
@@ -56,12 +64,4 @@ class SomeRandomEntityClass
     public function getFoo() {}
     public function getBar() {}
     public function setBar() {}
-}
-
-/**
- * TODO: move in a standalone Stub NakedPhp\Stubs\MethodRemover
- */
-class DummyMethodRemover implements MethodRemover
-{
-    public function removeMethods($prefix) {}
 }
