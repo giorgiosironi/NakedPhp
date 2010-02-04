@@ -57,7 +57,7 @@ class OneToOneAssociation extends AbstractFacetHolder implements NakedObjectAsso
     }
 
     /**
-     * FIX: use the PropertySetter Facet
+     * FIX: use the Property\Setter Facet
      */
     public function setAssociation(NakedObject $inObject, NakedObject $associate)
     {

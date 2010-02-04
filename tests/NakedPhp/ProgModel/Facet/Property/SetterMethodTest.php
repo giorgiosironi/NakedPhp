@@ -10,26 +10,26 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_MetaModel
+ * @package    NakedPhp_ProgModel
  */
 
-namespace NakedPhp\MetaModel\Facet\Property;
+namespace NakedPhp\ProgModel\Facet\Property;
 use NakedPhp\ProgModel\NakedBareObject;
 
-class SetterTest extends \PHPUnit_Framework_TestCase
+class SetterMethodTest extends \PHPUnit_Framework_TestCase
 {
     private $_value;
 
     public function testReturnsRightFacetType()
     {
-        $facet = new Setter('myProperty');
+        $facet = new SetterMethod('myProperty');
         $this->assertEquals('Property\Setter', $facet->facetType());
     }
 
     public function testSetsAScalarAsFieldValue()
     {
         $no = new NakedBareObject($this);
-        $facet = new Setter('myProperty');
+        $facet = new SetterMethod('myProperty');
         $facet->setProperty($no, new NakedBareObject('dummy'));
         $this->assertEquals('dummy', $this->_value);
     }

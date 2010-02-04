@@ -17,41 +17,10 @@ namespace NakedPhp\MetaModel\Facet\Property;
 use NakedPhp\MetaModel\Facet;
 use NakedPhp\MetaModel\NakedObject;
 
-/**
- * TODO: extract interface
- * TODO: tranform in new Setter(\ReflectionMethod)
- */
-class Setter implements Facet
+interface Setter extends Facet
 {
     /**
-     * @var string property name
-     * @example 'myField'
+     * Sets $value on a field of $no.
      */
-    private $_propertyName;
-    
-    /**
-     * @param string
-     */
-    public function __construct($propertyName)
-    {
-        $this->_propertyName = $propertyName;
-    }
-
-    /**
-     * Sets a value on $no the $this->_propertyName field.
-     */
-    public function setProperty(NakedObject $no, NakedObject $value)
-    {
-        $methodName = 'set' . ucfirst($this->_propertyName);
-        $unwrapped = $value->getObject();
-        return $no->$methodName($unwrapped);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function facetType()
-    {
-        return 'Property\Setter';
-    }
+    public function setProperty(NakedObject $no, NakedObject $value);
 }

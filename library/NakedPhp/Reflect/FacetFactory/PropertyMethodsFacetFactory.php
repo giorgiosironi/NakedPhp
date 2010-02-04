@@ -15,9 +15,9 @@
 
 namespace NakedPhp\Reflect\FacetFactory;
 use NakedPhp\MetaModel\AssociationIdentifyingFacetFactory;
-use NakedPhp\MetaModel\Facet\Property\Setter;
 use NakedPhp\MetaModel\FacetHolder;
 use NakedPhp\MetaModel\NakedObjectFeatureType;
+use NakedPhp\ProgModel\Facet\Property\SetterMethod;
 use NakedPhp\Reflect\MethodRemover;
 
 class PropertyMethodsFacetFactory implements AssociationIdentifyingFacetFactory
@@ -55,7 +55,7 @@ class PropertyMethodsFacetFactory implements AssociationIdentifyingFacetFactory
         $name = str_replace('get', '', $getter->getName());
         $fieldName = lcfirst($name);
         if ($class->getMethod('set' . $name)) {
-            $facetHolder->addFacet(new Setter($fieldName));
+            $facetHolder->addFacet(new SetterMethod($fieldName));
         }
     }
 
