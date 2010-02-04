@@ -37,5 +37,5 @@ interface ActionContainer
      * @param string $name
      * @return boolean
      */
-    public function hasMethod($name);
+    public function hasObjectAction($name);
 }

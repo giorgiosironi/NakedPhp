@@ -136,7 +136,7 @@ class NakedObjectMethodDecorator implements NakedObject, \IteratorAggregate
      * Proxies to wrapped entity with the aid of the MethodCaller.
      * Convenience method.
      */
-    public function hasMethod($methodName)
+    public function hasObjectAction($methodName)
     {
         $methods = $this->getObjectActions();
         return isset($methods[$methodName]);

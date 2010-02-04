@@ -44,7 +44,7 @@ class MethodMerger implements MethodCaller
 
         $class = $no->getSpecification();
 
-        if ($class->hasMethod($methodName)) {
+        if ($class->hasObjectAction($methodName)) {
             $parameters = $this->_addServices($class->getObjectAction($methodName), $parameters);
             $result = call_user_func_array(array($no, $methodName), $parameters);
         } else {
@@ -202,7 +202,7 @@ class MethodMerger implements MethodCaller
      * {@inheritdoc}
      * Convenience method.
      */
-    public function hasMethod(NakedObjectSpecification $class, $methodName)
+    public function hasObjectAction(NakedObjectSpecification $class, $methodName)
     {
         $methods = $this->_getAllMethods($class);
         return isset($methods[$methodName]);

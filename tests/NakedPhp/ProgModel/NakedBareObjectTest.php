@@ -75,7 +75,7 @@ class NakedBareObjectTest extends AbstractNakedObjectTest
     public function testReturnsTheStateOfTheObject()
     {
         $no = new NakedBareObject($this, $class = new NakedObjectSpecificationStub('', array()));
-        $class->setFields(array('nickname' => null));
+        $class->setAssociations(array('nickname' => null));
         $this->assertEquals(array('nickname' => 'dummy'), $no->getState());
     }
 
@@ -90,7 +90,7 @@ class NakedBareObjectTest extends AbstractNakedObjectTest
         $field->expects($this->once())
               ->method('setAssociation');
         $class = new NakedObjectSpecificationStub(null, array());
-        $class->setFields(array('nickname' => $field));
+        $class->setAssociations(array('nickname' => $field));
         $no = new NakedBareObject(null, $class);
         $no->setState($data);
     }
@@ -101,7 +101,7 @@ class NakedBareObjectTest extends AbstractNakedObjectTest
 
         $field = $this->getMock('NakedPhp\ProgModel\OneToOneAssociation');
         $class = new NakedObjectSpecificationStub(null, array());
-        $class->setFields(array('phonenumber' => $field));
+        $class->setAssociations(array('phonenumber' => $field));
         $no = new NakedBareObject(null, $class);
 
         $field->expects($this->once())
@@ -121,8 +121,8 @@ class NakedBareObjectTest extends AbstractNakedObjectTest
         $no = new NakedBareObject($this, $class);
         $this->assertEquals(array('dummy' => 'DummyMethod'), $no->getObjectActions());
         $this->assertEquals('DummyMethod', $no->getObjectAction('dummy'));
-        $this->assertTrue($no->hasMethod('dummy'));
-        $this->assertFalse($no->hasMethod('notExistentMethodName'));
+        $this->assertTrue($no->hasObjectAction('dummy'));
+        $this->assertFalse($no->hasObjectAction('notExistentMethodName'));
     }
 
     public function testProxiesToTheClassForFacetHolding()
@@ -149,7 +149,7 @@ class NakedBareObjectTest extends AbstractNakedObjectTest
     public function testIsTraversableProxyingToTheEntityState()
     {
         $class = new NakedObjectSpecificationStub('', array());
-        $class->setFields(array('nickname' => null));
+        $class->setAssociations(array('nickname' => null));
         $no = new NakedBareObject($this, $class);
         $this->assertEquals('dummy', $no->getIterator()->current());
     }

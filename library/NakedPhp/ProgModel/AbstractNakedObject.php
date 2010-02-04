@@ -69,7 +69,7 @@ abstract class AbstractNakedObject implements NakedObject
      * {@inheritdoc}
      * Convenience method.
      */
-    public function hasMethod($methodName)
+    public function hasObjectAction($methodName)
     {
         $methods = $this->getObjectActions();
         return isset($methods[$methodName]);

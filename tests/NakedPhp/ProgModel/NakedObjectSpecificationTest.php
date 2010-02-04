@@ -18,38 +18,4 @@ use NakedPhp\Stubs\DummyFacet;
 
 abstract class NakedObjectSpecificationTest extends \PHPUnit_Framework_TestCase
 {
-    protected $_className;
-
-    protected function _newInstance($name = '', $methods = array())
-    {
-        $class = $this->_className;
-        return new $class($name, $methods);
-    }
-
-    public function testRetainsClassName()
-    {
-        $nc = $this->_newInstance('stdClass', array());
-        $this->assertEquals('stdClass', $nc->getClassName());
-    }
-
-    public function testRetainsMethodsList()
-    {
-        $nc = $this->_newInstance('', $methods = array('doThis' => 'doThis', 'doThat'));
-        $this->assertEquals($methods, $nc->getObjectActions());
-        $this->assertTrue($nc->hasMethod('doThis'));
-        $this->assertFalse($nc->hasMethod('doAnything'));
-    }
-
-    public function testGivesAccessToAMethodByName()
-    {
-        $nc = $this->_newInstance('', array('key' => 'doThis', 'doThat'));
-        $this->assertEquals('doThis', $nc->getObjectAction('key'));
-    }
-
-    public function testImplementsFacetHolderInterface()
-    {
-        $nc = $this->_newInstance();
-        $helper = new \NakedPhp\Test\FacetHolder($this);
-        $helper->testIsFacetHolder($nc);
-    }
 }

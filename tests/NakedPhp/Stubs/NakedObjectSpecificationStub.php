@@ -14,13 +14,13 @@
  */
 
 namespace NakedPhp\Stubs;
-use NakedPhp\ProgModel\AbstractNakedObjectSpecification;
+use NakedPhp\ProgModel\PhpSpecification;
 
-class NakedObjectSpecificationStub extends AbstractNakedObjectSpecification
+class NakedObjectSpecificationStub extends PhpSpecification
 {
     protected $_fields;
 
-    public function setFields(array $fields)
+    public function setAssociations(array $fields)
     {
         $this->_fields = $fields;
     }

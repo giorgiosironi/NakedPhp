@@ -50,5 +50,5 @@ interface MethodCaller
      * @param string $methodName
      * @return boolean
      */
-    public function hasMethod(NakedObjectSpecification $no, $methodName);
+    public function hasObjectAction(NakedObjectSpecification $no, $methodName);
 }

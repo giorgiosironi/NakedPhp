@@ -117,8 +117,8 @@ class NakedObjectMethodDecoratorTest extends \NakedPhp\Test\TestCase
 
         $this->assertEquals(array('dummy' => 'DummyMethod'), $no->getObjectActions());
         $this->assertEquals('DummyMethod', $no->getObjectAction('dummy'));
-        $this->assertTrue($no->hasMethod('dummy'));
-        $this->assertFalse($no->hasMethod('notExistentMethodName'));
+        $this->assertTrue($no->hasObjectAction('dummy'));
+        $this->assertFalse($no->hasObjectAction('notExistentMethodName'));
     }
 
     public function testDelegatesToTheMergerForCallingMethods()

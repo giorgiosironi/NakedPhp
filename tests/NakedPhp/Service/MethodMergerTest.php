@@ -70,8 +70,8 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
 
         $methods = $this->_methodMerger->getApplicableMethods($class);
         $this->assertTrue(isset($methods['doSomething']));
-        $this->assertTrue($this->_methodMerger->hasMethod($class, 'doSomething'));
-        $this->assertFalse($this->_methodMerger->hasMethod($class, 'doSomethingWhichDoesNotExist'));
+        $this->assertTrue($this->_methodMerger->hasObjectAction($class, 'doSomething'));
+        $this->assertFalse($this->_methodMerger->hasObjectAction($class, 'doSomethingWhichDoesNotExist'));
     }
 
     public function testCallsAServiceMethodAsIfItWereAnHiddenOneOnTheEntityClass()
@@ -194,7 +194,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         );
         $class = new NakedObjectSpecificationStub('NakedPhp\Stubs\User', $methods);
 
-        $this->assertTrue($this->_methodMerger->hasMethod($class, 'doSomething'));
+        $this->assertTrue($this->_methodMerger->hasObjectAction($class, 'doSomething'));
         $this->assertSame($expectedMethod,
                           $this->_methodMerger->getObjectAction($class, 'doSomething'));
     }
@@ -212,7 +212,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
         ));
 
         $class = $this->_getEmptyEntityClass();
-        $this->assertTrue($this->_methodMerger->hasMethod($class, 'block'));
+        $this->assertTrue($this->_methodMerger->hasObjectAction($class, 'block'));
         $method = $this->_methodMerger->getObjectAction($class, 'block');
         $this->assertEquals(array('days' => $days), $method->getParameters());
     }
@@ -225,7 +225,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
 
         $class = $this->_getEntityClassWithCreateNewMethod();
 
-        $this->assertTrue($this->_methodMerger->hasMethod($class, 'createNew'));
+        $this->assertTrue($this->_methodMerger->hasObjectAction($class, 'createNew'));
         $method = $this->_methodMerger->getObjectAction($class, 'createNew');
         $this->assertEquals(array('name' => new NakedObjectMethodParameter('string', 'name')), $method->getParameters());
     }

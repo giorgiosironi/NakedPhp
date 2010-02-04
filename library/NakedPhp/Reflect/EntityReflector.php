@@ -14,7 +14,7 @@
  */
 
 namespace NakedPhp\Reflect;
-use NakedPhp\ProgModel\NakedEntitySpecification;
+use NakedPhp\ProgModel\PhpSpecification;
 use NakedPhp\ProgModel\NakedObjectMethod;
 use NakedPhp\ProgModel\NakedObjectMethodParameter;
 use NakedPhp\ProgModel\OneToOneAssociation;
@@ -56,7 +56,8 @@ class EntityReflector
         }
 
         $this->_generateFacets($methods, $fields);
-        $class = new NakedEntitySpecification($className, $methods, $fields);
+        $class = new PhpSpecification($className, $methods, $fields);
+        $class->markAsEntity();
 
         return $class;
     }

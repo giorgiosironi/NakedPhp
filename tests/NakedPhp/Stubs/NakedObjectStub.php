@@ -45,7 +45,7 @@ class NakedObjectStub extends NakedBareObject
         return $this->_state;
     }
     
-    public function setFields(array $fields)
+    public function setAssociations(array $fields)
     {
         $this->_fields = $fields;
     }
