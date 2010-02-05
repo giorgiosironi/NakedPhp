@@ -10,24 +10,24 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_MetaModel
+ * @package    NakedPhp_ProgModel
  */
 
-namespace NakedPhp\MetaModel\Facet;
+namespace NakedPhp\ProgModel\Facet;
 use NakedPhp\ProgModel\NakedBareObject;
 
-class HiddenTest extends \PHPUnit_Framework_TestCase
+class HiddenMethodTest extends \PHPUnit_Framework_TestCase
 {
     public function testReturnsRightFacetType()
     {
-        $facet = new Hidden('myProperty');
+        $facet = new HiddenMethod('hideMyProperty');
         $this->assertEquals('Hidden', $facet->facetType());
     }
 
     public function testReturnsReasonEstablishedFromTheHookMethod()
     {
         $no = new NakedBareObject($this);
-        $facet = new Hidden('myProperty');
+        $facet = new HiddenMethod('hideMyProperty');
         $reason = $facet->hiddenReason($no);
         $this->assertEquals('Not available.', $reason);
     }

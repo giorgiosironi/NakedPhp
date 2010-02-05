@@ -17,36 +17,10 @@ namespace NakedPhp\MetaModel\Facet;
 use NakedPhp\MetaModel\Facet;
 use NakedPhp\MetaModel\NakedObject;
 
-class Hidden implements Facet
+interface Hidden extends Facet
 {
     /**
-     * @var string property name or method name
-     * @example 'myField'
+     * @return string   false in case feature is not hidden
      */
-    private $_featureName;
-    
-    /**
-     * @param string
-     */
-    public function __construct($featureName)
-    {
-        $this->_featureName = $featureName;
-    }
-
-    /**
-     * @return string   false in case feature is not disabled
-     */
-    public function hiddenReason(NakedObject $no)
-    {
-        $methodName = 'hide' . ucfirst($this->_featureName);
-        return $no->$methodName();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function facetType()
-    {
-        return 'Hidden';
-    }
+    public function hiddenReason(NakedObject $no);
 }

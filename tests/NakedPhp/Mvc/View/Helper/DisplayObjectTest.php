@@ -16,7 +16,7 @@
 namespace NakedPhp\Mvc\View\Helper;
 use NakedPhp\Stubs\NakedObjectStub;
 use NakedPhp\ProgModel\OneToOneAssociation;
-use NakedPhp\MetaModel\Facet\Hidden;
+use NakedPhp\ProgModel\Facet\HiddenMethod;
 
 class DisplayObjectTest extends \PHPUnit_Framework_TestCase
 {
@@ -50,7 +50,7 @@ class DisplayObjectTest extends \PHPUnit_Framework_TestCase
 
     public function testHidesFieldsProgrammatically()
     {
-        $this->_object->getAssociation('firstName')->addFacet(new Hidden('firstName'));
+        $this->_object->getAssociation('firstName')->addFacet(new HiddenMethod('hideFirstName'));
         $result = $this->_helper->displayObject($this->_object);
 
         $this->assertQueryContentNotContains($result, 'table tr td', 'firstName');
