@@ -19,7 +19,7 @@ use NakedPhp\ProgModel\NakedObjectMethod;
 use NakedPhp\ProgModel\NakedObjectMethodParameter;
 use NakedPhp\ProgModel\OneToOneAssociation;
 use NakedPhp\MetaModel\Facet\Action\Invocation;
-use NakedPhp\MetaModel\Facet\Disabled;
+use NakedPhp\ProgModel\Facet\DisabledMethod;
 use NakedPhp\ProgModel\Facet\HiddenMethod;
 use NakedPhp\MetaModel\Facet\Property\Choices;
 use NakedPhp\MetaModel\Facet\Property\Validate;
@@ -99,7 +99,7 @@ class EntityReflector
                         $field->addFacet($facet);
                     }
                     if (strstr($methodName, 'disable')) {
-                        $facet = new Disabled($fieldName);
+                        $facet = new DisabledMethod($methodName);
                         $field->addFacet($facet);
                     }
                     if (strstr($methodName, 'validate')) {

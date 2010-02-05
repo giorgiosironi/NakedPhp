@@ -16,7 +16,7 @@
 namespace NakedPhp\Form;
 use NakedPhp\Stubs\NakedObjectStub;
 use NakedPhp\ProgModel\OneToOneAssociation;
-use NakedPhp\MetaModel\Facet\Disabled;
+use NakedPhp\ProgModel\Facet\DisabledMethod;
 use NakedPhp\MetaModel\Facet\Property\Choices;
 use NakedPhp\MetaModel\Facet\Property\Validate;
 
@@ -87,7 +87,7 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $entity = new NakedObjectStub($this);
         $field = new OneToOneAssociation('string', 'myField');
-        $field->addFacet(new Disabled('myField'));
+        $field->addFacet(new DisabledMethod('disableMyField'));
         $element = $this->_formBuilder->createElement($entity, $field);
         $this->assertEquals('disabled', $element->getAttrib('disabled'));
     }
@@ -101,7 +101,7 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $entity = new NakedObjectStub($this);
         $field = new OneToOneAssociation('string', 'myOtherField');
-        $field->addFacet(new Disabled('myOtherField'));
+        $field->addFacet(new DisabledMethod('disableMyOtherField'));
         $element = $this->_formBuilder->createElement($entity, $field);
 
         $decorators = $element->getDecorators();
