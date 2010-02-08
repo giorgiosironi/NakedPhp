@@ -13,7 +13,7 @@
  * @package    Example_Test
  */
 
-class Example_AbstractTest extends Zend_Test_PHPUnit_ControllerTestCase
+abstract class Example_AbstractTest extends Zend_Test_PHPUnit_ControllerTestCase
 {
     public function setUp()
     {
