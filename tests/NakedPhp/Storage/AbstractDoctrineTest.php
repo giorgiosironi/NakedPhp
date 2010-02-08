@@ -34,7 +34,7 @@ abstract class AbstractDoctrineTest extends \PHPUnit_Framework_TestCase
 
         $connectionOptions = array(
             'driver' => 'pdo_sqlite',
-            'path' => '/var/www/nakedphp/tests/database.sqlite'
+            'path' => __DIR__ . '/../../database.sqlite'
         );
 
         $this->_em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config);
