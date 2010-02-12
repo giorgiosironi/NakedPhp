@@ -21,7 +21,7 @@ use NakedPhp\Reflect\MethodRemover;
 /**
  * Hides a high number of FacetFactory instances beyond its interface.
  */
-class FactoriesFacetProcessor
+class FactoriesFacetProcessor implements FacetProcessor
 {
     protected $_facetFactories;
 
