@@ -14,10 +14,11 @@
  */
 
 namespace NakedPhp\Service;
+use NakedPhp\MetaModel\Facet\Action\Invocation;
+use NakedPhp\ProgModel\Facet\Action\InvocationMethod;
 use NakedPhp\ProgModel\NakedBareObject;
 use NakedPhp\ProgModel\NakedObjectMethod;
 use NakedPhp\ProgModel\NakedObjectMethodParameter;
-use NakedPhp\MetaModel\Facet\Action\Invocation;
 use NakedPhp\Stubs\NakedObjectSpecificationStub;
 use NakedPhp\Stubs\User;
 
@@ -94,7 +95,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     public function testKeepsInvocationFacetOnRebuiltMethods()
     {
         $this->_makeProcessMethodAvailable();
-        $this->_serviceClass->getObjectAction('process')->addFacet(new Invocation('process'));
+        $this->_serviceClass->getObjectAction('process')->addFacet(new InvocationMethod('process'));
         $class = $this->_getEmptyEntityClass();
         $methods = $this->_methodMerger->getApplicableMethods($class);
 

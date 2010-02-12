@@ -17,7 +17,7 @@ namespace NakedPhp\Reflect;
 use NakedPhp\ProgModel\PhpSpecification;
 use NakedPhp\ProgModel\NakedObjectMethod;
 use NakedPhp\ProgModel\NakedObjectMethodParameter;
-use NakedPhp\MetaModel\Facet\Action\Invocation;
+use NakedPhp\ProgModel\Facet\Action\InvocationMethod;
 
 class ServiceReflector
 {
@@ -41,7 +41,7 @@ class ServiceReflector
         $class = new PhpSpecification($className, $methods);
         $class->markAsService();
         foreach ($methods as $methodName => $method) {
-            $method->addFacet(new Invocation($methodName));
+            $method->addFacet(new InvocationMethod($methodName));
         }
 
         return $class;

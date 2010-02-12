@@ -10,24 +10,24 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_MetaModel
+ * @package    NakedPhp_ProgModel
  */
 
-namespace NakedPhp\MetaModel\Facet\Action;
+namespace NakedPhp\ProgModel\Facet\Action;
 use NakedPhp\ProgModel\NakedBareObject;
 
-class InvocationTest extends \PHPUnit_Framework_TestCase
+class InvocationMethodTest extends \PHPUnit_Framework_TestCase
 {
     public function testReturnsRightFacetType()
     {
-        $facet = new Invocation('myAction');
+        $facet = new InvocationMethod('myAction');
         $this->assertEquals('Action\Invocation', $facet->facetType());
     }
 
     public function testInvokesTheHookMethod()
     {
         $no = new NakedBareObject($this);
-        $facet = new Invocation('myAction');
+        $facet = new InvocationMethod('myAction');
         $result = $facet->invoke($no, array('foo', 'bar'));
         $this->assertEquals('dummy', $result);
     }
@@ -41,7 +41,7 @@ class InvocationTest extends \PHPUnit_Framework_TestCase
 
     public function testHasAStringRepresentationEqualToTheMethodName()
     {
-        $facet = new Invocation('myAction');
+        $facet = new InvocationMethod('myAction');
         $this->assertEquals('myAction', (string) $facet);
     }
 }

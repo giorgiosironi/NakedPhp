@@ -17,7 +17,7 @@ namespace NakedPhp\Service;
 use NakedPhp\MetaModel\NakedObject;
 use NakedPhp\MetaModel\NakedObjectSpecification;
 use NakedPhp\ProgModel\NakedObjectMethod;
-use NakedPhp\MetaModel\Facet\Action\Invocation;
+use NakedPhp\ProgModel\Facet\Action\InvocationMethod;
 
 /**
  * Merge services methods who take an entity as methods on the entity;
@@ -182,7 +182,7 @@ class MethodMerger implements MethodCaller
         $newMethod = new NakedObjectMethod($methodName, $newParams, $method->getReturnType());
 
         if ($method->getFacet('Action\Invocation')) {
-            $newMethod->addFacet(new Invocation($methodName));
+            $newMethod->addFacet(new InvocationMethod($methodName));
         }
 
         return $newMethod;

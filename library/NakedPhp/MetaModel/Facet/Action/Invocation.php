@@ -17,41 +17,12 @@ namespace NakedPhp\MetaModel\Facet\Action;
 use NakedPhp\MetaModel\Facet;
 use NakedPhp\MetaModel\NakedObject;
 
-class Invocation implements Facet
+interface Invocation extends Facet
 {
-    /**
-     * @var string method name
-     * @example 'doSomething'
-     */
-    private $_methodName;
-    
-    /**
-     * @param string
-     */
-    public function __construct($methodName)
-    {
-        $this->_methodName = $methodName;
-    }
-
     /**
      * @return mixed    method return value
      */
-    public function invoke(NakedObject $no, array $arguments = array())
-    {
-        $callBack = array($no, $this->_methodName);
-        return call_user_func_array($callBack, $arguments);
-    }
+    public function invoke(NakedObject $no, array $arguments = array());
 
-    /**
-     * {@inheritdoc}
-     */
-    public function facetType()
-    {
-        return 'Action\Invocation';
-    }
-
-    public function __toString()
-    {
-        return $this->_methodName;
-    }
+    public function __toString();
 }

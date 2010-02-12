@@ -18,7 +18,7 @@ use NakedPhp\ProgModel\PhpSpecification;
 use NakedPhp\ProgModel\NakedObjectMethod;
 use NakedPhp\ProgModel\NakedObjectMethodParameter;
 use NakedPhp\ProgModel\OneToOneAssociation;
-use NakedPhp\MetaModel\Facet\Action\Invocation;
+use NakedPhp\ProgModel\Facet\Action\InvocationMethod;
 use NakedPhp\ProgModel\Facet\DisabledMethod;
 use NakedPhp\ProgModel\Facet\HiddenMethod;
 use NakedPhp\MetaModel\Facet\Property\Choices;
@@ -118,7 +118,7 @@ class EntityReflector
         }
 
         foreach ($userMethods as $methodName => $method) {
-            $method->addFacet(new Invocation($methodName));
+            $method->addFacet(new InvocationMethod($methodName));
         }
     }
 }
