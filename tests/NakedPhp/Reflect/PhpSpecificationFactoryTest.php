@@ -15,7 +15,6 @@
 
 namespace NakedPhp\Reflect;
 use NakedPhp\ProgModel\PhpSpecification;
-use NakedPhp\Reflect\ClassDiscoverer;
 
 class PhpSpecificationFactoryTest extends \PHPUnit_Framework_TestCase
 {
