@@ -17,11 +17,6 @@ namespace NakedPhp\Reflect;
 use NakedPhp\ProgModel\PhpSpecification;
 use NakedPhp\Reflect\ClassDiscoverer;
 
-use NakedPhp\MetaModel\AssociationIdentifyingFacetFactory;
-use NakedPhp\Reflect\FacetFactory\AbstractFacetFactory;
-use NakedPhp\Stubs\DummyMethodRemover;
-use NakedPhp\Stubs\FacetHolderStub;
-
 class PhpSpecificationFactoryTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreatesPhpSpecificationObjectsGivenSomeClassNames()
