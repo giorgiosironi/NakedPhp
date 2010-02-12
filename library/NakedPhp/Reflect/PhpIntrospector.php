@@ -14,8 +14,13 @@
  */
 
 namespace NakedPhp\Reflect;
+use NakedPhp\MetaModel\FacetHolder;
 use NakedPhp\ProgModel\PhpSpecification;
+use NakedPhp\ProgModel\OneToOneAssociation;
 
+/**
+ * TODO: how to obtain Actions?
+ */
 class PhpIntrospector
 {
     protected $_specification;
@@ -28,14 +33,60 @@ class PhpIntrospector
     {
         $this->_specification = $specification;
         $this->_facetProcessor = $facetProcessor;
+        // FIX: real work; probably necessary since all methods need reflection objects to work
+        $this->_reflectionClass = new \ReflectionClass($this->_specification->getClassName());
+        $this->_methods = new \ArrayObject($this->_reflectionClass->getMethods());
+        $this->_methodRemover = new ArrayObjectMethodRemover($this->_methods);
     }
 
     public function introspectClass()
     {
-        $this->_reflectionClass = new \ReflectionClass($this->_specification->getClassName());
-        $this->_methodRemover = new ArrayObjectMethodRemover(new \ArrayObject());
-        $this->_facetProcessor->processClass($this->_reflectionClass,
-                                             $this->_methodRemover,
-                                             $this->_specification);
+        $this->_processClass($this->_specification);
+
+        foreach ($this->_methods as $method) {
+            $this->_processMethod($method, $this->_specification);
+        }
     }
+
+    /**
+     * TODO: naming of association?
+     * TODO: type of association? (NakedObjectSpecification)
+     * All by FacetFactories I suppose. See the list of Facets on NOF documentation.
+     */
+    public function introspectAssociations()
+    {
+        $this->_accessors = $this->_facetProcessor->removePropertyAccessors($this->_methodRemover);
+        foreach ($this->_accessors as $accessor) {
+            $association = new OneToOneAssociation();
+            $this->_processClass($association);
+            $this->_processMethod($accessor, $association);
+        }
+    }
+
+    public function introspectActions()
+    {
+    }
+
+    /**
+     * Currying of $this->_facetProcessor->processClass.
+     */
+    protected function _processClass(FacetHolder $facetHolder)
+    {
+        return $this->_facetProcessor->processClass($this->_reflectionClass,
+                                                    $this->_methodRemover,
+                                                    $facetHolder);
+    }
+
+    /**
+     * Currying of $this->_facetProcessor->processMethod.
+     */
+    protected function _processMethod(\ReflectionMethod $method,
+                                      FacetHolder $facetHolder)
+    {
+        return $this->_facetProcessor->processMethod($this->_reflectionClass,
+                                                     $method,
+                                                     $this->_methodRemover,
+                                                     $facetHolder);
+    }
+
 }

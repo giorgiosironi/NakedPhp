@@ -41,8 +41,36 @@ class PhpIntrospectorTest extends \PHPUnit_Framework_TestCase
         $this->_facetProcessor->expects($this->once())
                               ->method('processClass')
                               ->with($this->anything(), $this->anything(), $this->_specification);
+        $this->_facetProcessor->expects($this->exactly(3))
+                              ->method('processMethod')
+                              ->with($this->anything(), $this->anything(), $this->anything(), $this->_specification);
+
         $this->_introspector->introspectClass();
+    }
+
+    public function testIntrospectsAssociations()
+    {
+        $rc = new \ReflectionClass('NakedPhp\Reflect\DummyClass');
+        $methods = array($rc->getMethod('foo1'), $rc->getMethod('foo2'));
+        $this->_facetProcessor->expects($this->once())
+                              ->method('removePropertyAccessors')
+                              ->will($this->returnValue($methods));
+
+        $this->_facetProcessor->expects($this->exactly(2))
+                              ->method('processClass')
+                              ->with($this->anything(), $this->anything(), $this->anything());
+
+        $this->_facetProcessor->expects($this->exactly(2))
+                              ->method('processMethod')
+                              ->with($this->anything(), $this->anything(), $this->anything(), $this->anything());
+
+        $this->_introspector->introspectAssociations();
     }
 }
 
-class DummyClass {}
+class DummyClass
+{
+    public function foo1() {}
+    public function foo2() {}
+    public function foo3() {}
+}
