@@ -20,6 +20,11 @@ use NakedPhp\Reflect\MethodRemover;
 
 abstract class AbstractFacetFactory implements FacetFactory
 {
+    public function getFeatureTypes()
+    {
+        return array();
+    }
+
     /**
      * {@inheritdoc}
      */

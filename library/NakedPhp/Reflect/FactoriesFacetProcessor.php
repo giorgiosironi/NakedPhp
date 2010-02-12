@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\Reflect;
+use NakedPhp\MetaModel\AssociationIdentifyingFacetFactory;
 use NakedPhp\MetaModel\FacetHolder;
 use NakedPhp\Reflect\MethodRemover;
 
@@ -29,6 +30,33 @@ class FactoriesFacetProcessor
         $this->_facetFactories = $factories;
     }
 
+    /**
+     * Merges the results of @see AssociationIdentifyingFacetFactory::removePropertyAccessors() calls.
+     * @return array    ReflectionMethod instances
+     */
+    public function removePropertyAccessors(MethodRemover $remover)
+    {
+        $methods = array();
+        foreach ($this->_getAssociationIdentifyingFacetFactories() as $factory) {
+            $methods += $factory->removePropertyAccessors($remover);
+        }
+        return $methods;
+    }
+
+    /**
+     * @return array    AssociationIdentifyingFacetFactory instances
+     */
+    protected function _getAssociationIdentifyingFacetFactories()
+    {
+        $factories = array();
+        foreach ($this->_facetFactories as $factory) {
+            if ($factory instanceof AssociationIdentifyingFacetFactory) {
+                $factories[] = $factory;
+            }
+        }
+        return $factories;
+    }
+
     public function processClass(\ReflectionClass $class, MethodRemover $remover, FacetHolder $holder)
     {
         foreach ($this->_facetFactories as $factory) {
@@ -42,5 +70,4 @@ class FactoriesFacetProcessor
             $factory->processMethod($class, $method, $remover, $holder);
         }
     }
-
 }

@@ -14,6 +14,9 @@
  */
 
 namespace NakedPhp\Reflect;
+use NakedPhp\MetaModel\AssociationIdentifyingFacetFactory;
+use NakedPhp\Reflect\FacetFactory\AbstractFacetFactory;
+use NakedPhp\Reflect\MethodRemover;
 use NakedPhp\Stubs\DummyMethodRemover;
 use NakedPhp\Stubs\FacetHolderStub;
 
@@ -41,4 +44,30 @@ class FactoriesFacetProcessorTest extends \PHPUnit_Framework_TestCase
         $processor->processMethod($rc, $method, $remover, $holder);
     }
 
+    public function testPropagatesRemoveAccessorCallsToAllAssociationIdentifyingFactories()
+    {
+        $processor = new FactoriesFacetProcessor(array(
+            new DummyAssociationIdentifyingFactory(array(4 => 'A', 8 => 'B')),
+            new DummyAssociationIdentifyingFactory(array(16 => 'C', 42 => 'D')),
+            $this->getMock('NakedPhp\Reflect\FacetFactory\AbstractFacetFactory')
+        ));
+        
+        $remover = new DummyMethodRemover();
+        $expected = array(4 => 'A', 8 => 'B', 16 => 'C', 42 => 'D');
+        $this->assertEquals($expected, $processor->removePropertyAccessors($remover));
+    }
+}
+
+class DummyAssociationIdentifyingFactory extends AbstractFacetFactory implements AssociationIdentifyingFacetFactory
+{
+    protected $_removedMethods;
+    public function __construct($removedMethods)
+    {
+        $this->_removedMethods = $removedMethods;
+    }
+
+    public function removePropertyAccessors(MethodRemover $remover)
+    {
+        return $this->_removedMethods;
+    }
 }
