@@ -26,7 +26,7 @@ class Loader
             $classFile = str_replace('\\', '/', $class) . '.php';
             include_once $classFile;
             if (!(class_exists($class) or interface_exists($class))) {
-                throw new \Exception("Namespaced class $class not found.");
+                throw new \Exception("Namespaced class $class not found (included file: $classFile.");
             }
             return true;
         }
