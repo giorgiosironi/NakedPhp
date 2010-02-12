@@ -14,6 +14,8 @@
  */
 
 namespace NakedPhp\Reflect;
+use NakedPhp\ProgModel\OneToOneAssociation;
+use NakedPhp\ProgModel\PhpAction;
 use NakedPhp\ProgModel\PhpSpecification;
 
 /**
@@ -30,7 +32,7 @@ class PhpIntrospectorTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_specification = new PhpSpecification('NakedPhp\Reflect\DummyClass');
+        $this->_specification = new PhpSpecification('NakedPhp\Reflect\DummyClass', null, null);
         $this->_facetProcessor = $this->getMock('NakedPhp\Reflect\FacetProcessor');
         $this->_introspector = new PhpIntrospector($this->_specification,
                                                    $this->_facetProcessor);
@@ -41,7 +43,7 @@ class PhpIntrospectorTest extends \PHPUnit_Framework_TestCase
         $this->_facetProcessor->expects($this->once())
                               ->method('processClass')
                               ->with($this->anything(), $this->anything(), $this->_specification);
-        $this->_facetProcessor->expects($this->exactly(3))
+        $this->_facetProcessor->expects($this->exactly(4))
                               ->method('processMethod')
                               ->with($this->anything(), $this->anything(), $this->anything(), $this->_specification);
 
@@ -51,7 +53,7 @@ class PhpIntrospectorTest extends \PHPUnit_Framework_TestCase
     public function testIntrospectsAssociations()
     {
         $rc = new \ReflectionClass('NakedPhp\Reflect\DummyClass');
-        $methods = array($rc->getMethod('foo1'), $rc->getMethod('foo2'));
+        $methods = array($rc->getMethod('getFoo'), $rc->getMethod('getBar'));
         $this->_facetProcessor->expects($this->once())
                               ->method('removePropertyAccessors')
                               ->will($this->returnValue($methods));
@@ -65,12 +67,50 @@ class PhpIntrospectorTest extends \PHPUnit_Framework_TestCase
                               ->with($this->anything(), $this->anything(), $this->anything(), $this->anything());
 
         $this->_introspector->introspectAssociations();
+
+        $associations = $this->_specification->getAssociations();
+        $this->assertEquals(2, count($associations));
+        $this->assertTrue($associations['foo'] instanceof OneToOneAssociation);
+        $this->assertTrue($associations['bar'] instanceof OneToOneAssociation);
     }
+
+    public function testIntrospectsObjectActions()
+    {
+        $this->_facetProcessor->expects($this->exactly(4))
+                              ->method('recognizes')
+                              ->will($this->returnCallback(array($this, 'recognizes')));
+
+        $this->_facetProcessor->expects($this->exactly(2))
+                              ->method('processClass')
+                              ->with($this->anything(), $this->anything(), $this->anything());
+
+        $this->_facetProcessor->expects($this->exactly(8))
+                              ->method('processMethod')
+                              ->with($this->anything(), $this->anything(), $this->anything(), $this->anything());
+
+        $this->_introspector->introspectActions();
+
+        $actions = $this->_specification->getObjectActions();
+        $this->assertEquals(2, count($actions));
+        $this->assertTrue($actions['anotherMethod'] instanceof PhpAction);
+        $this->assertTrue($actions['andStillAnotherMethod'] instanceof PhpAction);
+    }
+
+    public function recognizes(\ReflectionMethod $method)
+    {
+        $name = $method->getName();
+        if (strstr($name, 'get') or strstr($name, 'set')) {
+            return true;
+        }
+        return false;
+    }
+
 }
 
 class DummyClass
 {
-    public function foo1() {}
-    public function foo2() {}
-    public function foo3() {}
+    public function getFoo() {}
+    public function getBar() {}
+    public function anotherMethod() {}
+    public function andStillAnotherMethod() {}
 }

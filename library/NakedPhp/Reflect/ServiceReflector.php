@@ -15,8 +15,8 @@
 
 namespace NakedPhp\Reflect;
 use NakedPhp\ProgModel\PhpSpecification;
-use NakedPhp\ProgModel\NakedObjectMethod;
-use NakedPhp\ProgModel\NakedObjectMethodParameter;
+use NakedPhp\ProgModel\PhpAction;
+use NakedPhp\ProgModel\PhpActionParameter;
 use NakedPhp\ProgModel\Facet\Action\InvocationMethod;
 
 class ServiceReflector

@@ -19,6 +19,7 @@ use NakedPhp\Reflect\MethodRemover;
 
 /**
  * TODO: this interface should extend FacetFactory or a subset
+ * making it a Composite
  */
 interface FacetProcessor
 {
@@ -26,6 +27,11 @@ interface FacetProcessor
      * @return array    ReflectionMethod instances
      */
     public function removePropertyAccessors(MethodRemover $remover);
+
+    /**
+     * @return boolean
+     */
+    public function recognizes(\ReflectionMethod $method);
 
     public function processClass(\ReflectionClass $class, MethodRemover $remover, FacetHolder $holder);
 

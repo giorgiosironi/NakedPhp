@@ -40,7 +40,21 @@ class PropertyMethodsFacetFactoryTest extends \PHPUnit_Framework_TestCase
         $methods = $this->_facetFactory->removePropertyAccessors($removerMock);
         $this->assertEquals('dummy', $methods);
     }
-    
+
+    public function testRecognizesGetters()
+    {
+        $rc = new \ReflectionClass('NakedPhp\Reflect\FacetFactory\SomeRandomEntityClass');
+        $getter = $rc->getMethod('getBar');
+        $this->assertTrue($this->_facetFactory->recognizes($getter));
+    }
+ 
+    public function testRecognizesSetters()
+    {
+        $rc = new \ReflectionClass('NakedPhp\Reflect\FacetFactory\SomeRandomEntityClass');
+        $setter = $rc->getMethod('setBar');
+        $this->assertTrue($this->_facetFactory->recognizes($setter));
+    }
+   
     public function testAddsThePropertySetterFacet()
     {
         $rc = new \ReflectionClass('NakedPhp\Reflect\FacetFactory\SomeRandomEntityClass');

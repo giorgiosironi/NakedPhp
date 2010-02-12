@@ -55,7 +55,7 @@ class OneToOneAssociationTest extends \PHPUnit_Framework_TestCase
      * TODO: implement as a Facet
     public function testIsNotDefaultByDefault()
     {
-        $param = new NakedObjectMethodParameter('array', 'info');
+        $param = new PhpActionParameter('array', 'info');
         $this->assertFalse($param->getDefault());
     }
     */

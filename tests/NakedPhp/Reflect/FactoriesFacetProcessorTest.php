@@ -15,6 +15,7 @@
 
 namespace NakedPhp\Reflect;
 use NakedPhp\MetaModel\AssociationIdentifyingFacetFactory;
+use NakedPhp\MetaModel\MethodFilteringFacetFactory;
 use NakedPhp\Reflect\FacetFactory\AbstractFacetFactory;
 use NakedPhp\Reflect\MethodRemover;
 use NakedPhp\Stubs\DummyMethodRemover;
@@ -56,6 +57,19 @@ class FactoriesFacetProcessorTest extends \PHPUnit_Framework_TestCase
         $expected = array(4 => 'A', 8 => 'B', 16 => 'C', 42 => 'D');
         $this->assertEquals($expected, $processor->removePropertyAccessors($remover));
     }
+
+    public function testPropagatesRecognizesCallsToAllMethodFilteringFactories()
+    {
+        $processor = new FactoriesFacetProcessor(array(
+            new DummyMethodFilteringFactory(array('myMethod')),
+            new DummyMethodFilteringFactory(array('yourMethod'))
+        ));
+        
+        $rc = new \ReflectionClass('NakedPhp\Reflect\DummyClassWithFilteredMethods');
+        $this->assertTrue($processor->recognizes($rc->getMethod('myMethod')));
+        $this->assertTrue($processor->recognizes($rc->getMethod('yourMethod')));
+        $this->assertFalse($processor->recognizes($rc->getMethod('hisMethod')));
+    }
 }
 
 class DummyAssociationIdentifyingFactory extends AbstractFacetFactory implements AssociationIdentifyingFacetFactory
@@ -70,4 +84,25 @@ class DummyAssociationIdentifyingFactory extends AbstractFacetFactory implements
     {
         return $this->_removedMethods;
     }
+}
+
+class DummyMethodFilteringFactory extends AbstractFacetFactory implements MethodFilteringFacetFactory
+{
+    protected $_recognizedMethods;
+    public function __construct($recognizedMethods)
+    {
+        $this->_recognizedMethods = $recognizedMethods;
+    }
+
+    public function recognizes(\ReflectionMethod $method)
+    {
+        return in_array($method->getName(), $this->_recognizedMethods);
+    }
+}
+
+class DummyClassWithFilteredMethods
+{
+    public function myMethod() {}
+    public function yourMethod() {}
+    public function hisMethod() {}
 }

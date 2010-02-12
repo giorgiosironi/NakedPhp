@@ -27,7 +27,7 @@ class PhpSpecification extends AbstractFacetHolder implements NakedObjectSpecifi
     protected $_className;
 
     /**
-     * @var array of NakedObjectMethod instances
+     * @var array of PhpAction instances
      */
     protected $_methods;
 
@@ -54,7 +54,7 @@ class PhpSpecification extends AbstractFacetHolder implements NakedObjectSpecifi
     }
 
     /**
-     * @return array NakedObjectMethod
+     * @return array PhpAction
      */
     public function getObjectActions()
     {

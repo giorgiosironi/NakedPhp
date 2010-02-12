@@ -19,7 +19,7 @@ use NakedPhp\MetaModel\NakedObjectActionParameter;
 /**
  * Wraps info about a method or constructor param.
  */
-final class NakedObjectMethodParameter implements NakedObjectActionParameter
+final class PhpActionParameter implements NakedObjectActionParameter
 {
     /**
      * @var string

@@ -15,7 +15,7 @@
 
 namespace NakedPhp\Reflect;
 use NakedPhp\ProgModel\OneToOneAssociation;
-use NakedPhp\ProgModel\NakedObjectMethod;
+use NakedPhp\ProgModel\PhpAction;
 use NakedPhp\MetaModel\Facet;
 use NakedPhp\MetaModel\Facet\Action\Invocation;
 
@@ -28,14 +28,14 @@ class EntityReflectorTest extends \PHPUnit_Framework_TestCase
     {
         $this->_methodsReflector = $this->getMock('NakedPhp\Reflect\MethodsReflector', array('analyze'));
         $methods = array(
-            'sendMessage' => new NakedObjectMethod('sendMessage'),
-            'getName' => new NakedObjectMethod('getName'),
-            'setName' => new NakedObjectMethod('setName'),
-            'getStatus' => new NakedObjectMethod('getStatus', array(), 'string'),
-            'choicesStatus' => new NakedObjectMethod('choicesStatus', array(), 'array'),
-            'disableStatus' => new NakedObjectMethod('disableStatus', array(), 'boolean'),
-            'validateStatus' => new NakedObjectMethod('validateStatus', array(), 'boolean'),
-            'hideStatus' => new NakedObjectMethod('hideStatus', array(), 'boolean')
+            'sendMessage' => new PhpAction('sendMessage'),
+            'getName' => new PhpAction('getName'),
+            'setName' => new PhpAction('setName'),
+            'getStatus' => new PhpAction('getStatus', array(), 'string'),
+            'choicesStatus' => new PhpAction('choicesStatus', array(), 'array'),
+            'disableStatus' => new PhpAction('disableStatus', array(), 'boolean'),
+            'validateStatus' => new PhpAction('validateStatus', array(), 'boolean'),
+            'hideStatus' => new PhpAction('hideStatus', array(), 'boolean')
         );
         $this->_methodsReflector->expects($this->once())
                                 ->method('analyze')

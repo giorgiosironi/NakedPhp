@@ -16,7 +16,7 @@
 namespace NakedPhp\Reflect\Functional;
 use NakedPhp\Reflect\EntityReflector;
 use NakedPhp\Reflect\ReflectFactory;
-use NakedPhp\ProgModel\NakedObjectMethodParameter;
+use NakedPhp\ProgModel\PhpActionParameter;
 
 class UserTest extends \PHPUnit_Framework_TestCase
 {
@@ -34,8 +34,8 @@ class UserTest extends \PHPUnit_Framework_TestCase
     {
         $methods = $this->_result->getObjectActions();
         $sendMessage = $methods['sendMessage'];
-        $this->assertEquals(array('title' => new NakedObjectMethodParameter('string', 'title'),
-                                  'text' => new NakedObjectMethodParameter('string', 'text')),
+        $this->assertEquals(array('title' => new PhpActionParameter('string', 'title'),
+                                  'text' => new PhpActionParameter('string', 'text')),
                             $sendMessage->getParameters());
         $this->assertEquals('void', $sendMessage->getReturnType());
         $deactivate = $methods['deactivate'];

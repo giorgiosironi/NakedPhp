@@ -10,17 +10,18 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_ProgModel
+ * @package    NakedPhp_MetaModel
  */
 
-namespace NakedPhp\ProgModel;
+namespace NakedPhp\MetaModel;
 
-class NakedObjectMethodParameterTest extends \PHPUnit_Framework_TestCase
+interface MethodFilteringFacetFactory extends FacetFactory
 {
-    public function testRetainsTypeAndName()
-    {
-        $param = new NakedObjectMethodParameter('array', 'info');
-        $this->assertEquals('array', (string) $param->getType());
-        $this->assertEquals('info', $param->getName());
-    }
+    /**
+     * When true, the method should be not listed in the actions
+     * as it is recognized for special purposes by this FacetFactory.
+     * @param ReflectionMethod $method
+     * @return boolean
+     */
+    public function recognizes(\ReflectionMethod $method);
 }

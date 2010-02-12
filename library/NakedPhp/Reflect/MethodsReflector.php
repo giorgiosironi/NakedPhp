@@ -14,8 +14,8 @@
  */
 
 namespace NakedPhp\Reflect;
-use NakedPhp\ProgModel\NakedObjectMethod;
-use NakedPhp\ProgModel\NakedObjectMethodParameter;
+use NakedPhp\ProgModel\PhpAction;
+use NakedPhp\ProgModel\PhpActionParameter;
 use NakedPhp\ProgModel\OneToOneAssociation;
 
 class MethodsReflector
@@ -29,7 +29,7 @@ class MethodsReflector
  
     /**
      * @param string $className
-     * @return array    NakedObjectMethod instances
+     * @return array    PhpAction instances
      */
     public function analyze($className)
     {
@@ -53,7 +53,7 @@ class MethodsReflector
             $parametersAnnotationsFound = $returnAnnotationFound = false;
             foreach ($annotations as $ann) {
                 if ($ann['annotation'] == 'param') {
-                    $params[$ann['name']] = new NakedObjectMethodParameter($ann['type'], $ann['name']);
+                    $params[$ann['name']] = new PhpActionParameter($ann['type'], $ann['name']);
                     $parametersAnnotationsFound = true;
                 } else if ($ann['annotation'] == 'return') {
                     $return = $ann['type'];
@@ -63,13 +63,13 @@ class MethodsReflector
             if (!$parametersAnnotationsFound) {
                 foreach ($method->getParameters() as $param) {
                     $name = $param->getName();
-                    $params[$name] = new NakedObjectMethodParameter('string', $name);
+                    $params[$name] = new PhpActionParameter('string', $name);
                 }
             }
             if (!$returnAnnotationFound) {
                 $return = 'string';
             }
-            $methods[$methodName] = new NakedObjectMethod($methodName, $params, $return);
+            $methods[$methodName] = new PhpAction($methodName, $params, $return);
         }
 
         return $methods; 

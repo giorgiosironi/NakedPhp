@@ -16,7 +16,7 @@
 namespace NakedPhp\ProgModel;
 use NakedPhp\MetaModel\NakedObjectAction;
 
-class NakedObjectMethod extends AbstractFacetHolder implements NakedObjectAction
+class PhpAction extends AbstractFacetHolder implements NakedObjectAction
 {
     /**
      * @var string
@@ -24,7 +24,7 @@ class NakedObjectMethod extends AbstractFacetHolder implements NakedObjectAction
     private $_id;
 
     /**
-     * @var array   NakedObjectMethodParameter instances
+     * @var array   PhpActionParameter instances
      */
     private $_params;
 

@@ -14,11 +14,11 @@
  */
 
 namespace NakedPhp\Form;
-use NakedPhp\ProgModel\NakedObjectMethod;
+use NakedPhp\ProgModel\PhpAction;
 
 class MethodFormBuilder
 {
-    public function createForm(NakedObjectMethod $method)
+    public function createForm(PhpAction $method)
     {
         $form = new \Zend_Form();
         foreach ($method->getParameters() as $name => $param) {

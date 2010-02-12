@@ -15,11 +15,13 @@
 
 namespace NakedPhp\Reflect;
 use NakedPhp\MetaModel\FacetHolder;
-use NakedPhp\ProgModel\PhpSpecification;
 use NakedPhp\ProgModel\OneToOneAssociation;
+use NakedPhp\ProgModel\PhpAction;
+use NakedPhp\ProgModel\PhpActionParameter;
+use NakedPhp\ProgModel\PhpSpecification;
 
 /**
- * TODO: how to obtain Actions?
+ * TODO: factor out creation of ProgModel instances in a Factory
  */
 class PhpIntrospector
 {
@@ -39,6 +41,10 @@ class PhpIntrospector
         $this->_methodRemover = new ArrayObjectMethodRemover($this->_methods);
     }
 
+    /**
+     * Initializes the class-level Facets on $this->_specification.
+     * @return void
+     */
     public function introspectClass()
     {
         $this->_processClass($this->_specification);
@@ -49,22 +55,47 @@ class PhpIntrospector
     }
 
     /**
-     * TODO: naming of association?
-     * TODO: type of association? (NakedObjectSpecification)
+     * Initializes the associations list on $this->_specification,
+     * with the respective Facets.
+     * TODO: type of association? (NakedObjectSpecification) will be factored out
      * All by FacetFactories I suppose. See the list of Facets on NOF documentation.
+     * @return void
      */
     public function introspectAssociations()
     {
+        $associations = array();
         $this->_accessors = $this->_facetProcessor->removePropertyAccessors($this->_methodRemover);
         foreach ($this->_accessors as $accessor) {
             $association = new OneToOneAssociation();
+            $identifier = NameUtils::baseName($accessor->getName());
             $this->_processClass($association);
             $this->_processMethod($accessor, $association);
+            $associations[$identifier] = $association;
         }
+        $this->_specification->initAssociations($associations);
     }
 
+    /**
+     * Initializes the list of actions on $this->_specification, 
+     * including the respective facets.
+     * @return void
+     */
     public function introspectActions()
     {
+        $actions = array();
+        foreach ($this->_methods as $method) {
+            if ($this->_facetProcessor->recognizes($method)) {
+                continue;
+            }
+            $name = $method->getName();
+            $action = new PhpAction($name);
+            $this->_processClass($action);
+            foreach ($this->_methods as $collaboratorCandidate) {
+                $this->_processMethod($collaboratorCandidate, $action);
+            }
+            $actions[$name] = $action;
+        }
+        $this->_specification->initObjectActions($actions);
     }
 
     /**

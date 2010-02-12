@@ -19,25 +19,25 @@ class NakedObjectMethodTest extends \PHPUnit_Framework_TestCase
 {
     public function testRetainsId()
     {
-        $method = new NakedObjectMethod('doSomething');
+        $method = new PhpAction('doSomething');
         $this->assertEquals('doSomething', $method->getId());
     }
 
     public function testRetainsParamsList()
     {
-        $method = new NakedObjectMethod('doSomething', $params = array('one', 'two'));
+        $method = new PhpAction('doSomething', $params = array('one', 'two'));
         $this->assertEquals($params, $method->getParameters());
     }
 
     public function testRetainsReturnType()
     {
-        $method = new NakedObjectMethod('doSomething', $params = array(), 'string');
+        $method = new PhpAction('doSomething', $params = array(), 'string');
         $this->assertEquals('string', $method->getReturnType());
     }
 
     public function testImplementsFacetHolderInterface()
     {
-        $field = new NakedObjectMethod();
+        $field = new PhpAction();
         $helper = new \NakedPhp\Test\FacetHolder($this);
         $helper->testIsFacetHolder($field);
     }

@@ -16,11 +16,16 @@
 namespace NakedPhp\Reflect\FacetFactory;
 use NakedPhp\MetaModel\AssociationIdentifyingFacetFactory;
 use NakedPhp\MetaModel\FacetHolder;
+use NakedPhp\MetaModel\MethodFilteringFacetFactory;
 use NakedPhp\MetaModel\NakedObjectFeatureType;
 use NakedPhp\ProgModel\Facet\Property\SetterMethod;
 use NakedPhp\Reflect\MethodRemover;
+use NakedPhp\Reflect\NameUtils;
 
-class PropertyMethodsFacetFactory implements AssociationIdentifyingFacetFactory
+/**
+ * Used to generate the associations list and their Facets.
+ */
+class PropertyMethodsFacetFactory implements AssociationIdentifyingFacetFactory, MethodFilteringFacetFactory
 {
     /**
      * {@inheritdoc}
@@ -28,6 +33,15 @@ class PropertyMethodsFacetFactory implements AssociationIdentifyingFacetFactory
     public function getFeatureTypes()
     {
         return array(NakedObjectFeatureType::PROPERTY);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function recognizes(\ReflectionMethod $method)
+    {
+        return NameUtils::startsWith($method->getName(), 'get')
+            || NameUtils::startsWith($method->getName(), 'set');
     }
 
     /**

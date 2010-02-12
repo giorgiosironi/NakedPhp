@@ -36,7 +36,7 @@ class ArrayObjectMethodRemover implements MethodRemover
         $removed = array();
         foreach ($this->_methods->getArrayCopy() as $index => $method) {
             $name = $method->getName();
-            if (strstr($name, $prefix) === $name) {
+            if (NameUtils::startsWith($name, $prefix)) {
                 $removed[] = $method;
                 unset($this->_methods[$index]);
             }

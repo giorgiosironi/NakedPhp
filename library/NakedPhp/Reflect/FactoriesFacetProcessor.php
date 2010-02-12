@@ -16,10 +16,13 @@
 namespace NakedPhp\Reflect;
 use NakedPhp\MetaModel\AssociationIdentifyingFacetFactory;
 use NakedPhp\MetaModel\FacetHolder;
+use NakedPhp\MetaModel\MethodFilteringFacetFactory;
 use NakedPhp\Reflect\MethodRemover;
 
 /**
  * Hides a high number of FacetFactory instances beyond its interface.
+ * The operation implemented are the same of a normal FacetFactory,
+ * but are repeated on all the factories.
  */
 class FactoriesFacetProcessor implements FacetProcessor
 {
@@ -44,17 +47,16 @@ class FactoriesFacetProcessor implements FacetProcessor
     }
 
     /**
-     * @return array    AssociationIdentifyingFacetFactory instances
+     * @return boolean  true if at least one @see MethodFilteringFacetFactory recognizes $method.
      */
-    protected function _getAssociationIdentifyingFacetFactories()
+    public function recognizes(\ReflectionMethod $method)
     {
-        $factories = array();
-        foreach ($this->_facetFactories as $factory) {
-            if ($factory instanceof AssociationIdentifyingFacetFactory) {
-                $factories[] = $factory;
+        foreach ($this->_getMethodFilteringFacetFactories() as $factory) {
+            if ($factory->recognizes($method)) {
+                return true;
             }
         }
-        return $factories;
+        return false;
     }
 
     public function processClass(\ReflectionClass $class, MethodRemover $remover, FacetHolder $holder)
@@ -69,5 +71,35 @@ class FactoriesFacetProcessor implements FacetProcessor
         foreach ($this->_facetFactories as $factory) {
             $factory->processMethod($class, $method, $remover, $holder);
         }
+    }
+
+    /**
+     * @return array    AssociationIdentifyingFacetFactory instances
+     */
+    protected function _getAssociationIdentifyingFacetFactories()
+    {
+        return $this->_filterFacetFactories('NakedPhp\MetaModel\AssociationIdentifyingFacetFactory');
+    }
+    /**
+     * @return array    MethodFilteringFacetFactory instances
+     */
+    protected function _getMethodFilteringFacetFactories()
+    {
+        return $this->_filterFacetFactories('NakedPhp\MetaModel\MethodFilteringFacetFactory');
+    }
+
+    /**
+     * @param string $interface fully qualified interface name
+     * @return array    $interface instances
+     */
+    protected function _filterFacetFactories($interface)
+    {
+        $factories = array();
+        foreach ($this->_facetFactories as $factory) {
+            if ($factory instanceof $interface) {
+                $factories[] = $factory;
+            }
+        }
+        return $factories;
     }
 }
