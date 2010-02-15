@@ -17,7 +17,7 @@ namespace NakedPhp\Form;
 use NakedPhp\Stubs\NakedObjectStub;
 use NakedPhp\ProgModel\OneToOneAssociation;
 use NakedPhp\ProgModel\Facet\DisabledMethod;
-use NakedPhp\MetaModel\Facet\Property\Choices;
+use NakedPhp\ProgModel\Facet\Property\ChoicesMethod;
 use NakedPhp\MetaModel\Facet\Property\Validate;
 
 class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
@@ -71,7 +71,7 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $entity = new NakedObjectStub($this);
         $field = new OneToOneAssociation('string', 'limitedField');
-        $field->addFacet(new Choices('limitedField'));
+        $field->addFacet(new ChoicesMethod('choicesLimitedField'));
         $element = $this->_formBuilder->createElement($entity, $field);
         $this->assertTrue($element instanceof \Zend_Form_Element_Select);
         $expected = array('foo' => 'Foo', 'bar' => 'Bar');

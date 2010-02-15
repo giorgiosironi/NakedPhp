@@ -21,7 +21,7 @@ use NakedPhp\ProgModel\OneToOneAssociation;
 use NakedPhp\ProgModel\Facet\Action\InvocationMethod;
 use NakedPhp\ProgModel\Facet\DisabledMethod;
 use NakedPhp\ProgModel\Facet\HiddenMethod;
-use NakedPhp\MetaModel\Facet\Property\Choices;
+use NakedPhp\ProgModel\Facet\Property\ChoicesMethod;
 use NakedPhp\MetaModel\Facet\Property\Validate;
 
 class EntityReflector
@@ -95,7 +95,7 @@ class EntityReflector
                 if (preg_match($pattern, $methodName)) {
                     $hiddenMethods[$methodName] = $method;
                     if (strstr($methodName, 'choices')) {
-                        $facet = new Choices($fieldName);
+                        $facet = new ChoicesMethod($fieldName);
                         $field->addFacet($facet);
                     }
                     if (strstr($methodName, 'disable')) {

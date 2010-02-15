@@ -17,36 +17,10 @@ namespace NakedPhp\MetaModel\Facet\Property;
 use NakedPhp\MetaModel\Facet;
 use NakedPhp\MetaModel\NakedObject;
 
-class Choices implements Facet
+interface Choices extends Facet
 {
     /**
-     * @var string property name
-     * @example 'myField'
+     * @return array    possible values for the field
      */
-    private $_propertyName;
-    
-    /**
-     * @param string
-     */
-    public function __construct($propertyName)
-    {
-        $this->_propertyName = $propertyName;
-    }
-
-    /**
-     * @return array    possible values for the $this->_propertyName field
-     */
-    public function getChoices(NakedObject $no)
-    {
-        $methodName = 'choices' . ucfirst($this->_propertyName);
-        return $no->$methodName();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function facetType()
-    {
-        return 'Property\Choices';
-    }
+    public function getChoices(NakedObject $no);
 }
