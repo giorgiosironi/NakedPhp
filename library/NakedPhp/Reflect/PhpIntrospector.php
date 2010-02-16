@@ -27,15 +27,19 @@ class PhpIntrospector
 {
     protected $_specification;
     protected $_facetProcessor;
+    protected $_metaModelFactory;
     protected $_reflectionClass;
     protected $_methodRemover;
 
     public function __construct(PhpSpecification $specification,
-                                FacetProcessor $facetProcessor)
+                                FacetProcessor $facetProcessor,
+                                MetaModelFactory $metaModelFactory)
     {
         $this->_specification = $specification;
         $this->_facetProcessor = $facetProcessor;
+        $this->_metaModelFactory = $metaModelFactory;
         // FIX: real work; probably necessary since all methods need reflection objects to work
+        // move in init() method
         $this->_reflectionClass = new \ReflectionClass($this->_specification->getClassName());
         $this->_methods = new \ArrayObject($this->_reflectionClass->getMethods());
         $this->_methodRemover = new ArrayObjectMethodRemover($this->_methods);
@@ -66,7 +70,7 @@ class PhpIntrospector
         $associations = array();
         $this->_accessors = $this->_facetProcessor->removePropertyAccessors($this->_methodRemover);
         foreach ($this->_accessors as $accessor) {
-            $association = new OneToOneAssociation();
+            $association = $this->_metaModelFactory->createAssociation($accessor);
             $identifier = NameUtils::baseName($accessor->getName());
             $this->_processClass($association);
             $this->_processMethod($accessor, $association);
@@ -87,12 +91,12 @@ class PhpIntrospector
             if ($this->_facetProcessor->recognizes($method)) {
                 continue;
             }
-            $name = $method->getName();
-            $action = new PhpAction($name);
+            $action = $this->_metaModelFactory->createAction($method);
             $this->_processClass($action);
             foreach ($this->_methods as $collaboratorCandidate) {
                 $this->_processMethod($collaboratorCandidate, $action);
             }
+            $name = $method->getName();
             $actions[$name] = $action;
         }
         $this->_specification->initObjectActions($actions);

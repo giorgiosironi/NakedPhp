@@ -30,13 +30,26 @@ class PhpIntrospectorTest extends \PHPUnit_Framework_TestCase
     private $_specification;
     private $_facetProcessor;
     private $_introspector;
+    private $_metaModelFactory;
+    private $_createdAssociation;
+    private $_createdAction;
 
     public function setUp()
     {
         $this->_specification = new PhpSpecification('NakedPhp\Reflect\DummyClass', null, null);
         $this->_facetProcessor = $this->getMock('NakedPhp\Reflect\FacetProcessor');
+        $this->_metaModelFactory = $this->getMock('NakedPhp\Reflect\MetaModelFactory');
+        $this->_createdAssociation = new OneToOneAssociation('dummy');
+        $this->_createdAction = new PhpAction('dummy');
+        $this->_metaModelFactory->expects($this->any())
+                                ->method('createAssociation')
+                                ->will($this->returnValue($this->_createdAssociation));
+        $this->_metaModelFactory->expects($this->any())
+                                ->method('createAction')
+                                ->will($this->returnValue($this->_createdAction));
         $this->_introspector = new PhpIntrospector($this->_specification,
-                                                   $this->_facetProcessor);
+                                                   $this->_facetProcessor,
+                                                   $this->_metaModelFactory);
     }
 
     public function testIntrospectsClass()
@@ -61,11 +74,11 @@ class PhpIntrospectorTest extends \PHPUnit_Framework_TestCase
 
         $this->_facetProcessor->expects($this->exactly(2))
                               ->method('processClass')
-                              ->with($this->anything(), $this->anything(), $this->anything());
+                              ->with($this->anything(), $this->anything(), $this->_createdAssociation);
 
         $this->_facetProcessor->expects($this->exactly(2))
                               ->method('processMethod')
-                              ->with($this->anything(), $this->anything(), $this->anything(), $this->anything());
+                              ->with($this->anything(), $this->anything(), $this->anything(), $this->_createdAssociation);
 
         $this->_introspector->introspectAssociations();
 
@@ -83,11 +96,11 @@ class PhpIntrospectorTest extends \PHPUnit_Framework_TestCase
 
         $this->_facetProcessor->expects($this->exactly(2))
                               ->method('processClass')
-                              ->with($this->anything(), $this->anything(), $this->anything());
+                              ->with($this->anything(), $this->anything(), $this->_createdAction);
 
         $this->_facetProcessor->expects($this->exactly(8))
                               ->method('processMethod')
-                              ->with($this->anything(), $this->anything(), $this->anything(), $this->anything());
+                              ->with($this->anything(), $this->anything(), $this->anything(), $this->_createdAction);
 
         $this->_introspector->introspectActions();
 
