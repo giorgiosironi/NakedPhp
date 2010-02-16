@@ -10,24 +10,24 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_MetaModel
+ * @package    NakedPhp_ProgModel
  */
 
-namespace NakedPhp\MetaModel\Facet\Property;
+namespace NakedPhp\ProgModel\Facet\Property;
 use NakedPhp\ProgModel\NakedBareObject;
 
-class ValidateTest extends \PHPUnit_Framework_TestCase
+class ValidateMethodTest extends \PHPUnit_Framework_TestCase
 {
     public function testReturnsRightFacetType()
     {
-        $facet = new Validate('myProperty');
+        $facet = new ValidateMethod('validateMyProperty');
         $this->assertEquals('Property\Validate', $facet->facetType());
     }
 
     public function testReturnsValidStateEstablishedFromTheHookMethod()
     {
         $no = new NakedBareObject($this);
-        $facet = new Validate('myProperty');
+        $facet = new ValidateMethod('validateMyProperty');
         $valid = $facet->invalidReason($no, 42);
         $this->assertFalse($valid);
     }

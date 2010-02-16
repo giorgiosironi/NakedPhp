@@ -18,7 +18,7 @@ use NakedPhp\Stubs\NakedObjectStub;
 use NakedPhp\ProgModel\OneToOneAssociation;
 use NakedPhp\ProgModel\Facet\DisabledMethod;
 use NakedPhp\ProgModel\Facet\Property\ChoicesMethod;
-use NakedPhp\MetaModel\Facet\Property\Validate;
+use NakedPhp\ProgModel\Facet\Property\ValidateMethod;
 
 class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
 {
@@ -120,7 +120,7 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $entity = new NakedObjectStub($this);
         $field = new OneToOneAssociation('string', 'myField');
-        $field->addFacet(new Validate('myField'));
+        $field->addFacet(new ValidateMethod('validateMyField'));
         $element = $this->_formBuilder->createElement($entity, $field);
         $this->assertFalse($element->isValid('foo'));
     }

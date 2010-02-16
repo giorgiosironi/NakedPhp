@@ -22,7 +22,7 @@ use NakedPhp\ProgModel\Facet\Action\InvocationMethod;
 use NakedPhp\ProgModel\Facet\DisabledMethod;
 use NakedPhp\ProgModel\Facet\HiddenMethod;
 use NakedPhp\ProgModel\Facet\Property\ChoicesMethod;
-use NakedPhp\MetaModel\Facet\Property\Validate;
+use NakedPhp\ProgModel\Facet\Property\ValidateMethod;
 
 class EntityReflector
 {
@@ -95,7 +95,7 @@ class EntityReflector
                 if (preg_match($pattern, $methodName)) {
                     $hiddenMethods[$methodName] = $method;
                     if (strstr($methodName, 'choices')) {
-                        $facet = new ChoicesMethod($fieldName);
+                        $facet = new ChoicesMethod($methodName);
                         $field->addFacet($facet);
                     }
                     if (strstr($methodName, 'disable')) {
@@ -103,7 +103,7 @@ class EntityReflector
                         $field->addFacet($facet);
                     }
                     if (strstr($methodName, 'validate')) {
-                        $facet = new Validate($fieldName);
+                        $facet = new ValidateMethod($methodName);
                         $field->addFacet($facet);
                     }
                     if (strstr($methodName, 'hide')) {

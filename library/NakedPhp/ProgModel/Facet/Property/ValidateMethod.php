@@ -10,20 +10,46 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_MetaModel
+ * @package    NakedPhp_ProgModel
  */
 
-namespace NakedPhp\MetaModel\Facet\Property;
-use NakedPhp\MetaModel\Facet;
+namespace NakedPhp\ProgModel\Facet\Property;
+use NakedPhp\MetaModel\Facet\Property\Validate;
 use NakedPhp\MetaModel\NakedObject;
 
-interface Validate extends Facet
+class ValidateMethod implements Validate
 {
+    /**
+     * @var string method name
+     * @example 'validateMyField'
+     */
+    private $_methodName;
+    
+    /**
+     * @param string
+     */
+    public function __construct($methodName)
+    {
+        $this->_methodName = $methodName;
+    }
+
     /**
      * @param NakedObject $no
      * @param mixed $proposedValue
      * @return string   reason of non valid result, or a boolean to indicate
      *                  validation without messages
      */
-    public function invalidReason(NakedObject $no, $proposedValue);
+    public function invalidReason(NakedObject $no, $proposedValue)
+    {
+        $methodName = $this->_methodName;
+        return $no->$methodName($proposedValue);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function facetType()
+    {
+        return 'Property\Validate';
+    }
 }
