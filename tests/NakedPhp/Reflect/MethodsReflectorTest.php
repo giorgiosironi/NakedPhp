@@ -26,6 +26,7 @@ class MethodsReflectorTest extends \PHPUnit_Framework_TestCase
     {
         $this->_parserMock = $this->getMock('NakedPhp\Reflect\DocblockParser', array('parse', 'contains'));
         $this->_reflector = new MethodsReflector($this->_parserMock);
+        $this->_reflectionClass = new \ReflectionClass('NakedPhp\Reflect\DummyReflectedClass');
     }
 
     private function setMockAnnotations($annotations = null)
@@ -44,6 +45,59 @@ class MethodsReflectorTest extends \PHPUnit_Framework_TestCase
                    ->will($this->returnValue($annotations));
     }
 
+    public function testFindsIdentifierForAction()
+    {
+        $method = $this->_reflectionClass->getMethod('myMethod');
+        $identifier = $this->_reflector->getIdentifierForAction($method);
+        $this->assertEquals('myMethod', $identifier);
+    }
+
+    public function testFindsIdentifierForAssociation()
+    {
+        $getter = $this->_reflectionClass->getMethod('getMyField');
+        $identifier = $this->_reflector->getIdentifierForAssociation($getter);
+        $this->assertEquals('myField', $identifier);
+    }
+
+    public function testFindsMethodReturnType()
+    {
+        $this->setMockAnnotations(array(
+            array(
+                'annotation' => 'return',
+                'type' => 'integer',
+                'description' => 'The role of the user'
+            )
+        ));
+
+        $method = $this->_reflectionClass->getMethod('getMyField');
+        $type = $this->_reflector->getReturnType($method);
+        $this->assertEquals('integer', $type);
+    }
+
+    public function testFindsParametersTypeAndIdentifiers()
+    {
+        $this->setMockAnnotations(array(
+            array(
+                'annotation' => 'param',
+                'type' => 'integer',
+                'name' => 'myParameter',
+                'description' => 'My useful parameter.'
+            )
+        ));
+
+        $method = $this->_reflectionClass->getMethod('myMethod');
+        $params = $this->_reflector->getParams($method);
+        $this->assertEquals(array(
+                                'myParameter' => array(
+                                    'type' => 'integer',
+                                    'description' => 'My useful parameter.'
+                                )
+                            ),
+                            $params);
+    }
+
+
+    // TODO: from now on, the tests will be deleted; this Api is used by old Reflectors
     public function testReturnsAnArrayOfMethods()
     {
         $this->setMockAnnotations();
@@ -99,4 +153,13 @@ class MethodsReflectorTest extends \PHPUnit_Framework_TestCase
         $methods = $this->_reflector->analyze('NakedPhp\Stubs\User');
         $this->assertFalse(isset($methods['mySkippedMethod']));
     }
+}
+
+class DummyReflectedClass
+{
+    /**
+     * Docblocks will be mocked.
+     */
+    public function myMethod() {}
+    public function getMyField() {}
 }

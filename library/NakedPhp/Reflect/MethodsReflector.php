@@ -26,7 +26,60 @@ class MethodsReflector
     {
         $this->_parser = $parser;
     }
+
+    /**
+     * @return string
+     */
+    public function getIdentifierForAction(\ReflectionMethod $method)
+    {
+        return $method->getName();
+    }
  
+    /**
+     * @return string
+     */
+    public function getIdentifierForAssociation(\ReflectionMethod $getter)
+    {
+        $methodName = $getter->getName();
+        return NameUtils::baseName($methodName);
+    }
+
+    /**
+     * @return string    class name or data type
+     */
+    public function getReturnType(\ReflectionMethod $method)
+    {
+        $annotations = $this->_parser->parse($method->getDocComment());
+        $returnType = '';
+        foreach ($annotations as $ann) {
+            if ($ann['annotation'] == 'return') {
+                $returnType = $ann['type'];
+            }
+        }
+        return $returnType;
+    }
+
+    /**
+     * @return array    of array, indexed by param identifier
+     *                  subarrays' keys are 'type' and 'description'
+     */
+    public function getParams(\ReflectionMethod $method)
+    {
+        $annotations = $this->_parser->parse($method->getDocComment());
+        $params = array();
+        foreach ($annotations as $ann) {
+            if ($ann['annotation'] == 'param') {
+                $params[$ann['name']] = array(
+                    'type' => $ann['type'],
+                    'description' => $ann['description']
+                );
+            }
+        }
+        return $params;
+    }
+ 
+    // TODO: from now on, old Api. Delete.
+
     /**
      * @param string $className
      * @return array    PhpAction instances
