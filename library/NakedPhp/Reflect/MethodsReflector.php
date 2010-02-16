@@ -63,7 +63,7 @@ class MethodsReflector
      * @return array    of array, indexed by param identifier
      *                  subarrays' keys are 'type' and 'description'
      */
-    public function getParams(\ReflectionMethod $method)
+    public function getParameters(\ReflectionMethod $method)
     {
         $annotations = $this->_parser->parse($method->getDocComment());
         $params = array();

@@ -10,17 +10,20 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_ProgModel
+ * @package    NakedPhp_Reflect
  */
 
-namespace NakedPhp\ProgModel;
+namespace NakedPhp\Reflect;
 
-class NakedObjectMethodParameterTest extends \PHPUnit_Framework_TestCase
+interface MetaModelFactory
 {
-    public function testRetainsTypeAndName()
-    {
-        $param = new PhpActionParameter('array', 'info');
-        $this->assertEquals('array', (string) $param->getType());
-        $this->assertEquals('info', $param->getId());
-    }
+    /**
+     * @return NakedObjectAssociation
+     */
+    public function createAssociation(\ReflectionMethod $getter);
+
+    /**
+     * @return NakedObjectAction
+     */
+    public function createAction(\ReflectionMethod $method);
 }

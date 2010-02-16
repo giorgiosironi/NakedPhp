@@ -23,6 +23,7 @@ use NakedPhp\ProgModel\PhpSpecification;
  * - introspection of class
  * - introspection of associations
  * - introspection of action method
+ * TODO: add indirection using a MetaModelFactory
  */
 class PhpIntrospectorTest extends \PHPUnit_Framework_TestCase
 {
@@ -104,7 +105,6 @@ class PhpIntrospectorTest extends \PHPUnit_Framework_TestCase
         }
         return false;
     }
-
 }
 
 class DummyClass

@@ -43,6 +43,11 @@ final class PhpActionParameter implements NakedObjectActionParameter
         return $this->_type;
     }
 
+    public function getId()
+    {
+        return $this->_name;
+    }
+
     public function getName()
     {
         return $this->_name;

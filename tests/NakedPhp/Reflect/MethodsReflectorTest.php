@@ -86,7 +86,7 @@ class MethodsReflectorTest extends \PHPUnit_Framework_TestCase
         ));
 
         $method = $this->_reflectionClass->getMethod('myMethod');
-        $params = $this->_reflector->getParams($method);
+        $params = $this->_reflector->getParameters($method);
         $this->assertEquals(array(
                                 'myParameter' => array(
                                     'type' => 'integer',

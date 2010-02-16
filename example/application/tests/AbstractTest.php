@@ -13,6 +13,9 @@
  * @package    Example_Test
  */
 
+/**
+ * TODO: move in example/tests/controllers
+ */
 abstract class Example_AbstractTest extends Zend_Test_PHPUnit_ControllerTestCase
 {
     public function setUp()
