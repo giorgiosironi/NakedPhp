@@ -40,9 +40,11 @@ class PhpIntrospector
         $this->_metaModelFactory = $metaModelFactory;
         // FIX: real work; probably necessary since all methods need reflection objects to work
         // move in init() method
-        $this->_reflectionClass = new \ReflectionClass($this->_specification->getClassName());
-        $this->_methods = new \ArrayObject($this->_reflectionClass->getMethods());
-        $this->_methodRemover = new ArrayObjectMethodRemover($this->_methods);
+        if ($this->_specification) {
+            $this->_reflectionClass = new \ReflectionClass($this->_specification->getClassName());
+            $this->_methods = new \ArrayObject($this->_reflectionClass->getMethods());
+            $this->_methodRemover = new ArrayObjectMethodRemover($this->_methods);
+        }
     }
 
     /**

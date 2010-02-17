@@ -18,21 +18,30 @@ use NakedPhp\ProgModel\PhpSpecification;
 
 class PhpSpecificationLoader implements SpecificationLoader
 {
-    protected $_factory;
+    protected $_specFactory;
+    protected $_introspectorFactory;
 
     /**
      * @var array   PhpSpecification instances
      */
     protected $_specifications;
 
-    public function __construct(SpecificationFactory $factory)
+    public function __construct(SpecificationFactory $specFactory,
+                                IntrospectorFactory $introspectorFactory)
     {
-        $this->_factory = $factory;
+        $this->_specFactory         = $specFactory;
+        $this->_introspectorFactory = $introspectorFactory;
     }
 
     public function init()
     {
-        $this->_specifications = $this->_factory->getSpecifications();
+        $this->_specifications = $this->_specFactory->getSpecifications();
+        foreach ($this->_specifications as $spec) {
+            $introspector = $this->_introspectorFactory->getIntrospector($spec);
+            $introspector->introspectClass();
+            $introspector->introspectAssociations();
+            $introspector->introspectActions();
+        }
     }
 
     /**
