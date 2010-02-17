@@ -31,9 +31,9 @@ class PhpIntrospector
     protected $_reflectionClass;
     protected $_methodRemover;
 
-    public function __construct(PhpSpecification $specification,
-                                FacetProcessor $facetProcessor,
-                                MetaModelFactory $metaModelFactory)
+    public function __construct(PhpSpecification $specification = null,
+                                FacetProcessor $facetProcessor = null,
+                                MetaModelFactory $metaModelFactory = null)
     {
         $this->_specification = $specification;
         $this->_facetProcessor = $facetProcessor;
