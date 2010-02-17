@@ -64,7 +64,8 @@ class ProgModelFactoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('myMethod', $action->getId());
         $this->assertEquals('string', $action->getReturnType());
-        $param = current($action->getParameters());
+        $params = $action->getParameters();
+        $param = $params['myParam'];
         $this->assertEquals('myParam', $param->getId());
         $this->assertEquals('integer', $param->getType());
     }

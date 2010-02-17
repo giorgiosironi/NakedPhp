@@ -18,15 +18,34 @@ use NakedPhp\ProgModel\PhpSpecification;
 
 class PhpSpecificationFactoryTest extends \PHPUnit_Framework_TestCase
 {
-    public function testCreatesPhpSpecificationObjectsGivenSomeClassNames()
+    private $_specifications;
+
+    public function setUp()
     {
         $classDiscoverer = new DummyClassDiscoverer();
         $specFactory = new PhpSpecificationFactory($classDiscoverer);
-        $expected = array(
-            'My_Model_EntityA' => new PhpSpecification('My_Model_EntityA'),
-            'My_Model_EntityB' => new PhpSpecification('My_Model_EntityB')
-        );
-        $this->assertEquals($expected, $specFactory->getSpecifications());
+        $this->_specifications = $specFactory->getSpecifications();
+    }
+
+    public function testCreatesPhpSpecificationObjectsGivenSomeClassNames()
+    {
+        $this->assertEquals(2, count($this->_specifications));
+        $spec = current($this->_specifications);
+        $this->assertEquals('My_Model_EntityA', $spec->getClassName());
+    }
+
+    public function testCreatesPhpSpecificationsWhoseAssociationsCanBeSet()
+    {
+        $spec = current($this->_specifications);
+        $spec->initAssociations(array());
+        $this->assertEquals(array(), $spec->getAssociations());
+    }
+
+    public function testCreatesPhpSpecificationsWhoseActionsCanBeSet()
+    {
+        $spec = current($this->_specifications);
+        $spec->initObjectActions(array());
+        $this->assertEquals(array(), $spec->getObjectActions());
     }
 }
 

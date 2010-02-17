@@ -66,9 +66,12 @@ class PropertyMethodsFacetFactory implements AssociationIdentifyingFacetFactory,
      */
     public function processMethod(\ReflectionClass $class, \ReflectionMethod $getter, MethodRemover $remover, FacetHolder $facetHolder)
     {
+        if (!NameUtils::startsWith($getter->getName(), 'get')) {
+            return false;
+        }
         $name = str_replace('get', '', $getter->getName());
-        $fieldName = lcfirst($name);
-        if ($class->getMethod('set' . $name)) {
+        if ($class->hasMethod('set' . $name)) {
+            $fieldName = lcfirst($name);
             $facetHolder->addFacet(new SetterMethod($fieldName));
         }
     }

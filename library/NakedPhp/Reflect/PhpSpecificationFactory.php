@@ -32,7 +32,7 @@ class PhpSpecificationFactory implements SpecificationFactory
     {
         $specifications = array();
         foreach ($this->_discoverer->getList() as $fullName) {
-            $specifications[$fullName] = new PhpSpecification($fullName);
+            $specifications[$fullName] = new PhpSpecification($fullName, null, null);
         }
         return $specifications;
     }

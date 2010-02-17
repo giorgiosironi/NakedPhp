@@ -44,10 +44,10 @@ class ProgModelFactory implements MetaModelFactory
     {
         $identifier = $this->_reflector->getIdentifierForAction($method);
         $oldParams = $this->_reflector->getParameters($method);
-        $callback = function($identifier, $param) {
-            return new PhpActionParameter($param['type'], $identifier);
+        $params = array();
+        foreach ($oldParams as $idParam => $param) {
+            $params[$idParam] = new PhpActionParameter($param['type'], $idParam);
         };
-        $params = array_map($callback, array_keys($oldParams), $oldParams);
         $returnType = $this->_reflector->getReturnType($method);
         return new PhpAction($identifier, $params, $returnType);
     }

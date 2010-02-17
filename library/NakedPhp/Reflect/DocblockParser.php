@@ -89,7 +89,11 @@ class DocblockParser
     
     protected function _extractDocblockParam($line)
     {
-        list ($annotation, $type, $name, $description) = preg_split('/[ ]/', $line, 4);
+        $pieces = preg_split('/[ ]/', $line, 4);
+        $annotation  = $pieces[0];
+        $type        = $pieces[1];
+        $name        = isset($pieces[2]) ? $pieces[2] : uniqid();
+        $description = isset($pieces[3]) ? $pieces[3] : '';
         return array(
             'annotation'  => str_replace('@', '', $annotation),
             'type'        => $type,

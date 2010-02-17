@@ -55,6 +55,18 @@ class PropertyMethodsFacetFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->_facetFactory->recognizes($setter));
     }
    
+    public function testAddsReadOnlyPropertyFacetIfSetterIsNotPresent()
+    {
+        $rc = new \ReflectionClass('NakedPhp\Reflect\FacetFactory\SomeRandomEntityClass');
+        $getter = $rc->getMethod('getFoo');
+        $removerMock = $this->_getMethodRemoverMock();
+        $facetHolder = new FacetHolderStub();
+
+        $this->_facetFactory->processMethod($rc, $getter, $removerMock, $facetHolder);
+
+        $this->assertNull($facetHolder->getFacet('Property\Setter'));
+    }
+
     public function testAddsThePropertySetterFacet()
     {
         $rc = new \ReflectionClass('NakedPhp\Reflect\FacetFactory\SomeRandomEntityClass');

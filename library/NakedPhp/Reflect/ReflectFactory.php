@@ -18,6 +18,29 @@ namespace NakedPhp\Reflect;
 class ReflectFactory
 {
     /**
+     * @return SpecificationLoader
+     */
+    public function createSpecificationLoader($folder, $prefix)
+    {
+        $loader = new PhpSpecificationLoader(
+            new PhpSpecificationFactory(
+                new FilesystemClassDiscoverer($folder, $prefix)
+            ),
+            new PhpIntrospectorFactory(
+                new FactoriesFacetProcessor(array(
+                    new FacetFactory\PropertyMethodsFacetFactory
+                )),
+                new ProgModelFactory(
+                    new MethodsReflector(
+                        new DocblockParser
+                    )
+                )
+            )
+        );
+        return $loader;
+    }
+
+    /**
      * @return EntityReflector
      */
     public function createEntityReflector()

@@ -85,7 +85,7 @@ class PhpSpecification extends AbstractFacetHolder implements NakedObjectSpecifi
     public function initObjectActions(array $actions)
     {
         if ($this->_methods !== null) {
-            throw new Exception('Actions of a PhpSpecification cannot be set more than one time.');
+            throw new Exception("Actions of a PhpSpecification ($this->_className) cannot be set more than one time.");
         }
         $this->_methods = $actions;
     }
@@ -112,7 +112,7 @@ class PhpSpecification extends AbstractFacetHolder implements NakedObjectSpecifi
     public function initAssociations(array $associations)
     {
         if ($this->_fields !== null) {
-            throw new Exception('Associations of a PhpSpecification cannot be set more than one time.');
+            throw new Exception("Associations of a PhpSpecification ($this->_className) cannot be set more than one time.");
         }
         $this->_fields = $associations;
     }

@@ -26,9 +26,31 @@ class UserTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $factory = new ReflectFactory();
+        $folder = realpath(__DIR__ . '/../../Stubs/');
+        $loader = $factory->createSpecificationLoader($folder,
+        'NakedPhp\\Stubs\\');
+        $loader->init();
+        $this->_spec = $loader->loadSpecification('NakedPhp\Stubs\User');
+
+        // TODO: these setup will be obsolete. When possible, delete it.
         $this->_reflector = $factory->createEntityReflector();
         $this->_result = $this->_reflector->analyze('NakedPhp\Stubs\User');
     }
+
+    public function testFindsOutActions()
+    {
+        $actions = $this->_spec->getObjectActions();
+        $sendMessage = $actions['sendMessage'];
+        $this->assertEquals(array('title' => new PhpActionParameter('string', 'title'),
+                                  'text' => new PhpActionParameter('string', 'text')),
+                            $sendMessage->getParameters());
+        $this->assertEquals('void', $sendMessage->getReturnType());
+        $deactivate = $actions['deactivate'];
+        $this->assertEquals(array(), $deactivate->getParameters());
+        $this->assertEquals('boolean', $deactivate->getReturnType());
+    }
+
+    // TODO: these tests will be obsolete. When possible, delete them.
 
     public function testReadsAnnotationsOfMethods()
     {

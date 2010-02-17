@@ -55,6 +55,24 @@ EOT;
                             $result[0]);
     }
 
+    public function testListsDocblockParamAnnotationsWithEmptyDescriptions()
+    {
+        $comment = <<<EOT
+        /**
+         * @param string \$text
+         *
+         */
+EOT;
+        $result = $this->_parser->parse($comment);
+        $this->assertEquals(array(
+                                'annotation' => 'param',
+                                'type' => 'string',
+                                'name' => 'text',
+                                'description' => ''
+                            ), 
+                            $result[0]);
+    }
+
     public function testListsDocblockReturnAnnotations()
     {
         $comment = <<<EOT
@@ -68,6 +86,23 @@ EOT;
                                 'annotation' => 'return',
                                 'type' => 'string',
                                 'description' => 'a nice description'
+                            ), 
+                            $result[0]);
+    }
+
+    public function testListsDocblockReturnAnnotationsWithoutDescription()
+    {
+        $comment = <<<EOT
+        /**
+         * @return string
+         *
+         */
+EOT;
+        $result = $this->_parser->parse($comment);
+        $this->assertEquals(array(
+                                'annotation' => 'return',
+                                'type' => 'string',
+                                'description' => ''
                             ), 
                             $result[0]);
     }
