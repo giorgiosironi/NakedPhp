@@ -19,6 +19,9 @@ use NakedPhp\MetaModel\NakedService;
 
 class Controller extends \Zend_Controller_Action
 {
+    protected $_folder;
+    protected $_prefix;
+
     /**
      * @var NakedPhp\Factory    creates nakedphp object
      */
@@ -56,7 +59,7 @@ class Controller extends \Zend_Controller_Action
 
     public final function preDispatch()
     {
-        $this->_factory = new \NakedPhp\Factory();
+        $this->_factory = new \NakedPhp\Factory($this->_folder, $this->_prefix);
         $this->_nakedFactory = $this->_factory->getNakedFactory();
         $this->_unwrappedContainer = $this->_factory->getUnwrappedContainer();
         $this->_bareWrappingIterator = $this->_factory->getBareWrappingIterator();

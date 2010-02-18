@@ -15,13 +15,15 @@
 
 namespace NakedPhp\Reflect;
 use NakedPhp\MetaModel\FacetHolder;
+use NakedPhp\MetaModel\NakedObjectFeatureType;
 use NakedPhp\ProgModel\OneToOneAssociation;
 use NakedPhp\ProgModel\PhpAction;
 use NakedPhp\ProgModel\PhpActionParameter;
 use NakedPhp\ProgModel\PhpSpecification;
 
 /**
- * TODO: factor out creation of ProgModel instances in a Factory
+ * This class uses the work of the FacetProcessor to fill in the Specification
+ * with objects created from the MetaModelFactory.
  */
 class PhpIntrospector
 {
@@ -54,10 +56,10 @@ class PhpIntrospector
      */
     public function introspectClass()
     {
-        $this->_processClass($this->_specification);
+        $this->_processClass($this->_specification, NakedObjectFeatureType::OBJECT);
 
         foreach ($this->_methods as $method) {
-            $this->_processMethod($method, $this->_specification);
+            $this->_processMethod($method, $this->_specification, NakedObjectFeatureType::OBJECT);
         }
     }
 
@@ -66,7 +68,7 @@ class PhpIntrospector
      * with the respective Facets.
      * TODO: type of association? (NakedObjectSpecification) will be factored out
      * All by FacetFactories I suppose. See the list of Facets on NOF documentation.
-     * FIX: should call only the FF that recognize PROPERTY
+     * FIX: should call only the FFs that recognize PROPERTY
      * @return void
      */
     public function introspectAssociations()
@@ -76,8 +78,8 @@ class PhpIntrospector
         foreach ($this->_accessors as $accessor) {
             $association = $this->_metaModelFactory->createAssociation($accessor);
             $identifier = NameUtils::baseName($accessor->getName());
-            $this->_processClass($association);
-            $this->_processMethod($accessor, $association);
+            $this->_processClass($association, NakedObjectFeatureType::PROPERTY);
+            $this->_processMethod($accessor, $association, NakedObjectFeatureType::PROPERTY);
             $associations[$identifier] = $association;
         }
         $this->_specification->initAssociations($associations);
@@ -97,9 +99,9 @@ class PhpIntrospector
                 continue;
             }
             $action = $this->_metaModelFactory->createAction($method);
-            $this->_processClass($action);
+            $this->_processClass($action, NakedObjectFeatureType::ACTION);
             foreach ($this->_methods as $collaboratorCandidate) {
-                $this->_processMethod($collaboratorCandidate, $action);
+                $this->_processMethod($collaboratorCandidate, $action, NakedObjectFeatureType::ACTION);
             }
             $name = $method->getName();
             $actions[$name] = $action;
@@ -110,23 +112,26 @@ class PhpIntrospector
     /**
      * Currying of $this->_facetProcessor->processClass.
      */
-    protected function _processClass(FacetHolder $facetHolder)
+    protected function _processClass(FacetHolder $facetHolder, $featureType)
     {
         return $this->_facetProcessor->processClass($this->_reflectionClass,
                                                     $this->_methodRemover,
-                                                    $facetHolder);
+                                                    $facetHolder,
+                                                    $featureType);
     }
 
     /**
      * Currying of $this->_facetProcessor->processMethod.
      */
     protected function _processMethod(\ReflectionMethod $method,
-                                      FacetHolder $facetHolder)
+                                      FacetHolder $facetHolder,
+                                      $featureType)
     {
         return $this->_facetProcessor->processMethod($this->_reflectionClass,
                                                      $method,
                                                      $this->_methodRemover,
-                                                     $facetHolder);
+                                                     $facetHolder,
+                                                     $featureType);
     }
 
 }

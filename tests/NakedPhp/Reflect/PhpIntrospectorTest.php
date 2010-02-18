@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\Reflect;
+use NakedPhp\MetaModel\NakedObjectFeatureType;
 use NakedPhp\ProgModel\OneToOneAssociation;
 use NakedPhp\ProgModel\PhpAction;
 use NakedPhp\ProgModel\PhpSpecification;
@@ -56,10 +57,10 @@ class PhpIntrospectorTest extends \PHPUnit_Framework_TestCase
     {
         $this->_facetProcessor->expects($this->once())
                               ->method('processClass')
-                              ->with($this->anything(), $this->anything(), $this->_specification);
+                              ->with($this->anything(), $this->anything(), $this->_specification, NakedObjectFeatureType::OBJECT);
         $this->_facetProcessor->expects($this->exactly(4))
                               ->method('processMethod')
-                              ->with($this->anything(), $this->anything(), $this->anything(), $this->_specification);
+                              ->with($this->anything(), $this->anything(), $this->anything(), $this->_specification, NakedObjectFeatureType::OBJECT);
 
         $this->_introspector->introspectClass();
     }
@@ -74,11 +75,11 @@ class PhpIntrospectorTest extends \PHPUnit_Framework_TestCase
 
         $this->_facetProcessor->expects($this->exactly(2))
                               ->method('processClass')
-                              ->with($this->anything(), $this->anything(), $this->_createdAssociation);
+                              ->with($this->anything(), $this->anything(), $this->_createdAssociation, NakedObjectFeatureType::PROPERTY);
 
         $this->_facetProcessor->expects($this->exactly(2))
                               ->method('processMethod')
-                              ->with($this->anything(), $this->anything(), $this->anything(), $this->_createdAssociation);
+                              ->with($this->anything(), $this->anything(), $this->anything(), $this->_createdAssociation, NakedObjectFeatureType::PROPERTY);
 
         $this->_introspector->introspectAssociations();
 
@@ -96,11 +97,11 @@ class PhpIntrospectorTest extends \PHPUnit_Framework_TestCase
 
         $this->_facetProcessor->expects($this->exactly(2))
                               ->method('processClass')
-                              ->with($this->anything(), $this->anything(), $this->_createdAction);
+                              ->with($this->anything(), $this->anything(), $this->_createdAction, NakedObjectFeatureType::ACTION);
 
         $this->_facetProcessor->expects($this->exactly(8))
                               ->method('processMethod')
-                              ->with($this->anything(), $this->anything(), $this->anything(), $this->_createdAction);
+                              ->with($this->anything(), $this->anything(), $this->anything(), $this->_createdAction, NakedObjectFeatureType::ACTION);
 
         $this->_introspector->introspectActions();
 

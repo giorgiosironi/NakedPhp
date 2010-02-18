@@ -21,8 +21,19 @@ class Factory
      */
     private $_sessionBridge;
 
-    public function __construct()
+    private $_folder;
+    private $_prefix;
+
+    /**
+     * @param string $folder    folder containing classes' source files
+     * @param string $prefix    prefix of contained classes 
+     * <code>
+     * $factory = new \NakedPhp\Factory(APP_PATH . 'models/', 'Example_Model_');
+     */
+    public function __construct($folder, $prefix)
     {
+        $this->_folder = $folder;
+        $this->_prefix = $prefix;
         $this->_reflectFactory = new \NakedPhp\Reflect\ReflectFactory();
     }
 
@@ -83,8 +94,9 @@ class Factory
      */
     public function getNakedFactory()
     {
-        return new Service\NakedFactory($this->_reflectFactory->createEntityReflector(),
-                                        $this->_reflectFactory->createServiceReflector());
+        $loader = $this->_reflectFactory->createSpecificationLoader($this->_folder, $this->_prefix);
+        $loader->init();
+        return new Service\NakedFactory($loader);
     }
 
     public function getMethodFormBuilder()

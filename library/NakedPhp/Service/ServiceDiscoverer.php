@@ -18,6 +18,8 @@ namespace NakedPhp\Service;
 /**
  * This interface decouples the discovery of php Service classes.
  * Implementors can list services by config, autodiscovery, etc.
+ * TODO: refactor to feature NakedObjectSpecifications
+ *       @example $discoverer->getServiceSpecifications()
  */
 interface ServiceDiscoverer
 {

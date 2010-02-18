@@ -59,16 +59,18 @@ class FactoriesFacetProcessor implements FacetProcessor
         return false;
     }
 
-    public function processClass(\ReflectionClass $class, MethodRemover $remover, FacetHolder $holder)
+    public function processClass(\ReflectionClass $class, MethodRemover $remover, FacetHolder $holder, $featureType = null)
     {
-        foreach ($this->_facetFactories as $factory) {
+        $factories = $this->_filterFacetFactoriesByFeatureType($featureType);
+        foreach ($factories as $i => $factory) {
             $factory->processClass($class, $remover, $holder);
         }
     }
 
-    public function processMethod(\ReflectionClass $class, \ReflectionMethod $method, MethodRemover $remover, FacetHolder $holder)
+    public function processMethod(\ReflectionClass $class, \ReflectionMethod $method, MethodRemover $remover, FacetHolder $holder, $featureType = null)
     {
-        foreach ($this->_facetFactories as $factory) {
+        $factories = $this->_filterFacetFactoriesByFeatureType($featureType);
+        foreach ($factories as $i => $factory) {
             $factory->processMethod($class, $method, $remover, $holder);
         }
     }
@@ -101,5 +103,24 @@ class FactoriesFacetProcessor implements FacetProcessor
             }
         }
         return $factories;
+    }
+
+    /**
+     * @param string $requestedType     a NakedObjectFeatureType constant
+     * @return array
+     */
+    protected function _filterFacetFactoriesByFeatureType($requestedType)
+    {
+        if ($requestedType === null) {
+            return $this->_facetFactories;
+        }
+        $filteredFactories = array();
+        foreach ($this->_facetFactories as $factory) {
+            $supportedTypes = $factory->getFeatureTypes();
+            if (in_array($requestedType, $supportedTypes)) {
+                $filteredFactories[] = $factory;
+            }
+        }
+        return $filteredFactories;
     }
 }

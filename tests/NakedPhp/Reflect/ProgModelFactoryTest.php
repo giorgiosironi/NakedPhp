@@ -41,7 +41,18 @@ class ProgModelFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('myField', $association->getId());
         $this->assertEquals('integer', $association->getType());
     }
+    
+    public function testAssociationsTypeDefaultsToString()
+    {
+        $this->_reflectorMock->expects($this->once())
+                             ->method('getReturnType')
+                             ->will($this->returnValue(null));
 
+        $method = $this->_getDummyReflectionMethod();
+        $association = $this->_factory->createAssociation($method);
+
+        $this->assertEquals('string', $association->getType());
+    }
     
     public function testCreatesAction()
     {

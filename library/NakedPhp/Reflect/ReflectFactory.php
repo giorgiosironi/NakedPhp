@@ -28,7 +28,8 @@ class ReflectFactory
             ),
             new PhpIntrospectorFactory(
                 new FactoriesFacetProcessor(array(
-                    new FacetFactory\PropertyMethodsFacetFactory
+                    new FacetFactory\PropertyMethodsFacetFactory,
+                    new FacetFactory\ActionMethodsFacetFactory
                 )),
                 new ProgModelFactory(
                     new MethodsReflector(
@@ -41,16 +42,7 @@ class ReflectFactory
     }
 
     /**
-     * @return EntityReflector
-     */
-    public function createEntityReflector()
-    {
-        $methodsReflector = $this->_createMethodsReflector();
-        return new EntityReflector($methodsReflector);
-    }
-
-    /**
-     * @return ServicesReflector
+     * @return ServiceReflector
      */
     public function createServiceReflector()
     {

@@ -15,23 +15,21 @@
 
 namespace NakedPhp\Service;
 use NakedPhp\ProgModel\NakedBareObject;
-use NakedPhp\Reflect\EntityReflector;
-use NakedPhp\Reflect\ServiceReflector;
+use NakedPhp\Reflect\SpecificationLoader;
 
 class NakedFactory implements \NakedPhp\MetaModel\NakedFactory
 {
-    protected $_entityReflector;
-    protected $_serviceReflector;
+    protected $_specificationLoader;
 
-    public function __construct(EntityReflector $entityReflector = null, ServiceReflector $serviceReflector = null)
+    public function __construct(SpecificationLoader $specificationLoader = null)
     {
-        $this->_entityReflector  = $entityReflector;
-        $this->_serviceReflector = $serviceReflector;
+        $this->_specificationLoader  = $specificationLoader;
     }
 
     /**
      * @param mixed $value
-     * @return mixed
+     * @return NakedObject
+     * FIX: it should wrap also scalar values
      */
     public function createBare($object)
     {
@@ -39,12 +37,7 @@ class NakedFactory implements \NakedPhp\MetaModel\NakedFactory
             return $object;
         }
         $className = get_class($object);
-        if ($this->_serviceReflector->isService($className)) {
-            $class = $this->_serviceReflector->analyze($className);
-            return new NakedBareObject($object, $class);
-        } else {
-            $class = $this->_entityReflector->analyze($className);
-            return new NakedBareObject($object, $class);
-        }
+        $spec = $this->_specificationLoader->loadSpecification($className);
+        return new NakedBareObject($object, $spec);
     }
 }

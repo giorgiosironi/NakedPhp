@@ -18,14 +18,20 @@ use NakedPhp\MetaModel\AssociationIdentifyingFacetFactory;
 use NakedPhp\MetaModel\FacetHolder;
 use NakedPhp\MetaModel\MethodFilteringFacetFactory;
 use NakedPhp\MetaModel\NakedObjectFeatureType;
+use NakedPhp\ProgModel\Facet\DisabledMethod;
+use NakedPhp\ProgModel\Facet\HiddenMethod;
+use NakedPhp\ProgModel\Facet\Property\ChoicesMethod;
 use NakedPhp\ProgModel\Facet\Property\SetterMethod;
+use NakedPhp\ProgModel\Facet\Property\ValidateMethod;
 use NakedPhp\Reflect\MethodRemover;
 use NakedPhp\Reflect\NameUtils;
 
 /**
  * Used to generate the associations list and their Facets.
  */
-class PropertyMethodsFacetFactory implements AssociationIdentifyingFacetFactory, MethodFilteringFacetFactory
+class PropertyMethodsFacetFactory extends AbstractFacetFactory
+                                  implements AssociationIdentifyingFacetFactory,
+                                             MethodFilteringFacetFactory
 {
     /**
      * {@inheritdoc}
@@ -53,14 +59,6 @@ class PropertyMethodsFacetFactory implements AssociationIdentifyingFacetFactory,
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function processClass(\ReflectionClass $class, MethodRemover $remover, FacetHolder $facetHolder)
-    {
-        return false;
-    }
-
-    /**
      * Analyze $class and $method and add produced Facets to $facetHolder.
      * $method is the method itself for Actions, the getter for Associations.
      */
@@ -70,18 +68,22 @@ class PropertyMethodsFacetFactory implements AssociationIdentifyingFacetFactory,
             return false;
         }
         $name = str_replace('get', '', $getter->getName());
-        if ($class->hasMethod('set' . $name)) {
-            $fieldName = lcfirst($name);
-            $facetHolder->addFacet(new SetterMethod($fieldName));
+        $fieldName = lcfirst($name);
+        if ($class->hasMethod($setterName = 'set' . $name)) {
+            $facetHolder->addFacet(new SetterMethod($setterName));
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function processParams(\ReflectionMethod $method, $paramNum, FacetHolder $facetHolder)
-    {
-        return false;
+        if ($class->hasMethod($choicesName = 'choices' . $name)) {
+            $facetHolder->addFacet(new ChoicesMethod($choicesName));
+        }
+        if ($class->hasMethod($disabledName = 'disable' . $name)) {
+            $facetHolder->addFacet(new DisabledMethod($disabledName));
+        }
+        if ($class->hasMethod($validateName = 'validate' . $name)) {
+            $facetHolder->addFacet(new ValidateMethod($validateName));
+        }
+        if ($class->hasMethod($hideName = 'hide' . $name)) {
+            $facetHolder->addFacet(new HiddenMethod($hideName));
+        }
     }
 }
 

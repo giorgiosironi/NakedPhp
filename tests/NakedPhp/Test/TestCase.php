@@ -15,10 +15,13 @@
 
 namespace NakedPhp\Test;
 
+/**
+ * Base class for test cases that need the Delegation helper.
+ */
 class TestCase extends \PHPUnit_Framework_TestCase
 {
     /**
-     * HACK FIX: this is necessary to pass $this externally
+     * HACK: this is necessary to pass $this externally
      */
     public function once() { return parent::once(); }
     public function returnValue($value) { return parent::returnValue($value); }

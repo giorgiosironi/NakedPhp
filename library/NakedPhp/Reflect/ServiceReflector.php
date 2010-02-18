@@ -19,6 +19,9 @@ use NakedPhp\ProgModel\PhpAction;
 use NakedPhp\ProgModel\PhpActionParameter;
 use NakedPhp\ProgModel\Facet\Action\InvocationMethod;
 
+/**
+ * FIX: deprecated, delete
+ */
 class ServiceReflector
 {
     private $_parser;

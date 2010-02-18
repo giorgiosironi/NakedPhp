@@ -16,7 +16,8 @@
 namespace NakedPhp\Reflect;
 
 /**
- * FIX: move in MetaModel?
+ * Abstraction over a set of methods which can be
+ * removed selectively and used for Facet production purposes.
  */
 interface MethodRemover
 {

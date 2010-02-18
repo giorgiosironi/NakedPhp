@@ -18,8 +18,7 @@ use NakedPhp\MetaModel\FacetHolder;
 use NakedPhp\Reflect\MethodRemover;
 
 /**
- * TODO: this interface should extend FacetFactory or a subset
- * making it a Composite
+ * Aggregates FacetFactory instances.
  */
 interface FacetProcessor
 {
@@ -33,7 +32,13 @@ interface FacetProcessor
      */
     public function recognizes(\ReflectionMethod $method);
 
-    public function processClass(\ReflectionClass $class, MethodRemover $remover, FacetHolder $holder);
+    /**
+     * @param string $feaureType     a NakedObjectFeatureType constant
+     */
+    public function processClass(\ReflectionClass $class, MethodRemover $remover, FacetHolder $holder, $featureType = null);
 
-    public function processMethod(\ReflectionClass $class, \ReflectionMethod $method, MethodRemover $remover, FacetHolder $holder);
+    /**
+     * @param string $featureType     a NakedObjectFeatureType constant
+     */
+    public function processMethod(\ReflectionClass $class, \ReflectionMethod $method, MethodRemover $remover, FacetHolder $holder, $featureType = null);
 }

@@ -19,7 +19,7 @@ use NakedPhp\MetaModel\NakedObjectAssociation;
 
 /**
  * Wraps info about a field of a NakedObjectSpecification.
- * FIX: Move in ProgModel.
+ * This is known as a Property.
  */
 class OneToOneAssociation extends AbstractFacetHolder implements NakedObjectAssociation
 {

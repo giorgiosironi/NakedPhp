@@ -15,15 +15,21 @@
 
 namespace NakedPhp\Reflect\FacetFactory;
 use NakedPhp\Reflect\MethodRemover;
+use NakedPhp\MetaModel\Facet;
 use NakedPhp\MetaModel\NakedObjectFeatureType;
 use NakedPhp\Stubs\FacetHolderStub;
 
 class PropertyMethodsFacetFactoryTest extends \PHPUnit_Framework_TestCase
 {
+    private $_facetFactory;
+    private $_reflectionClass;
+
     public function setUp()
     {
         $this->_facetFactory = new PropertyMethodsFacetFactory();
+        $this->_reflectionClass = new \ReflectionClass('NakedPhp\Reflect\FacetFactory\SomeRandomEntityClass');
     }
+
     public function testIsAppropriateForSomeFeatureType()
     {
         $this->assertEquals(array(NakedObjectFeatureType::PROPERTY),
@@ -43,40 +49,68 @@ class PropertyMethodsFacetFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testRecognizesGetters()
     {
-        $rc = new \ReflectionClass('NakedPhp\Reflect\FacetFactory\SomeRandomEntityClass');
-        $getter = $rc->getMethod('getBar');
+        $getter = $this->_reflectionClass->getMethod('getBar');
         $this->assertTrue($this->_facetFactory->recognizes($getter));
     }
  
     public function testRecognizesSetters()
     {
-        $rc = new \ReflectionClass('NakedPhp\Reflect\FacetFactory\SomeRandomEntityClass');
-        $setter = $rc->getMethod('setBar');
+        $setter = $this->_reflectionClass->getMethod('setBar');
         $this->assertTrue($this->_facetFactory->recognizes($setter));
     }
    
     public function testAddsReadOnlyPropertyFacetIfSetterIsNotPresent()
     {
-        $rc = new \ReflectionClass('NakedPhp\Reflect\FacetFactory\SomeRandomEntityClass');
-        $getter = $rc->getMethod('getFoo');
-        $removerMock = $this->_getMethodRemoverMock();
-        $facetHolder = new FacetHolderStub();
-
-        $this->_facetFactory->processMethod($rc, $getter, $removerMock, $facetHolder);
-
+        $getter = $this->_reflectionClass->getMethod('getFoo');
+        $facetHolder = $this->_processGetter($getter);
         $this->assertNull($facetHolder->getFacet('Property\Setter'));
     }
 
     public function testAddsThePropertySetterFacet()
     {
-        $rc = new \ReflectionClass('NakedPhp\Reflect\FacetFactory\SomeRandomEntityClass');
-        $getter = $rc->getMethod('getBar');
+        $getter = $this->_reflectionClass->getMethod('getBar');
+        $facetHolder = $this->_processGetter($getter);
+        $this->assertNotNull($facetHolder->getFacet('Property\Setter'));
+    }
+
+    public function testGenerateFacetsForChoices()
+    {
+        $getter = $this->_reflectionClass->getMethod('getStatus');
+        $facetHolder = $this->_processGetter($getter);
+        $facet = $facetHolder->getFacet('Property\Choices');
+        $this->assertTrue($facet instanceof Facet);
+    }
+
+    public function testGenerateFacetsForDisabledFeatures()
+    {
+        $getter = $this->_reflectionClass->getMethod('getPassword');
+        $facetHolder = $this->_processGetter($getter);
+        $facet = $facetHolder->getFacet('Disabled');
+        $this->assertTrue($facet instanceof Facet);
+    }
+
+    public function testGenerateFacetsForValidation()
+    {
+        $getter = $this->_reflectionClass->getMethod('getEmail');
+        $facetHolder = $this->_processGetter($getter);
+        $facet = $facetHolder->getFacet('Property\Validate');
+        $this->assertTrue($facet instanceof Facet);
+    }
+
+    public function testGenerateFacetsForHiding()
+    {
+        $getter = $this->_reflectionClass->getMethod('getId');
+        $facetHolder = $this->_processGetter($getter);
+        $facet = $facetHolder->getFacet('Hidden');
+        $this->assertTrue($facet instanceof Facet);
+    }
+
+    private function _processGetter(\ReflectionMethod $method)
+    {
         $removerMock = $this->_getMethodRemoverMock();
         $facetHolder = new FacetHolderStub();
-
-        $this->_facetFactory->processMethod($rc, $getter, $removerMock, $facetHolder);
-
-        $this->assertNotNull($facetHolder->getFacet('Property\Setter'));
+        $this->_facetFactory->processMethod($this->_reflectionClass, $method, $removerMock, $facetHolder);
+        return $facetHolder;
     }
 
     private function _getMethodRemoverMock()
@@ -88,6 +122,19 @@ class PropertyMethodsFacetFactoryTest extends \PHPUnit_Framework_TestCase
 class SomeRandomEntityClass
 {
     public function getFoo() {}
+
     public function getBar() {}
     public function setBar() {}
+
+    public function getStatus() {}
+    public function choicesStatus() {}
+    
+    public function getPassword() {}
+    public function disablePassword() {}
+
+    public function getEmail() {}
+    public function validateEmail() {}
+
+    public function getId() {}
+    public function hideId() {}
 }

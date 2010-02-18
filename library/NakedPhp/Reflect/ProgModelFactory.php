@@ -34,6 +34,9 @@ class ProgModelFactory implements MetaModelFactory
     {
         $identifier = $this->_reflector->getIdentifierForAssociation($getter);
         $type = $this->_reflector->getReturnType($getter);
+        if ($type === null) {
+            $type = 'string';
+        }
         return new OneToOneAssociation($type, $identifier);
     }
 

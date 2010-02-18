@@ -46,11 +46,12 @@ class MethodsReflector
 
     /**
      * @return string    class name or data type
+     *                   null if cannot be found
      */
     public function getReturnType(\ReflectionMethod $method)
     {
         $annotations = $this->_parser->parse($method->getDocComment());
-        $returnType = '';
+        $returnType = null;
         foreach ($annotations as $ann) {
             if ($ann['annotation'] == 'return') {
                 $returnType = $ann['type'];
@@ -78,7 +79,7 @@ class MethodsReflector
         return $params;
     }
  
-    // TODO: from now on, old Api. Delete.
+    // FIX: from now on, old Api. Delete.
 
     /**
      * @param string $className
@@ -129,7 +130,7 @@ class MethodsReflector
     }
 
     /**
-     * TODO: maybe hidden methods should be listed anyway, but then the
+     * Maybe hidden methods should be listed anyway, but then the
      * Invocation facet would have to be created here
      * @param string $docblock  documentation block of a method or property
      * @return boolean

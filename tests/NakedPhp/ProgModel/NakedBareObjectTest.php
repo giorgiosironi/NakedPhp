@@ -80,7 +80,7 @@ class NakedBareObjectTest extends AbstractNakedObjectTest
     }
 
     /**
-     * FIX: NakedBareObject should not be used for scalar.
+     * FIX: NakedBareObject should not be used for scalar?
      * Think of a new adapter that implements NakedObject.
      */
     public function testSetsTheStateOfTheObject()

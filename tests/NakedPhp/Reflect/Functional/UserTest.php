@@ -14,68 +14,55 @@
  */
 
 namespace NakedPhp\Reflect\Functional;
-use NakedPhp\Reflect\EntityReflector;
 use NakedPhp\Reflect\ReflectFactory;
 use NakedPhp\ProgModel\PhpActionParameter;
 
 class UserTest extends \PHPUnit_Framework_TestCase
 {
-    private $_reflector;
-    private $_result;
+    private static $_staticSpec;
+    private $_spec;
 
-    public function setUp()
+    public static function setUpBeforeClass()
     {
         $factory = new ReflectFactory();
         $folder = realpath(__DIR__ . '/../../Stubs/');
-        $loader = $factory->createSpecificationLoader($folder,
-        'NakedPhp\\Stubs\\');
+        $loader = $factory->createSpecificationLoader($folder, 'NakedPhp\\Stubs\\');
         $loader->init();
-        $this->_spec = $loader->loadSpecification('NakedPhp\Stubs\User');
+        self::$_staticSpec = $loader->loadSpecification('NakedPhp\Stubs\User');
+    }
 
-        // TODO: these setup will be obsolete. When possible, delete it.
-        $this->_reflector = $factory->createEntityReflector();
-        $this->_result = $this->_reflector->analyze('NakedPhp\Stubs\User');
+    public function setUp()
+    {
+        $this->_spec = self::$_staticSpec;
     }
 
     public function testFindsOutActions()
     {
         $actions = $this->_spec->getObjectActions();
+
         $sendMessage = $actions['sendMessage'];
         $this->assertEquals(array('title' => new PhpActionParameter('string', 'title'),
                                   'text' => new PhpActionParameter('string', 'text')),
                             $sendMessage->getParameters());
+        $this->assertNotNull($sendMessage->getFacet('Action\Invocation'));
         $this->assertEquals('void', $sendMessage->getReturnType());
+
         $deactivate = $actions['deactivate'];
-        $this->assertEquals(array(), $deactivate->getParameters());
-        $this->assertEquals('boolean', $deactivate->getReturnType());
-    }
-
-    // TODO: these tests will be obsolete. When possible, delete them.
-
-    public function testReadsAnnotationsOfMethods()
-    {
-        $methods = $this->_result->getObjectActions();
-        $sendMessage = $methods['sendMessage'];
-        $this->assertEquals(array('title' => new PhpActionParameter('string', 'title'),
-                                  'text' => new PhpActionParameter('string', 'text')),
-                            $sendMessage->getParameters());
-        $this->assertEquals('void', $sendMessage->getReturnType());
-        $deactivate = $methods['deactivate'];
         $this->assertEquals(array(), $deactivate->getParameters());
         $this->assertEquals('boolean', $deactivate->getReturnType());
     }
 
     public function testGeneratesFieldsFromGetters()
     {
-        $fields = $this->_result->getAssociations();
+        $fields = $this->_spec->getAssociations();
         $status = $fields['status'];
         $this->assertEquals('string', $status->getType());
     }
 
     public function testGeneratesStringFieldsFromGettersWithoutAnnotations()
     {
-        $fields = $this->_result->getAssociations();
-        $status = $fields['password'];
-        $this->assertEquals('string', $status->getType());
+        $fields = $this->_spec->getAssociations();
+        $password = $fields['password'];
+        $this->assertEquals('string', $password->getType());
     }
 }

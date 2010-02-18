@@ -19,7 +19,8 @@ use NakedPhp\MetaModel\Facet\Property\Setter;
 use NakedPhp\MetaModel\NakedObject;
 
 /**
- * TODO: tranform in new Setter(\ReflectionMethod)
+ * POSTPONED: tranform in new Setter(\ReflectionMethod)
+ * if possible.
  */
 class SetterMethod implements Setter
 {

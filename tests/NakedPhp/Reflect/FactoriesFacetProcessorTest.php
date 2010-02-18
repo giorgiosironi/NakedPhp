@@ -16,6 +16,7 @@
 namespace NakedPhp\Reflect;
 use NakedPhp\MetaModel\AssociationIdentifyingFacetFactory;
 use NakedPhp\MetaModel\MethodFilteringFacetFactory;
+use NakedPhp\MetaModel\NakedObjectFeatureType;
 use NakedPhp\Reflect\FacetFactory\AbstractFacetFactory;
 use NakedPhp\Reflect\MethodRemover;
 use NakedPhp\Stubs\DummyMethodRemover;
@@ -23,7 +24,7 @@ use NakedPhp\Stubs\FacetHolderStub;
 
 class FactoriesFacetProcessorTest extends \PHPUnit_Framework_TestCase
 {
-    public function testPropagatesProcessCallsToAllFactories()
+    public function testPropagatesProcessCallsToAllFactoriesByDefault()
     {
         $ffMock = $this->getMock('NakedPhp\Reflect\FacetFactory\AbstractFacetFactory');
         $processor = new FactoriesFacetProcessor(array(
@@ -43,6 +44,58 @@ class FactoriesFacetProcessorTest extends \PHPUnit_Framework_TestCase
                ->method('processMethod')
                ->with($rc, $method, $remover, $holder);
         $processor->processMethod($rc, $method, $remover, $holder);
+    }
+
+    public function testPropagatesProcessCallsToAllFactoriesOfTheSpecifiedFeatureType()
+    {
+        $processor = new FactoriesFacetProcessor(array(
+            $this->_getFacetFactoryMock(array(
+                                       NakedObjectFeatureType::ACTION,
+                                       NakedObjectFeatureType::PROPERTY
+                                   ),
+                                   true),
+            $this->_getFacetFactoryMock(array(
+                                       NakedObjectFeatureType::PROPERTY
+                                   ),
+                                   true),
+            $this->_getFacetFactoryMock(array(
+                                      NakedObjectFeatureType::OBJECT
+                                   ),
+                                   false),
+            $this->_getFacetFactoryMock(array(), false)
+        ));
+
+        $rc = new \ReflectionClass('stdClass');
+        $method = new \ReflectionMethod('ArrayIterator', 'current');
+        $remover = new DummyMethodRemover();
+        $holder = new FacetHolderStub();
+
+        $processor->processClass($rc, $remover, $holder, NakedObjectFeatureType::PROPERTY);
+        $processor->processMethod($rc, $method, $remover, $holder, NakedObjectFeatureType::PROPERTY);
+    }
+
+    /**
+     * @param array   $featureTypes
+     * @param boolean $shouldBeCalled
+     */
+    private function _getFacetFactoryMock(array $featureTypes, $shouldBeCalled)
+    {
+        $ffMock = $this->getMock('NakedPhp\Reflect\FacetFactory\AbstractFacetFactory');
+        $ffMock->expects($this->any())
+               ->method('getFeatureTypes')
+               ->will($this->returnValue($featureTypes));
+        if ($shouldBeCalled) {
+            $classTimes = $this->once();
+            $methodTimes = $this->once();
+        } else {
+            $classTimes = $this->never();
+            $methodTimes = $this->never();
+        }
+        $ffMock->expects($classTimes)
+               ->method('processClass');
+        $ffMock->expects($methodTimes)
+               ->method('processMethod');
+        return $ffMock;
     }
 
     public function testPropagatesRemoveAccessorCallsToAllAssociationIdentifyingFactories()

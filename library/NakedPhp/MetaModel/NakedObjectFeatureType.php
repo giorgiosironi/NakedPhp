@@ -19,7 +19,7 @@ namespace NakedPhp\MetaModel;
  * Enumerative class to represent FacetHolders that 
  * should be passed to a @see FacetFactory.
  */
-class NakedObjectFeatureType
+final class NakedObjectFeatureType
 {
     const OBJECT = 'OBJECT';
     const PROPERTY = 'PROPERTY';

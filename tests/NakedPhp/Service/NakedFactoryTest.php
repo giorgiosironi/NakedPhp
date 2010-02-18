@@ -19,50 +19,30 @@ use NakedPhp\Stubs\NakedObjectSpecificationStub;
 
 class NakedFactoryTest extends \PHPUnit_Framework_TestCase
 {
-    private $_entityReflectorMock;
-    private $_serviceReflectorMock;
+    private $_spec;
+    private $_specificationLoaderMock;
     private $_factory;
 
     public function setUp()
     {
-        $this->_entityReflectorMock = $this->getMock('NakedPhp\Reflect\EntityReflector', array('analyze'));
-        $this->_serviceReflectorMock = $this->getMock('NakedPhp\Reflect\ServiceReflector', array('isService', 'analyze'));
-        $this->_factory = new NakedFactory($this->_entityReflectorMock, $this->_serviceReflectorMock);
+        $this->_spec = new NakedObjectSpecificationStub();
+        $this->_specificationLoaderMock = $this->getMock('NakedPhp\Reflect\SpecificationLoader');
+        $this->_factory = new NakedFactory($this->_specificationLoaderMock);
     }
 
     public function testWrapsAnEntityInANakedObjectInstance()
     {
-        $this->_serviceReflectorMock->expects($this->any())
-                                    ->method('isService')
-                                    ->will($this->returnValue(false));
         $no = $this->_factory->createBare(new \stdClass);
         $this->assertTrue($no instanceof NakedObject);
     }
 
-    public function testGeneratesMetaModelForEntities()
+    public function testInsertsSpecification()
     {
-        $this->_serviceReflectorMock->expects($this->any())
-                                    ->method('isService')
-                                    ->will($this->returnValue(false));
-        $class = new NakedObjectSpecificationStub();
-        $this->_entityReflectorMock->expects($this->any())
-                                    ->method('analyze')
-                                    ->will($this->returnValue($class));
+        $this->_specificationLoaderMock->expects($this->once())
+                                       ->method('loadSpecification')
+                                       ->will($this->returnValue($this->_spec));
         $no = $this->_factory->createBare(new \stdClass);
-        $this->assertSame($class, $no->getSpecification());
-    }
-
-    public function testGeneratesMetaModelForServices()
-    {
-        $this->_serviceReflectorMock->expects($this->any())
-                                    ->method('isService')
-                                    ->will($this->returnValue(true));
-        $class = new NakedObjectSpecificationStub();
-        $this->_serviceReflectorMock->expects($this->any())
-                                    ->method('analyze')
-                                    ->will($this->returnValue($class));
-        $no = $this->_factory->createBare(new \stdClass);
-        $this->assertSame($class, $no->getSpecification());
+        $this->assertSame($this->_spec, $no->getSpecification());
     }
 
     public function testDoesNotWrapScalarValues()

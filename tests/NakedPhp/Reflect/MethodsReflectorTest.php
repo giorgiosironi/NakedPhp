@@ -74,6 +74,15 @@ class MethodsReflectorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('integer', $type);
     }
 
+    public function testSetsMethodReturnTypeAsNullIfNoAnnotationCanBeFound()
+    {
+        $this->setMockAnnotations(array());
+
+        $method = $this->_reflectionClass->getMethod('getMyField');
+        $type = $this->_reflector->getReturnType($method);
+        $this->assertNull($type);
+    }
+
     public function testFindsParametersTypeAndIdentifiers()
     {
         $this->setMockAnnotations(array(
