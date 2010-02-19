@@ -55,4 +55,18 @@ class PhpSpecificationLoader implements SpecificationLoader
             }
         }
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getServiceSpecifications()
+    {
+        $serviceSpecs = array();
+        foreach ($this->_specifications as $name => $spec) {
+            if ($spec->isService()) {
+                $serviceSpecs[$name] = $spec;
+            }
+        }
+        return $serviceSpecs;
+    }
 }

@@ -14,19 +14,16 @@
  */
 
 namespace NakedPhp\Service\Provider;
-use NakedPhp\Service\Provider\AbstractProvider;
-use NakedPhp\Service\ServiceDiscoverer;
-use NakedPhp\Reflect\ServiceReflector;
+use NakedPhp\Reflect\ServiceDiscoverer;
 
 class FactoryProvider extends AbstractProvider
 {
     protected $_factory;
 
     public function __construct(ServiceDiscoverer $discoverer = null,
-                                ServiceReflector $serviceReflector = null,
                                 $factory)
     {
-        parent::__construct($discoverer, $serviceReflector);
+        parent::__construct($discoverer);
         $this->_factory = $factory;
     }
 

@@ -30,7 +30,7 @@ class ServiceIterator implements \IteratorAggregate
     public function getIterator()
     {
         $array = array();
-        foreach ($this->_serviceProvider->getServiceClasses() as $className => $nakedServiceClass) {
+        foreach ($this->_serviceProvider->getServiceSpecifications() as $className => $nakedServiceClass) {
             $array[$className] = $this->_serviceProvider->getService($className);
         }
         return new \ArrayIterator($array);

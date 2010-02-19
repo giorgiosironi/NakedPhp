@@ -51,7 +51,6 @@ class PhpIntrospector
 
     /**
      * Initializes the class-level Facets on $this->_specification.
-     * FIX: should call only the FF that recognize CLASS
      * @return void
      */
     public function introspectClass()
@@ -68,7 +67,6 @@ class PhpIntrospector
      * with the respective Facets.
      * TODO: type of association? (NakedObjectSpecification) will be factored out
      * All by FacetFactories I suppose. See the list of Facets on NOF documentation.
-     * FIX: should call only the FFs that recognize PROPERTY
      * @return void
      */
     public function introspectAssociations()
@@ -88,7 +86,6 @@ class PhpIntrospector
     /**
      * Initializes the list of actions on $this->_specification, 
      * including the respective facets.
-     * FIX: should call only the FF that recognize ACTION or ACTION_PARAM
      * @return void
      */
     public function introspectActions()

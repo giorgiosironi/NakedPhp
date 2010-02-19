@@ -10,19 +10,19 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Service
+ * @package    NakedPhp_Reflect
  */
 
-namespace NakedPhp\Service\Provider;
+namespace NakedPhp\Reflect;
 
-class EmptyConstructorsProvider extends AbstractProvider
+/**
+ * This interface decouples the discovery of php Service classes.
+ * Implementors can list services by config, autodiscovery, etc.
+ */
+interface ServiceDiscoverer
 {
     /**
-     * {@inheritdoc}
+     * @return array    NakedObjectSpecification instances
      */
-    public function getService($className)
-    {
-        $wrapped = new $className();
-        return $this->_wrap($wrapped, $className);
-    }
+    public function getServiceSpecifications();
 }

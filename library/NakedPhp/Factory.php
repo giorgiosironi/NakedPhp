@@ -23,6 +23,7 @@ class Factory
 
     private $_folder;
     private $_prefix;
+    private $_serviceClassNames;
 
     /**
      * @param string $folder    folder containing classes' source files
@@ -30,11 +31,12 @@ class Factory
      * <code>
      * $factory = new \NakedPhp\Factory(APP_PATH . 'models/', 'Example_Model_');
      */
-    public function __construct($folder, $prefix)
+    public function __construct($folder, $prefix, $serviceClassNames)
     {
-        $this->_folder = $folder;
-        $this->_prefix = $prefix;
-        $this->_reflectFactory = new \NakedPhp\Reflect\ReflectFactory();
+        $this->_folder            = $folder;
+        $this->_prefix            = $prefix;
+        $this->_serviceClassNames = $serviceClassNames;
+        $this->_reflectFactory    = new \NakedPhp\Reflect\ReflectFactory();
     }
 
     protected function _getSessionBridge()
@@ -83,9 +85,9 @@ class Factory
 
     public function getServiceProvider()
     {
-        $reflector = $this->_reflectFactory->createServiceReflector();
-        $serviceDiscoverer = new Service\FilesystemServiceDiscoverer($reflector, __DIR__ . '/../../example/application/models/', 'Example_Model_');
-        return new Service\Provider\EmptyConstructorsProvider($serviceDiscoverer, $this->_reflectFactory->createServiceReflector());
+        $loader = $this->_getSpecificationLoader();
+        $discoverer = new Service\ConfiguredServiceDiscoverer($loader, $this->_serviceClassNames);
+        return new Service\Provider\EmptyConstructorsProvider($discoverer);
     }
 
     /**
@@ -94,9 +96,14 @@ class Factory
      */
     public function getNakedFactory()
     {
-        $loader = $this->_reflectFactory->createSpecificationLoader($this->_folder, $this->_prefix);
-        $loader->init();
-        return new Service\NakedFactory($loader);
+        return new Service\NakedFactory($this->_getSpecificationLoader());
+    }
+
+    protected function _getSpecificationLoader()
+    {
+        $specLoader = $this->_reflectFactory->createSpecificationLoader($this->_folder, $this->_prefix);
+        $specLoader->init();
+        return $specLoader;
     }
 
     public function getMethodFormBuilder()

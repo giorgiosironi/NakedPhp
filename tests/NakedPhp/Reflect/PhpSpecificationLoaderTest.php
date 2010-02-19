@@ -19,26 +19,33 @@ use NakedPhp\ProgModel\PhpSpecification;
 
 class PhpSpecificationLoaderTest extends \PHPUnit_Framework_TestCase
 {
-    public function testObtainsPhpSpecificationObjectsFromTheFactory()
+    private $_specLoader;
+
+    public function setUp()
     {
         $specFactory = new DummySpecificationFactory();
         $introspectorFactory = new
         DummyIntrospectorFactory($this->_getIntrospector());
-        $specLoader = new PhpSpecificationLoader($specFactory, $introspectorFactory);
-        $specLoader->init();
-        $specification = $specLoader->loadSpecification('My_Model_EntityA');
+        $this->_specLoader = new PhpSpecificationLoader($specFactory, $introspectorFactory);
+        $this->_specLoader->init();
+    }
+
+    public function testObtainsPhpSpecificationObjectsFromTheFactory()
+    {
+        $specification = $this->_specLoader->loadSpecification('My_Model_EntityA');
         $this->assertTrue($specification instanceof NakedObjectSpecification);
         $this->assertEquals('My_Model_EntityA', (string) $specification);
     }
 
     private function _getIntrospector()
     {
+        $classes = 3;
         $introspector = $this->getMock('NakedPhp\Reflect\PhpIntrospector');
-        $introspector->expects($this->exactly(2))
+        $introspector->expects($this->exactly($classes))
                      ->method('introspectClass');
-        $introspector->expects($this->exactly(2))
+        $introspector->expects($this->exactly($classes))
                      ->method('introspectAssociations');
-        $introspector->expects($this->exactly(2))
+        $introspector->expects($this->exactly($classes))
                      ->method('introspectActions');
         return $introspector;
     }
@@ -48,9 +55,12 @@ class DummySpecificationFactory implements SpecificationFactory
 {
     public function getSpecifications()
     {
+        $serviceSpec = new PhpSpecification('My_Model_Service');
+        $serviceSpec->markAsService();
         return array(
             'My_Model_EntityA' => new PhpSpecification('My_Model_EntityA'),
-            'My_Model_EntityB' => new PhpSpecification('My_Model_EntityB')
+            'My_Model_EntityB' => new PhpSpecification('My_Model_EntityB'),
+            'My_Model_Service' => $serviceSpec
         );
     }
 }

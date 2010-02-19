@@ -14,31 +14,15 @@
  */
 
 namespace NakedPhp\Service\Provider;
-use NakedPhp\Service\ServiceDiscoverer;
-use NakedPhp\Reflect\ServiceReflector;
+use NakedPhp\Reflect\ServiceDiscoverer;
 
 abstract class AbstractProvider implements \NakedPhp\Service\ServiceProvider
 {
     protected $_discoverer;
-    protected $_reflector;
 
-    public function __construct(ServiceDiscoverer $discoverer = null,
-                                ServiceReflector $serviceReflector = null)
+    public function __construct(ServiceDiscoverer $discoverer = null)
     {
         $this->_discoverer = $discoverer;
-        $this->_reflector = $serviceReflector;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getServiceClasses()
-    {
-        $array = array();
-        foreach ($this->_discoverer->getList() as $className) {
-            $array[$className] = $this->_reflector->analyze($className);
-        }
-        return $array;
     }
 
     /**
@@ -48,7 +32,16 @@ abstract class AbstractProvider implements \NakedPhp\Service\ServiceProvider
      */
     protected function _wrap($instance, $fullClassName)
     {
-        $nakedClass = $this->_reflector->analyze($fullClassName);
-        return new \NakedPhp\ProgModel\NakedBareObject($instance, $nakedClass);
+        $specs = $this->_discoverer->getServiceSpecifications();
+        $spec = $specs[$fullClassName];
+        return new \NakedPhp\ProgModel\NakedBareObject($instance, $spec);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getServiceSpecifications()
+    {
+        return $this->_discoverer->getServiceSpecifications();
     }
 }

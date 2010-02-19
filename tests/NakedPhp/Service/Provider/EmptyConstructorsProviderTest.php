@@ -16,32 +16,23 @@
 namespace NakedPhp\Service\Provider;
 use NakedPhp\Stubs\NakedObjectSpecificationStub;
 
-class EmptyConstructorsProviderTest extends \PHPUnit_Framework_TestCase implements \NakedPhp\Service\ServiceDiscoverer
+class EmptyConstructorsProviderTest extends \PHPUnit_Framework_TestCase
 {
-    private $_serviceClasses = array('stdClass', 'SplQueue');
-
-    /** @var NakedPhp\MetaModel\NakedObjectSpecification */
-    private $_originalClass;
-
-    /**
-     * @var EmptyConstructorsServiceProvider
-     */
+    private $_stdClassSpec;
     private $_provider;
     
     public function setUp()
     {
-        $this->_originalClass = new NakedObjectSpecificationStub();
-        $serviceReflectorMock = $this->getMock('NakedPhp\Reflect\ServiceReflector', array('analyze'));
-        $serviceReflectorMock->expects($this->any())
-                             ->method('analyze')
-                             ->will($this->returnValue($this->_originalClass));
-        $this->_provider = new EmptyConstructorsProvider($this, $serviceReflectorMock);
-    }
+        $serviceClasses = array(
+            'stdClass' => $this->_stdClassSpec = new NakedObjectSpecificationStub('stdClass'), 
+            'SplQueue' => new NakedObjectSpecificationStub('SplQueue')
+        );
 
-    public function testIteratesOverAllServices()
-    {
-        $classes = $this->_provider->getServiceClasses();
-        $this->assertEquals($this->_serviceClasses, array_keys($classes));
+        $serviceDiscovererMock = $this->getMock('NakedPhp\Reflect\ServiceDiscoverer');
+        $serviceDiscovererMock->expects($this->any())
+                              ->method('getServiceSpecifications')
+                              ->will($this->returnValue($serviceClasses));
+        $this->_provider = new EmptyConstructorsProvider($serviceDiscovererMock);
     }
 
     public function testInstancesServices()
@@ -50,23 +41,15 @@ class EmptyConstructorsProviderTest extends \PHPUnit_Framework_TestCase implemen
         $ns->enqueue('foo');
     }
 
-    public function testProvidesServiceMetaModel()
-    {
-        $classes = $this->_provider->getServiceClasses();
-        foreach ($classes as $serviceClass) {
-            $this->assertSame($this->_originalClass, $serviceClass);
-        }
-    }
-
     public function testInjectServiceMetaModelIntoInstances()
     {
         $service = $this->_provider->getService('stdClass');
-        $this->assertSame($this->_originalClass, $service->getSpecification());
+        $this->assertSame($this->_stdClassSpec, $service->getSpecification());
     }
-    
-    /* self-shunting */
-    public function getList()
+
+    public function testProxiesToDiscovererForServiceSpecifications()
     {
-        return $this->_serviceClasses;
+        $specs = $this->_provider->getServiceSpecifications();
+        $this->assertEquals(2, count($specs));
     }
 }

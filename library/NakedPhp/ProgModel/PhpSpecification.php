@@ -39,7 +39,7 @@ class PhpSpecification extends AbstractFacetHolder implements NakedObjectSpecifi
     /**
      * @return boolean
      */
-    protected $_isService;
+    protected $_isService = false;
 
     /**
      * @param string $className
@@ -137,7 +137,6 @@ class PhpSpecification extends AbstractFacetHolder implements NakedObjectSpecifi
      */
     public function markAsEntity()
     {
-        $this->_checkIsNotMarked();
         $this->_isService = false;
     }
 
@@ -147,15 +146,7 @@ class PhpSpecification extends AbstractFacetHolder implements NakedObjectSpecifi
      */
     public function markAsService()
     {
-        $this->_checkIsNotMarked();
         $this->_isService = true;
-    }
-
-    protected function _checkIsNotMarked()
-    {
-        if ($this->_isService !== null) {
-            throw new Exception("Attempt to mark class $this->_className, which is already marked.");
-        }
     }
 
     /**

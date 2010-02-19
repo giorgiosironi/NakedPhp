@@ -28,7 +28,7 @@ class ServiceIteratorTest extends \PHPUnit_Framework_TestCase implements Service
     }
     
     /* self-shunting */
-    public function getServiceClasses()
+    public function getServiceSpecifications()
     {
         return array('A' => null, 'B' => null, 'C' => null);
     }

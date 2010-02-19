@@ -14,18 +14,15 @@
  */
 
 namespace NakedPhp\Service;
+use NakedPhp\Reflect\ServiceDiscoverer;
 
 /**
  * This class decouples the services instantiation and object management.
  * Implementors can perform lazy loading, remoting, etc.
+ * FIX: rename to ServiceFactory
  */
-interface ServiceProvider
+interface ServiceProvider extends ServiceDiscoverer
 {
-    /**
-     * @return array    NakedObjectSpecification instances of service classes
-     */
-    public function getServiceClasses();
-
     /**
      * @param string $className
      * @return NakedService

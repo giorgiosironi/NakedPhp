@@ -75,10 +75,9 @@ class PhpSpecificationTest extends \PHPUnit_Framework_TestCase
         $helper->testIsFacetHolder($nc);
     }
 
-    public function testAllowsInitializationOfServiceMarkAsFalse()
+    public function testDefaultsInitializationOfServiceMarkAsFalse()
     {
         $nc = new PhpSpecification();
-        $nc->markAsEntity();
         $this->assertFalse($nc->isService());
     }
 
@@ -87,16 +86,6 @@ class PhpSpecificationTest extends \PHPUnit_Framework_TestCase
         $nc = new PhpSpecification();
         $nc->markAsService();
         $this->assertTrue($nc->isService());
-    }
-
-    /**
-     * @expectedException NakedPhp\ProgModel\Exception
-     */
-    public function testDoesNotAllowMultipleInitializationOfServiceMark()
-    {
-        $nc = new PhpSpecification();
-        $nc->markAsService();
-        $nc->markAsEntity();
     }
 
     public function testRetainsFieldsList()

@@ -34,9 +34,4 @@ class NakedObjectSpecificationStub extends PhpSpecification
     {
         return $this->_fields[$name];
     }
-
-    public function isService()
-    {
-        return null;
-    }
 }

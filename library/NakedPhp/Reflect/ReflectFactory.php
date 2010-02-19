@@ -17,42 +17,31 @@ namespace NakedPhp\Reflect;
 
 class ReflectFactory
 {
+    protected $_specLoader;
+
     /**
      * @return SpecificationLoader
      */
     public function createSpecificationLoader($folder, $prefix)
     {
-        $loader = new PhpSpecificationLoader(
-            new PhpSpecificationFactory(
-                new FilesystemClassDiscoverer($folder, $prefix)
-            ),
-            new PhpIntrospectorFactory(
-                new FactoriesFacetProcessor(array(
-                    new FacetFactory\PropertyMethodsFacetFactory,
-                    new FacetFactory\ActionMethodsFacetFactory
-                )),
-                new ProgModelFactory(
-                    new MethodsReflector(
-                        new DocblockParser
+        if (!isset($this->_specLoader)) {
+            $this->_specLoader = new PhpSpecificationLoader(
+                new PhpSpecificationFactory(
+                    new FilesystemClassDiscoverer($folder, $prefix)
+                ),
+                new PhpIntrospectorFactory(
+                    new FactoriesFacetProcessor(array(
+                        new FacetFactory\PropertyMethodsFacetFactory,
+                        new FacetFactory\ActionMethodsFacetFactory
+                    )),
+                    new ProgModelFactory(
+                        new MethodsReflector(
+                            new DocblockParser
+                        )
                     )
                 )
-            )
-        );
-        return $loader;
-    }
-
-    /**
-     * @return ServiceReflector
-     */
-    public function createServiceReflector()
-    {
-        $parser = new DocblockParser();
-        $methodsReflector = $this->_createMethodsReflector();
-        return new ServiceReflector($parser, $methodsReflector);
-    }
-
-    protected function _createMethodsReflector()
-    {
-        return new MethodsReflector(new DocblockParser());
+            );
+        }
+        return $this->_specLoader;
     }
 }

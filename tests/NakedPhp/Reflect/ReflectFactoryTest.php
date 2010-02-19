@@ -10,21 +10,18 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Service
+ * @package    NakedPhp_Reflect
  */
 
-namespace NakedPhp\Service;
+namespace NakedPhp\Reflect;
 
-/**
- * This interface decouples the discovery of php Service classes.
- * Implementors can list services by config, autodiscovery, etc.
- * TODO: refactor to feature NakedObjectSpecifications
- *       @example $discoverer->getServiceSpecifications()
- */
-interface ServiceDiscoverer
+class ReflectFactoryTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @return array    classnames as strings
-     */
-    public function getList();
+    public function testCachesSpecificationLoaderInstance()
+    {
+        $factory = new ReflectFactory();
+        $specLoader = $factory->createSpecificationLoader('', '');
+        $this->assertTrue($specLoader instanceof SpecificationLoader);
+        $this->assertSame($specLoader, $factory->createSpecificationLoader('', ''));
+    }
 }

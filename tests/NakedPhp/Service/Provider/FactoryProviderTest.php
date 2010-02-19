@@ -17,34 +17,27 @@ namespace NakedPhp\Service\Provider;
 use NakedPhp\Stubs\NakedObjectSpecificationStub;
 use NakedPhp\MetaModel\NakedObject;
 
-class FactoryProviderTest extends \PHPUnit_Framework_TestCase implements \NakedPhp\Service\ServiceDiscoverer
+class FactoryProviderTest extends \PHPUnit_Framework_TestCase
 {
-    private $_serviceClasses = array('stdClass', 'SplQueue');
-
-    /** @var NakedPhp\MetaModel\NakedObjectSpecification */
-    private $_originalClass;
-
-    /**
-     * @var FactoryProvider
-     */
+    private $_SplQueueSpec;
     private $_provider;
     
     public function setUp()
     {
-        $this->_originalClass = new NakedObjectSpecificationStub();
-        $serviceReflectorMock = $this->getMock('NakedPhp\Reflect\ServiceReflector', array('analyze'));
-        $serviceReflectorMock->expects($this->any())
-                             ->method('analyze')
-                             ->will($this->returnValue($this->_originalClass));
-        $this->_provider = new FactoryProvider($this,
-                                               $serviceReflectorMock,
-                                               $this);
-    }
+        $serviceSpecs = array(
+            'stdClass'              => new NakedObjectSpecificationStub('stdClass'), 
+            'SplQueue'              => $this->_SplQueueSpec = new NakedObjectSpecificationStub('SplQueue'),
+            'My_NameSpace_SplQueue' => new NakedObjectSpecificationStub('My_NameSpace_SplQueue'),
+            'My\NameSpace\SplQueue' => new NakedObjectSpecificationStub('My\NameSpace\SplQueue')
+        );
 
-    public function testIteratesOverAllServices()
-    {
-        $classes = $this->_provider->getServiceClasses();
-        $this->assertEquals($this->_serviceClasses, array_keys($classes));
+        $serviceDiscovererMock = $this->getMock('NakedPhp\Reflect\ServiceDiscoverer');
+        $serviceDiscovererMock->expects($this->any())
+                              ->method('getServiceSpecifications')
+                              ->will($this->returnValue($serviceSpecs));
+
+        $this->_provider = new FactoryProvider($serviceDiscovererMock,
+                                               $this);
     }
 
     public function testInstancesServicesUsingAUserDefinedFactory()
@@ -71,25 +64,18 @@ class FactoryProviderTest extends \PHPUnit_Framework_TestCase implements \NakedP
         $this->assertEquals('insertedDuringConstruction', $value);
     }
 
-    public function testProvidesServiceMetaModel()
-    {
-        $classes = $this->_provider->getServiceClasses();
-        foreach ($classes as $serviceClass) {
-            $this->assertSame($this->_originalClass, $serviceClass);
-        }
-    }
-
     public function testInjectServiceMetaModelIntoInstances()
     {
         $service = $this->_provider->getService('SplQueue');
-        $this->assertSame($this->_originalClass, $service->getSpecification());
+        $this->assertSame($this->_SplQueueSpec, $service->getSpecification());
     }
-    
-    /* self-shunting for ServiceDiscoverer interface */
-    public function getList()
+
+    public function testProxiesToDiscovererForServiceSpecifications()
     {
-        return $this->_serviceClasses;
+        $specs = $this->_provider->getServiceSpecifications();
+        $this->assertEquals(4, count($specs));
     }
+
     
     /* self-shunting for user defined factory */
     public function getSplQueue()

@@ -32,7 +32,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_providerMock = $this->getMock('NakedPhp\Service\ServiceProvider', array('getServiceClasses', 'getService'));
+        $this->_providerMock = $this->getMock('NakedPhp\Service\ServiceProvider', array('getServiceSpecifications', 'getService'));
         $this->_methodMerger = new MethodMerger($this->_providerMock);
 
         $this->_callbackCalled = false;
@@ -41,7 +41,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     private function _setAvailableServiceClasses($services)
     {
         $this->_providerMock->expects($this->any())
-                            ->method('getServiceClasses')
+                            ->method('getServiceSpecifications')
                             ->will($this->returnValue($services));
     }
 

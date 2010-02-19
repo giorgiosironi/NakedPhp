@@ -67,7 +67,7 @@ class MethodMerger implements MethodCaller
     protected function _addServices(PhpAction $method, array $parameters)
     {
         $completeParameters = array(); 
-        $serviceClasses = $this->_serviceProvider->getServiceClasses();
+        $serviceClasses = $this->_serviceProvider->getServiceSpecifications();
         foreach ($method->getParameters() as $name => $param) {
             $type = $param->getType();
             if (isset($serviceClasses[$type])) {
@@ -120,7 +120,7 @@ class MethodMerger implements MethodCaller
         }
 
         $classMethods = array();
-        $serviceClasses = $this->_serviceProvider->getServiceClasses();
+        $serviceClasses = $this->_serviceProvider->getServiceSpecifications();
         foreach ($class->getObjectActions() as $methodName => $method) {
             foreach ($method->getParameters() as $param) {
                 $type = $param->getType();
@@ -143,7 +143,7 @@ class MethodMerger implements MethodCaller
     protected function _getAllServicesMethods()
     {
         $methods = array();
-        foreach ($this->_serviceProvider->getServiceClasses() as $serviceClass) {
+        foreach ($this->_serviceProvider->getServiceSpecifications() as $serviceClass) {
             foreach ($serviceClass->getObjectActions() as $method) {
                 $methodName = (string) $method;
                 $methods[$methodName] = $method;
@@ -158,7 +158,7 @@ class MethodMerger implements MethodCaller
      */
     protected function _findService($methodName)
     {
-        foreach ($this->_serviceProvider->getServiceClasses() as $serviceName => $serviceClass) {
+        foreach ($this->_serviceProvider->getServiceSpecifications() as $serviceName => $serviceClass) {
             $methods = $serviceClass->getObjectActions();
             if (isset($methods[$methodName])) {
                 return $this->_serviceProvider->getService($serviceName);
