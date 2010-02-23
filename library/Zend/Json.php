@@ -14,8 +14,9 @@
  *
  * @category   Zend
  * @package    Zend_Json
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: Json.php 20616 2010-01-25 19:56:04Z matthew $
  */
 
 /**
@@ -32,7 +33,7 @@ require_once 'Zend/Json/Expr.php';
  * @category   Zend
  * @package    Zend_Json
  * @uses       Zend_Json_Expr
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Json
@@ -70,8 +71,32 @@ class Zend_Json
      */
     public static function decode($encodedValue, $objectDecodeType = Zend_Json::TYPE_ARRAY)
     {
+        $encodedValue = (string) $encodedValue;
         if (function_exists('json_decode') && self::$useBuiltinEncoderDecoder !== true) {
-            return json_decode($encodedValue, $objectDecodeType);
+            $decode = json_decode($encodedValue, $objectDecodeType);
+
+            // php < 5.3
+            if (!function_exists('json_last_error')) {
+                if ($decode === $encodedValue) {
+                    require_once 'Zend/Json/Exception.php';
+                    throw new Zend_Json_Exception('Decoding failed');
+                }
+            // php >= 5.3
+            } elseif (($jsonLastErr = json_last_error()) != JSON_ERROR_NONE) {
+                require_once 'Zend/Json/Exception.php';
+                switch ($jsonLastErr) {
+                    case JSON_ERROR_DEPTH:
+                        throw new Zend_Json_Exception('Decoding failed: Maximum stack depth exceeded');
+                    case JSON_ERROR_CTRL_CHAR:
+                        throw new Zend_Json_Exception('Decoding failed: Unexpected control character found');
+                    case JSON_ERROR_SYNTAX:
+                        throw new Zend_Json_Exception('Decoding failed: Syntax error');
+                    default:
+                        throw new Zend_Json_Exception('Decoding failed');
+                }
+            }
+
+            return $decode;
         }
 
         require_once 'Zend/Json/Decoder.php';
@@ -335,4 +360,47 @@ class Zend_Json
 
         } // End of if (is_array($simpleXmlElementObject))
     } // End of function _processXml.
+    
+    /**
+     * Pretty-print JSON string
+     * 
+     * Use 'indent' option to select indentation string - by default it's a tab
+     * 
+     * @param string $json Original JSON string
+     * @param array $options Encoding options
+     * @return string
+     */
+    public static function prettyPrint($json, $options = array())
+    {
+        $tokens = preg_split('|([\{\}\]\[,])|', $json, -1, PREG_SPLIT_DELIM_CAPTURE);
+        $result = "";
+        $indent = 0;
+        
+        $ind = "\t";
+        if(isset($options['indent'])) {
+            $ind = $options['indent'];
+        }
+        
+        foreach($tokens as $token) {
+            if($token == "") continue;
+            
+            $prefix = str_repeat($ind, $indent);
+            if($token == "{" || $token == "[") {
+                $indent++;
+                if($result != "" && $result[strlen($result)-1] == "\n") {
+                    $result .= $prefix;
+                }
+                $result .= "$token\n";
+            } else if($token == "}" || $token == "]") {
+                $indent--;
+                $prefix = str_repeat($ind, $indent);
+                $result .= "\n$prefix$token";                
+            } else if($token == ",") {
+                $result .= "$token\n";
+            } else {
+                $result .= $prefix.$token;
+            }
+        }
+        return $result;
+   }
 }

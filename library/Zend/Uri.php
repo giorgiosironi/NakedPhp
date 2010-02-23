@@ -14,9 +14,9 @@
  *
  * @category  Zend
  * @package   Zend_Uri
- * @copyright Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
- * @version   $Id: Uri.php 15577 2009-05-14 12:43:34Z matthew $
+ * @version   $Id: Uri.php 20096 2010-01-06 02:05:09Z bkarwin $
  */
 
 /**
@@ -24,7 +24,7 @@
  *
  * @category  Zend
  * @package   Zend_Uri
- * @copyright Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Uri
@@ -44,7 +44,7 @@ abstract class Zend_Uri
     static protected $_config = array(
         'allow_unwise' => false
     );
-    
+
     /**
      * Return a string representation of this URI.
      *
@@ -149,15 +149,21 @@ abstract class Zend_Uri
     /**
      * Set global configuration options
      *
-     * @param array $config
+     * @param Zend_Config|array $config
      */
-    static public function setConfig(array $config)
+    static public function setConfig($config)
     {
+        if ($config instanceof Zend_Config) {
+            $config = $config->toArray();
+        } elseif (!is_array($config)) {
+            throw new Zend_Uri_Exception("Config must be an array or an instance of Zend_Config.");
+        }
+
         foreach ($config as $k => $v) {
             self::$_config[$k] = $v;
         }
     }
-    
+
     /**
      * Zend_Uri and its subclasses cannot be instantiated directly.
      * Use Zend_Uri::factory() to return a new Zend_Uri object.

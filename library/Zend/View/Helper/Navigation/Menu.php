@@ -15,8 +15,9 @@
  * @category   Zend
  * @package    Zend_View
  * @subpackage Helper
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: Menu.php 20096 2010-01-06 02:05:09Z bkarwin $
  */
 
 /**
@@ -30,7 +31,7 @@ require_once 'Zend/View/Helper/Navigation/HelperAbstract.php';
  * @category   Zend
  * @package    Zend_View
  * @subpackage Helper
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_View_Helper_Navigation_Menu
@@ -313,32 +314,33 @@ class Zend_View_Helper_Navigation_Menu
                                           $minDepth,
                                           $maxDepth)
     {
-        if (!$found = $this->findActive($container, $minDepth, $maxDepth)) {
+        if (!$active = $this->findActive($container, $minDepth - 1, $maxDepth)) {
             return '';
         }
 
-        $foundPage  = $found['page'];
-        $foundDepth = $found['depth'];
-
-        // render children or siblings?
-        if (!$foundPage->hasPages()) {
+        // special case if active page is one below minDepth
+        if ($active['depth'] < $minDepth) {
+            if (!$active['page']->hasPages()) {
+                return '';
+            }
+        } else if (!$active['page']->hasPages()) {
             // found pages has no children; render siblings
-            $foundPage = $foundPage->getParent();
-        } else if (is_int($maxDepth) && $foundDepth +1 > $maxDepth) {
+            $active['page'] = $active['page']->getParent();
+        } else if (is_int($maxDepth) && $active['depth'] +1 > $maxDepth) {
             // children are below max depth; render siblings
-            $foundPage = $foundPage->getParent();
+            $active['page'] = $active['page']->getParent();
         }
 
         $ulClass = $ulClass ? ' class="' . $ulClass . '"' : '';
         $html = $indent . '<ul' . $ulClass . '>' . self::EOL;
 
-        foreach ($foundPage as $page) {
-            if (!$this->accept($page)) {
+        foreach ($active['page'] as $subPage) {
+            if (!$this->accept($subPage)) {
                 continue;
             }
-            $liClass = $page->isActive(true) ? ' class="active"' : '';
+            $liClass = $subPage->isActive(true) ? ' class="active"' : '';
             $html .= $indent . '    <li' . $liClass . '>' . self::EOL;
-            $html .= $indent . '        ' . $this->htmlify($page) . self::EOL;
+            $html .= $indent . '        ' . $this->htmlify($subPage) . self::EOL;
             $html .= $indent . '    </li>' . self::EOL;
         }
 
@@ -585,8 +587,11 @@ class Zend_View_Helper_Navigation_Menu
 
         if (empty($partial)) {
             require_once 'Zend/View/Exception.php';
-            throw new Zend_View_Exception(
-                    'Unable to render menu: No partial view script provided');
+            $e = new Zend_View_Exception(
+                'Unable to render menu: No partial view script provided'
+            );
+            $e->setView($this->view);
+            throw $e;
         }
 
         $model = array(
@@ -596,10 +601,13 @@ class Zend_View_Helper_Navigation_Menu
         if (is_array($partial)) {
             if (count($partial) != 2) {
                 require_once 'Zend/View/Exception.php';
-                throw new Zend_View_Exception(
-                        'Unable to render menu: A view partial supplied as ' .
-                        'an array must contain two values: partial view ' .
-                        'script and module where script can be found');
+                $e = new Zend_View_Exception(
+                    'Unable to render menu: A view partial supplied as ' 
+                    .  'an array must contain two values: partial view ' 
+                    .  'script and module where script can be found'
+                );
+                $e->setView($this->view);
+                throw $e;
             }
 
             return $this->view->partial($partial[0], $partial[1], $model);

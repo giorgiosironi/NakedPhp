@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage Framework
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: TestLibraryFile.php 20096 2010-01-06 02:05:09Z bkarwin $
  */
 
 /**
@@ -30,20 +30,20 @@ require_once 'Zend/Tool/Project/Context/Filesystem/File.php';
  *
  * A profile is a hierarchical set of resources that keep track of
  * items within a specific project.
- * 
+ *
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Tool_Project_Context_Zf_TestLibraryFile extends Zend_Tool_Project_Context_Filesystem_File
 {
-    
+
     /**
      * @var string
      */
     protected $_forClassName = '';
-    
+
     /**
      * getName()
      *
@@ -53,7 +53,7 @@ class Zend_Tool_Project_Context_Zf_TestLibraryFile extends Zend_Tool_Project_Con
     {
         return 'TestLibraryFile';
     }
-    
+
     /**
      * init()
      *
@@ -66,7 +66,7 @@ class Zend_Tool_Project_Context_Zf_TestLibraryFile extends Zend_Tool_Project_Con
         parent::init();
         return $this;
     }
-    
+
     /**
      * getContents()
      *
@@ -76,9 +76,9 @@ class Zend_Tool_Project_Context_Zf_TestLibraryFile extends Zend_Tool_Project_Con
     {
 
         $filter = new Zend_Filter_Word_DashToCamelCase();
-        
+
         $className = $filter->filter($this->_forClassName) . 'Test';
-        
+
         $codeGenFile = new Zend_CodeGenerator_Php_File(array(
             'requiredFiles' => array(
                 'PHPUnit/Framework/TestCase.php'
@@ -103,5 +103,5 @@ class Zend_Tool_Project_Context_Zf_TestLibraryFile extends Zend_Tool_Project_Con
 
         return $codeGenFile->generate();
     }
-    
+
 }

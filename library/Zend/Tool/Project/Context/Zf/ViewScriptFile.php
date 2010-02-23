@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage Framework
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: ViewScriptFile.php 20096 2010-01-06 02:05:09Z bkarwin $
  */
 
 /**
@@ -33,7 +33,7 @@ require_once 'Zend/Tool/Project/Context/Filesystem/File.php';
  *
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Tool_Project_Context_Zf_ViewScriptFile extends Zend_Tool_Project_Context_Filesystem_File
@@ -73,7 +73,7 @@ class Zend_Tool_Project_Context_Zf_ViewScriptFile extends Zend_Tool_Project_Cont
     {
         if ($forActionName = $this->_resource->getAttribute('forActionName')) {
             $this->_forActionName = $forActionName;
-            $this->_filesystemName = $forActionName . '.phtml';
+            $this->_filesystemName = $this->_convertActionNameToFilesystemName($forActionName) . '.phtml';
         } elseif ($scriptName = $this->_resource->getAttribute('scriptName')) {
             $this->_scriptName = $scriptName;
             $this->_filesystemName = $scriptName . '.phtml';
@@ -124,33 +124,32 @@ class Zend_Tool_Project_Context_Zf_ViewScriptFile extends Zend_Tool_Project_Cont
 </head>
 <body>
   <h1>An error occurred</h1>
-  <h2><?= \$this->message ?></h2>
+  <h2><?php echo \$this->message ?></h2>
 
-  <? if ('development' == APPLICATION_ENV): ?>
+  <?php if (isset(\$this->exception)): ?>
 
   <h3>Exception information:</h3>
   <p>
-      <b>Message:</b> <?= \$this->exception->getMessage() ?>
+      <b>Message:</b> <?php echo \$this->exception->getMessage() ?>
   </p>
 
   <h3>Stack trace:</h3>
-  <pre><?= \$this->exception->getTraceAsString() ?>
+  <pre><?php echo \$this->exception->getTraceAsString() ?>
   </pre>
 
   <h3>Request Parameters:</h3>
-  <pre><? var_dump(\$this->request->getParams()) ?>
+  <pre><?php echo var_export(\$this->request->getParams(), true) ?>
   </pre>
-  <? endif ?>
+  <?php endif ?>
 
 </body>
 </html>
 
 EOS;
-        } elseif ($this->_forActionName == 'index' && $this->_resource->getParentResource()->getAttribute('forControllerName') == 'index') {
+        } elseif ($this->_forActionName == 'index' && $this->_resource->getParentResource()->getAttribute('forControllerName') == 'Index') {
 
             $contents =<<<EOS
 <style>
-
     a:link,
     a:visited
     {
@@ -170,6 +169,7 @@ EOS;
         height: 400px;
         border: 2px solid #444444;
         overflow: hidden;
+        text-align: center;
     }
 
     div#more-information
@@ -177,22 +177,21 @@ EOS;
         background-image: url(http://framework.zend.com/images/bkg_body-bottom.gif);
         height: 100%;
     }
-
 </style>
-<center>
-    <div id="welcome">
-        <br />
-        <h1>Welcome to the <span id="zf-name">Zend Framework!</span></h1>
-        <h3>This is your project's main page</h3><br /><br />
-        <div id="more-information">
-            <br />
-            <img src="http://framework.zend.com/images/PoweredBy_ZF_4LightBG.png" /><br /><br />
+<div id="welcome">
+    <h1>Welcome to the <span id="zf-name">Zend Framework!</span></h1>
+
+    <h3>This is your project's main page</h3>
+
+    <div id="more-information">
+        <p><img src="http://framework.zend.com/images/PoweredBy_ZF_4LightBG.png" /></p>
+        <p>
             Helpful Links: <br />
             <a href="http://framework.zend.com/">Zend Framework Website</a> |
             <a href="http://framework.zend.com/manual/en/">Zend Framework Manual</a>
-        </div>
+        </p>
     </div>
-</center>
+</div>
 EOS;
 
         } else {
@@ -202,4 +201,12 @@ EOS;
         return $contents;
     }
 
+    protected function _convertActionNameToFilesystemName($actionName)
+    {
+        $filter = new Zend_Filter();
+        $filter->addFilter(new Zend_Filter_Word_CamelCaseToDash())
+            ->addFilter(new Zend_Filter_StringToLower());
+        return $filter->filter($actionName);
+    }
+    
 }

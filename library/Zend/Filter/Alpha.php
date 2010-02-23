@@ -14,9 +14,9 @@
  *
  * @category   Zend
  * @package    Zend_Filter
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Alpha.php 14560 2009-03-31 14:41:22Z thomas $
+ * @version    $Id: Alpha.php 20096 2010-01-06 02:05:09Z bkarwin $
  */
 
 /**
@@ -31,7 +31,7 @@ require_once 'Zend/Locale.php';
 /**
  * @category   Zend
  * @package    Zend_Filter
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Filter_Alpha implements Zend_Filter_Interface
@@ -40,7 +40,7 @@ class Zend_Filter_Alpha implements Zend_Filter_Interface
      * Whether to allow white space characters; off by default
      *
      * @var boolean
-     * @depreciated
+     * @deprecated
      */
     public $allowWhiteSpace;
 
@@ -73,6 +73,16 @@ class Zend_Filter_Alpha implements Zend_Filter_Interface
      */
     public function __construct($allowWhiteSpace = false)
     {
+        if ($allowWhiteSpace instanceof Zend_Config) {
+            $allowWhiteSpace = $allowWhiteSpace->toArray();
+        } else if (is_array($allowWhiteSpace)) {
+            if (array_key_exists('allowwhitespace', $allowWhiteSpace)) {
+                $allowWhiteSpace = $allowWhiteSpace['allowwhitespace'];
+            } else {
+                $allowWhiteSpace = false;
+            }
+        }
+
         $this->allowWhiteSpace = (boolean) $allowWhiteSpace;
         if (null === self::$_unicodeEnabled) {
             self::$_unicodeEnabled = (@preg_match('/\pL/u', 'a')) ? true : false;

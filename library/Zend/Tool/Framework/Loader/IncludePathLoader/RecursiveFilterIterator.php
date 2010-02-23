@@ -15,15 +15,15 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage Framework
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: RecursiveFilterIterator.php 20096 2010-01-06 02:05:09Z bkarwin $
  */
 
 /**
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Tool_Framework_Loader_IncludePathLoader_RecursiveFilterIterator extends RecursiveFilterIterator
@@ -31,7 +31,7 @@ class Zend_Tool_Framework_Loader_IncludePathLoader_RecursiveFilterIterator exten
 
     protected $_denyDirectoryPattern = null;
     protected $_acceptFilePattern    = null;
-    
+
     /**
      * constructor
      *
@@ -45,7 +45,7 @@ class Zend_Tool_Framework_Loader_IncludePathLoader_RecursiveFilterIterator exten
         $this->_acceptFilePattern    = $acceptFilePattern;
         parent::__construct($iterator);
     }
-    
+
     /**
      * accept() - Which iterable items to accept or deny, required by FilterInterface
      *
@@ -57,11 +57,11 @@ class Zend_Tool_Framework_Loader_IncludePathLoader_RecursiveFilterIterator exten
         $currentNodeRealPath = $currentNode->getRealPath();
 
         // if the current node is a directory AND doesn't match the denyDirectory pattern, accept
-        if ($currentNode->isDir() 
+        if ($currentNode->isDir()
             && !preg_match('#' . $this->_denyDirectoryPattern . '#', $currentNodeRealPath)) {
             return true;
         }
-        
+
         // if the file matches the accept file pattern, accept
         $acceptable = (preg_match('#' . $this->_acceptFilePattern . '#', $currentNodeRealPath)) ? true : false;
         return $acceptable;
@@ -79,13 +79,13 @@ class Zend_Tool_Framework_Loader_IncludePathLoader_RecursiveFilterIterator exten
         if (empty($this->ref)) {
             $this->ref = new ReflectionClass($this);
         }
-        
+
         return $this->ref->newInstance(
             $this->getInnerIterator()->getChildren(),
             $this->_denyDirectoryPattern,
             $this->_acceptFilePattern
             );
     }
-    
+
 }
 

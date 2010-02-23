@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage Framework
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: Abstract.php 20096 2010-01-06 02:05:09Z bkarwin $
  */
 
 /**
@@ -48,7 +48,7 @@ require_once 'Zend/Tool/Framework/Registry.php';
 /**
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Tool_Project_Provider_Abstract extends Zend_Tool_Framework_Provider_Abstract
@@ -83,6 +83,9 @@ abstract class Zend_Tool_Project_Provider_Abstract extends Zend_Tool_Framework_P
             $contextRegistry->addContextsFromDirectory(
                 dirname(dirname(__FILE__)) . '/Context/Zf/', 'Zend_Tool_Project_Context_Zf_'
             );
+            $contextRegistry->addContextsFromDirectory(
+                dirname(dirname(__FILE__)) . '/Context/Filesystem/', 'Zend_Tool_Project_Context_Filesystem_'
+            );
             self::$_isInitialized = true;
         }
 
@@ -105,23 +108,45 @@ abstract class Zend_Tool_Project_Provider_Abstract extends Zend_Tool_Framework_P
      *    - if an enpoint variable has been registered in teh client registry - key=workingDirectory
      *    - if an ENV variable with the key ZFPROJECT_PATH is found
      *
-     * @
+     * @param $loadProfileFlag bool Whether or not to throw an exception when no profile is found
+     * @param $projectDirectory string The project directory to use to search
+     * @param $searchParentDirectories bool Whether or not to search upper level direcotries
      * @return Zend_Tool_Project_Profile
      */
-    protected function _loadProfile($loadProfileFlag = self::NO_PROFILE_THROW_EXCEPTION, $projectDirectory = null)
+    protected function _loadProfile($loadProfileFlag = self::NO_PROFILE_THROW_EXCEPTION, $projectDirectory = null, $searchParentDirectories = true)
     {
-
-
+        // use the cwd if no directory was provided
         if ($projectDirectory == null) {
             $projectDirectory = getcwd();
+        } elseif (realpath($projectDirectory) == false) {
+            throw new Zend_Tool_Project_Provider_Exception('The $projectDirectory supplied does not exist.');
         }
 
         $profile = new Zend_Tool_Project_Profile();
-        $profile->setAttribute('projectDirectory', $projectDirectory);
 
-        if ($profile->isLoadableFromFile()) {
-            $profile->loadFromFile();
-            $this->_loadedProfile = $profile;
+        $parentDirectoriesArray = explode(DIRECTORY_SEPARATOR, ltrim($projectDirectory, DIRECTORY_SEPARATOR));
+        while ($parentDirectoriesArray) {
+            $projectDirectoryAssembled = implode(DIRECTORY_SEPARATOR, $parentDirectoriesArray);
+
+            if (DIRECTORY_SEPARATOR !== "\\") {
+                $projectDirectoryAssembled = DIRECTORY_SEPARATOR . $projectDirectoryAssembled;
+            }
+
+            $profile->setAttribute('projectDirectory', $projectDirectoryAssembled);
+            if ($profile->isLoadableFromFile()) {
+                chdir($projectDirectoryAssembled);
+
+                $profile->loadFromFile();
+                $this->_loadedProfile = $profile;
+                break;
+            }
+
+            // break after first run if we are not to check upper directories
+            if ($searchParentDirectories == false) {
+                break;
+            }
+
+            array_pop($parentDirectoriesArray);
         }
 
         if ($this->_loadedProfile == null) {
@@ -181,6 +206,21 @@ abstract class Zend_Tool_Project_Provider_Abstract extends Zend_Tool_Framework_P
         $this->_registry->getResponse()->appendContent('Updating project profile \'' . $name . '\'');
 
         $projectProfileFile->getContext()->save();
+    }
+
+    protected function _getContentForContext(Zend_Tool_Project_Context_Interface $context, $methodName, $parameters)
+    {
+        $storage = $this->_registry->getStorage();
+        if (!$storage->isEnabled()) {
+            return false;
+        }
+
+        if (!class_exists('Zend_Tool_Project_Context_Content_Engine')) {
+            require_once 'Zend/Tool/Project/Context/Content/Engine.php';
+        }
+
+        $engine = new Zend_Tool_Project_Context_Content_Engine($storage);
+        return $engine->getContent($context, $methodName, $parameters);
     }
 
     /**

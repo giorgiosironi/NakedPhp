@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage Framework
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: Basic.php 20096 2010-01-06 02:05:09Z bkarwin $
  */
 
 /**
@@ -26,21 +26,27 @@
 require_once 'Zend/Tool/Framework/Metadata/Interface.php';
 
 /**
+ * @see Zend_Tool_Framework_Metadata_Attributable
+ */
+require_once 'Zend/Tool/Framework/Metadata/Attributable.php';
+
+/**
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_Tool_Framework_Metadata_Basic implements Zend_Tool_Framework_Metadata_Interface
+class Zend_Tool_Framework_Metadata_Basic 
+    implements Zend_Tool_Framework_Metadata_Interface, Zend_Tool_Framework_Metadata_Attributable
 {
-    
+
     /**#@+
      * Search constants
      */
     const ATTRIBUTES_ALL        = 'attributesAll';
     const ATTRIBUTES_NO_PARENT  = 'attributesParent';
     /**#@-*/
-    
+
     /**#@+
      * @var string
      */
@@ -48,7 +54,7 @@ class Zend_Tool_Framework_Metadata_Basic implements Zend_Tool_Framework_Metadata
     protected $_name        = null;
     protected $_value       = null;
     /**#@-*/
-    
+
     /**
      * @var mixed
      */
@@ -65,9 +71,9 @@ class Zend_Tool_Framework_Metadata_Basic implements Zend_Tool_Framework_Metadata
             $this->setOptions($options);
         }
     }
-    
+
     /**
-     * setOptions() - standard issue implementation, this will set any 
+     * setOptions() - standard issue implementation, this will set any
      * options that are supported via a set method.
      *
      * @param array $options
@@ -81,23 +87,23 @@ class Zend_Tool_Framework_Metadata_Basic implements Zend_Tool_Framework_Metadata
                 $this->{$setMethod}($optionValue);
             }
         }
-        
+
         return $this;
     }
 
     /**
      * getType()
-     * 
+     *
      * @return string
      */
     public function getType()
     {
         return $this->_type;
     }
-    
+
     /**
      * setType()
-     * 
+     *
      * @param string $type
      * @return Zend_Tool_Framework_Metadata_Basic
      */
@@ -109,17 +115,17 @@ class Zend_Tool_Framework_Metadata_Basic implements Zend_Tool_Framework_Metadata
 
     /**
      * getName()
-     * 
+     *
      * @return string
      */
     public function getName()
     {
         return $this->_name;
     }
-    
+
     /**
      * setName()
-     * 
+     *
      * @param string $name
      * @return Zend_Tool_Framework_Metadata_Basic
      */
@@ -128,20 +134,20 @@ class Zend_Tool_Framework_Metadata_Basic implements Zend_Tool_Framework_Metadata
         $this->_name = $name;
         return $this;
     }
-    
+
     /**
-     * getValue() 
-     * 
+     * getValue()
+     *
      * @return mixed
      */
     public function getValue()
     {
         return $this->_value;
     }
-    
+
     /**
      * setValue()
-     * 
+     *
      * @param unknown_type $Value
      * @return Zend_Tool_Framework_Metadata_Basic
      */
@@ -162,7 +168,7 @@ class Zend_Tool_Framework_Metadata_Basic implements Zend_Tool_Framework_Metadata
         $this->_reference = $reference;
         return $this;
     }
-    
+
     /**
      * getReference()
      *
@@ -172,7 +178,7 @@ class Zend_Tool_Framework_Metadata_Basic implements Zend_Tool_Framework_Metadata
     {
         return $this->_reference;
     }
-    
+
     /**
      * getAttributes() - this will retrieve any attributes of this object that exist as properties
      * This is most useful for printing metadata.
@@ -183,34 +189,34 @@ class Zend_Tool_Framework_Metadata_Basic implements Zend_Tool_Framework_Metadata
     public function getAttributes($type = self::ATTRIBUTES_ALL, $stringRepresentationOfNonScalars = false)
     {
         $thisReflection = new ReflectionObject($this);
-            
+
         $metadataPairValues = array();
 
         foreach (get_object_vars($this) as $varName => $varValue) {
             if ($type == self::ATTRIBUTES_NO_PARENT && ($thisReflection->getProperty($varName)->getDeclaringClass()->getName() == 'Zend_Tool_Framework_Metadata_Basic')) {
                 continue;
             }
-            
+
             if ($stringRepresentationOfNonScalars) {
-                
+
                 if (is_object($varValue)) {
                     $varValue = '(object)';
                 }
-                
+
                 if (is_null($varValue)) {
                     $varValue = '(null)';
                 }
-                
+
             }
-            
+
             $metadataPairValues[ltrim($varName, '_')] = $varValue;
         }
-        
+
         return $metadataPairValues;
     }
-    
+
     /**
-     * __toString() - string representation of this object 
+     * __toString() - string representation of this object
      *
      * @return string
      */

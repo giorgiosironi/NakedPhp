@@ -15,15 +15,15 @@
  * @category   Zend
  * @package    Zend_CodeGenerator
  * @subpackage PHP
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: Tag.php 20096 2010-01-06 02:05:09Z bkarwin $
  */
 
 /**
  * @see Zend_CodeGenerator_Abstract
  */
-require_once 'Zend/CodeGenerator/Abstract.php';
+require_once 'Zend/CodeGenerator/Php/Abstract.php';
 
 /**
  * @see Zend_CodeGenerator_Php_Docblock_Tag_Param
@@ -38,10 +38,10 @@ require_once 'Zend/CodeGenerator/Php/Docblock/Tag/Return.php';
 /**
  * @category   Zend
  * @package    Zend_CodeGenerator
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_CodeGenerator_Php_Docblock_Tag extends Zend_CodeGenerator_Abstract
+class Zend_CodeGenerator_Php_Docblock_Tag extends Zend_CodeGenerator_Php_Abstract
 {
 
     /**
@@ -53,7 +53,7 @@ class Zend_CodeGenerator_Php_Docblock_Tag extends Zend_CodeGenerator_Abstract
      * @var string
      */
     protected $_name = null;
-    
+
     /**
      * @var string
      */
@@ -68,9 +68,9 @@ class Zend_CodeGenerator_Php_Docblock_Tag extends Zend_CodeGenerator_Abstract
     public static function fromReflection(Zend_Reflection_Docblock_Tag $reflectionTag)
     {
         $tagName = $reflectionTag->getName();
-        
+
         $codeGenDocblockTag = self::factory($tagName);
-        
+
         // transport any properties via accessors and mutators from reflection to codegen object
         $reflectionClass = new ReflectionClass($reflectionTag);
         foreach ($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
@@ -81,10 +81,10 @@ class Zend_CodeGenerator_Php_Docblock_Tag extends Zend_CodeGenerator_Abstract
                 }
             }
         }
-        
+
         return $codeGenDocblockTag;
     }
-    
+
     /**
      * setPluginLoader()
      *
@@ -95,7 +95,7 @@ class Zend_CodeGenerator_Php_Docblock_Tag extends Zend_CodeGenerator_Abstract
         self::$_pluginLoader = $pluginLoader;
         return;
     }
-    
+
     /**
      * getPluginLoader()
      *
@@ -109,24 +109,24 @@ class Zend_CodeGenerator_Php_Docblock_Tag extends Zend_CodeGenerator_Abstract
                 'Zend_CodeGenerator_Php_Docblock_Tag' => dirname(__FILE__) . '/Tag/'))
                 );
         }
-        
+
         return self::$_pluginLoader;
     }
-    
+
     public static function factory($tagName)
     {
         $pluginLoader = self::getPluginLoader();
-        
+
         try {
             $tagClass = $pluginLoader->load($tagName);
         } catch (Zend_Loader_Exception $exception) {
             $tagClass = 'Zend_CodeGenerator_Php_Docblock_Tag';
         }
-        
+
         $tag = new $tagClass(array('name' => $tagName));
         return $tag;
     }
-    
+
     /**
      * setName()
      *
@@ -138,7 +138,7 @@ class Zend_CodeGenerator_Php_Docblock_Tag extends Zend_CodeGenerator_Abstract
         $this->_name = ltrim($name, '@');
         return $this;
     }
-    
+
     /**
      * getName()
      *
@@ -148,7 +148,7 @@ class Zend_CodeGenerator_Php_Docblock_Tag extends Zend_CodeGenerator_Abstract
     {
         return $this->_name;
     }
-    
+
     /**
      * setDescription()
      *
@@ -160,7 +160,7 @@ class Zend_CodeGenerator_Php_Docblock_Tag extends Zend_CodeGenerator_Abstract
         $this->_description = $description;
         return $this;
     }
-    
+
     /**
      * getDescription()
      *
@@ -178,7 +178,7 @@ class Zend_CodeGenerator_Php_Docblock_Tag extends Zend_CodeGenerator_Abstract
      */
     public function generate()
     {
-        return '@' . $this->_name . ' ' . $this->_description . PHP_EOL;
+        return '@' . $this->_name . ' ' . $this->_description;
     }
-    
+
 }

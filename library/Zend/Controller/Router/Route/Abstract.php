@@ -12,10 +12,11 @@
  * obtain it through the world-wide-web, please send an email
  * to license@zend.com so we can send you a copy immediately.
  *
+ * @category   Zend
  * @package    Zend_Controller
  * @subpackage Router
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Route.php 1847 2006-11-23 11:36:41Z martel $
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @version    $Id: Abstract.php 20096 2010-01-06 02:05:09Z bkarwin $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -31,7 +32,7 @@ require_once 'Zend/Controller/Router/Route/Interface.php';
  *
  * @package    Zend_Controller
  * @subpackage Router
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_Controller_Router_Route_Abstract implements Zend_Controller_Router_Route_Interface
@@ -49,7 +50,7 @@ abstract class Zend_Controller_Router_Route_Abstract implements Zend_Controller_
      * @var string
      */
     protected $_matchedPath = null;
-    
+
     /**
      * Get the version of the route
      *
@@ -59,7 +60,7 @@ abstract class Zend_Controller_Router_Route_Abstract implements Zend_Controller_
     {
         return 2;
     }
-    
+
     /**
      * Set partially matched path
      *
@@ -70,7 +71,7 @@ abstract class Zend_Controller_Router_Route_Abstract implements Zend_Controller_
     {
         $this->_matchedPath = $path;
     }
-    
+
     /**
      * Get partially matched path
      *
@@ -80,10 +81,10 @@ abstract class Zend_Controller_Router_Route_Abstract implements Zend_Controller_
     {
         return $this->_matchedPath;
     }
-    
+
     /**
      * Check or set wether this is an abstract route or not
-     * 
+     *
      * @param  boolean $flag
      * @return boolean
      */
@@ -92,17 +93,17 @@ abstract class Zend_Controller_Router_Route_Abstract implements Zend_Controller_
         if ($flag !== null) {
             $this->_isAbstract = $flag;
         }
-    
+
         return $this->_isAbstract;
     }
-    
+
     /**
      * Create a new chain
-     * 
+     *
      * @param  Zend_Controller_Router_Route_Abstract $route
      * @param  string                                $separator
      * @return Zend_Controller_Router_Route_Chain
-     */    
+     */
     public function chain(Zend_Controller_Router_Route_Abstract $route, $separator = '/')
     {
         require_once 'Zend/Controller/Router/Route/Chain.php';

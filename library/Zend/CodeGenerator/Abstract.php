@@ -15,15 +15,15 @@
  * @category   Zend
  * @package    Zend_CodeGenerator
  * @subpackage PHP
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: Abstract.php 20096 2010-01-06 02:05:09Z bkarwin $
  */
 
 /**
  * @category   Zend
  * @package    Zend_CodeGenerator
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class Zend_CodeGenerator_Abstract
@@ -33,12 +33,12 @@ abstract class Zend_CodeGenerator_Abstract
      * @var string
      */
     protected $_sourceContent = null;
-    
+
     /**
      * @var bool
      */
     protected $_isSourceDirty = true;
-    
+
     /**
      * __construct()
      *
@@ -59,7 +59,7 @@ abstract class Zend_CodeGenerator_Abstract
         }
         $this->_prepare();
     }
-    
+
     /**
      * setConfig()
      *
@@ -71,7 +71,7 @@ abstract class Zend_CodeGenerator_Abstract
         $this->setOptions($config->toArray());
         return $this;
     }
-    
+
     /**
      * setOptions()
      *
@@ -88,7 +88,7 @@ abstract class Zend_CodeGenerator_Abstract
         }
         return $this;
     }
-    
+
     /**
      * setSourceContent()
      *
@@ -99,7 +99,7 @@ abstract class Zend_CodeGenerator_Abstract
         $this->_sourceContent = $sourceContent;
         return;
     }
-    
+
     /**
      * getSourceContent()
      *
@@ -109,31 +109,31 @@ abstract class Zend_CodeGenerator_Abstract
     {
         return $this->_sourceContent;
     }
-    
+
     /**
      * _init() - this is called before the constuctor
      *
      */
     protected function _init()
     {
-        
+
     }
-    
+
     /**
      * _prepare() - this is called at construction completion
      *
      */
     protected function _prepare()
     {
-        
+
     }
-    
+
     /**
      * generate() - must be implemented by the child
      *
      */
     abstract public function generate();
-    
+
     /**
      * __toString() - casting to a string will in turn call generate()
      *

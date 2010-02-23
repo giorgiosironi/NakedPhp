@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Dojo
  * @subpackage View
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ComboBox.php 16135 2009-06-18 18:15:40Z matthew $
+ * @version    $Id: ComboBox.php 20096 2010-01-06 02:05:09Z bkarwin $
  */
 
 /** Zend_Dojo_View_Helper_Dijit */
@@ -25,11 +25,11 @@ require_once 'Zend/Dojo/View/Helper/Dijit.php';
 
 /**
  * Dojo ComboBox dijit
- * 
+ *
  * @uses       Zend_Dojo_View_Helper_Dijit
  * @package    Zend_Dojo
  * @subpackage View
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
   */
 class Zend_Dojo_View_Helper_ComboBox extends Zend_Dojo_View_Helper_Dijit
@@ -54,9 +54,9 @@ class Zend_Dojo_View_Helper_ComboBox extends Zend_Dojo_View_Helper_Dijit
 
     /**
      * dijit.form.ComboBox
-     * 
-     * @param  int $id 
-     * @param  mixed $value 
+     *
+     * @param  int $id
+     * @param  mixed $value
      * @param  array $params  Parameters to use for dijit creation
      * @param  array $attribs HTML attributes
      * @param  array|null $options Select options
@@ -72,9 +72,6 @@ class Zend_Dojo_View_Helper_ComboBox extends Zend_Dojo_View_Helper_Dijit
             // using dojo.data datastore
             if (false !== ($store = $this->_renderStore($params['store'], $id))) {
                 $params['store'] = $params['store']['store'];
-                if ($this->_useProgrammatic()) {
-                    unset($params['store']);
-                }
                 if (is_string($store)) {
                     $html .= $store;
                 }
@@ -99,9 +96,6 @@ class Zend_Dojo_View_Helper_ComboBox extends Zend_Dojo_View_Helper_Dijit
                     }
                 }
             }
-            if ($this->_useProgrammatic()) {
-                unset($params['store']);
-            }
             $html .= $this->_createFormElement($id, $value, $params, $attribs);
             return $html;
         }
@@ -115,8 +109,8 @@ class Zend_Dojo_View_Helper_ComboBox extends Zend_Dojo_View_Helper_Dijit
      * Render data store element
      *
      * Renders to dojo view helper
-     * 
-     * @param  array $params 
+     *
+     * @param  array $params
      * @return string|false
      */
     protected function _renderStore(array $params, $id)
@@ -141,14 +135,13 @@ class Zend_Dojo_View_Helper_ComboBox extends Zend_Dojo_View_Helper_Dijit
         if ($this->_useProgrammatic()) {
             if (!$this->_useProgrammaticNoScript()) {
                 require_once 'Zend/Json.php';
-                $js = 'var ' . $storeParams['jsId'] . ' = '
+                $this->dojo->addJavascript('var ' . $storeParams['jsId'] . ";\n");
+                $js = $storeParams['jsId'] . ' = '
                     . 'new ' . $storeParams['dojoType'] . '('
                     .     Zend_Json::encode($extraParams)
-                    . ");\n"
-                    . 'dijit.byId("' . $id . '").attr("store", ' 
-                    . $storeParams['jsId'] . ');';
+                    . ");\n";
                 $js = "function() {\n$js\n}";
-                $this->dojo->prependOnLoad($js);
+                $this->dojo->_addZendLoad($js);
             }
             return true;
         }

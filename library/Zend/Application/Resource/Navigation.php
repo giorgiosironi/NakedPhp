@@ -15,10 +15,16 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage Resource
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: Navigation.php 20816 2010-02-01 21:13:54Z freak $
  */
+
+/**
+ * @see Zend_Application_Resource_ResourceAbstract
+ */
+require_once 'Zend/Application/Resource/ResourceAbstract.php';
+
 
 /**
  * Resource for setting navigation structure
@@ -27,11 +33,11 @@
  * @category   Zend
  * @package    Zend_Application
  * @subpackage Resource
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @author     Dolf Schimmel
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_Application_Resource_Navigation 
+class Zend_Application_Resource_Navigation
     extends Zend_Application_Resource_ResourceAbstract
 {
     const DEFAULT_REGISTRY_KEY = 'Zend_Navigation';
@@ -82,9 +88,14 @@ class Zend_Application_Resource_Navigation
     protected function _storeRegistry()
     {
         $options = $this->getOptions();
-        $key = !is_numeric($options['storage']['registry']['key'])
-             ?  $options['storage']['registry']['key']
-             : self::DEFAULT_REGISTRY_KEY;
+        if(isset($options['storage']['registry']['key']) &&
+           !is_numeric($options['storage']['registry']['key'])) // see ZF-7461
+        {
+           $key = $options['storage']['registry']['key'];
+        } else {
+            $key = self::DEFAULT_REGISTRY_KEY;
+        }
+
         Zend_Registry::set($key,$this->getContainer());
     }
 
@@ -96,7 +107,7 @@ class Zend_Application_Resource_Navigation
     protected function _storeHelper()
     {
         $this->getBootstrap()->bootstrap('view');
-        $view = $this->getBootstrap()->getPluginResource('view')->getView();
+        $view = $this->getBootstrap()->view;
         $view->getHelper('navigation')->navigation($this->getContainer());
     }
 

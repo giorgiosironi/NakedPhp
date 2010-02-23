@@ -15,40 +15,46 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage Framework
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: BootstrapFile.php 20096 2010-01-06 02:05:09Z bkarwin $
  */
-
-/**
- * @see Zend_Tool_Project_Context_Filesystem_File
- */
-require_once 'Zend/Tool/Project/Context/Filesystem/File.php';
-
-require_once 'Zend/Application.php';
 
 /**
  * This class is the front most class for utilizing Zend_Tool_Project
  *
  * A profile is a hierarchical set of resources that keep track of
  * items within a specific project.
- * 
+ *
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_Tool_Project_Context_Zf_BootstrapFile extends Zend_Tool_Project_Context_Filesystem_File 
+class Zend_Tool_Project_Context_Zf_BootstrapFile extends Zend_Tool_Project_Context_Filesystem_File
 {
-    
+
     /**
      * @var string
      */
     protected $_filesystemName = 'Bootstrap.php';
+
+    /**
+     * @var Zend_Tool_Project_Profile_Resource
+     */
+    protected $_applicationConfigFile = null;
     
+    /**
+     * @var Zend_Tool_Project_Profile_Resource
+     */
+    protected $_applicationDirectory = null;
+    
+    /**
+     * @var Zend_Application
+     */
     protected $_applicationInstance = null;
-    protected $_bootstrapInstance = null;
-    
+
+
     /**
      * getName()
      *
@@ -58,30 +64,21 @@ class Zend_Tool_Project_Context_Zf_BootstrapFile extends Zend_Tool_Project_Conte
     {
         return 'BootstrapFile';
     }
-    
+
     public function init()
     {
         parent::init();
-        
-        $applicationConfigFile = $this->_resource->getProfile()->search('ApplicationConfigFile');
-        $applicationDirectory = $this->_resource->getProfile()->search('ApplicationDirectory');
-        
-        if (($applicationConfigFile === false) || ($applicationDirectory === false)) {
+
+        $this->_applicationConfigFile = $this->_resource->getProfile()->search('ApplicationConfigFile');
+        $this->_applicationDirectory = $this->_resource->getProfile()->search('ApplicationDirectory');
+
+        if (($this->_applicationConfigFile === false) || ($this->_applicationDirectory === false)) {
             throw new Exception('To use the BootstrapFile context, your project requires the use of both the "ApplicationConfigFile" and "ApplicationDirectory" contexts.');
         }
-        
-        if ($applicationConfigFile->getContext()->exists()) {
-            define('APPLICATION_PATH', $applicationDirectory->getPath());
-            $applicationOptions = array();
-            $applicationOptions['config'] = $applicationConfigFile->getPath();
-    
-            $this->_applicationInstance = new Zend_Application(
-                'development',
-                $applicationOptions
-                );
-        }
+
+
     }
-    
+
     /**
      * getContents()
      *
@@ -89,15 +86,34 @@ class Zend_Tool_Project_Context_Zf_BootstrapFile extends Zend_Tool_Project_Conte
      */
     public function getContents()
     {
+
         $codeGenFile = new Zend_CodeGenerator_Php_File(array(
             'classes' => array(
                 new Zend_CodeGenerator_Php_Class(array(
                     'name' => 'Bootstrap',
                     'extendedClass' => 'Zend_Application_Bootstrap_Bootstrap',
-                )),
-            )
-        ));
-       
+                    )),
+                )
+            ));
+
         return $codeGenFile->generate();
+    }
+    
+    public function getApplicationInstance()
+    {
+        if ($this->_applicationInstance == null) {
+            if ($this->_applicationConfigFile->getContext()->exists()) {
+                define('APPLICATION_PATH', $this->_applicationDirectory->getPath());
+                $applicationOptions = array();
+                $applicationOptions['config'] = $this->_applicationConfigFile->getPath();
+    
+                $this->_applicationInstance = new Zend_Application(
+                    'development',
+                    $applicationOptions
+                    );
+            }
+        }
+        
+        return $this->_applicationInstance;
     }
 }

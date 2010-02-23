@@ -15,14 +15,14 @@
  * @category   Zend
  * @package    Zend_Captcha
  * @subpackage Adapter
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
-/** Zend_Captcha_Base */
+/** @see Zend_Captcha_Base */
 require_once 'Zend/Captcha/Base.php';
 
-/** Zend_Service_ReCaptcha */
+/** @see Zend_Service_ReCaptcha */
 require_once 'Zend/Service/ReCaptcha.php';
 
 /**
@@ -35,9 +35,9 @@ require_once 'Zend/Service/ReCaptcha.php';
  * @category   Zend
  * @package    Zend_Captcha
  * @subpackage Adapter
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: ReCaptcha.php 16127 2009-06-18 01:12:54Z stas $
+ * @version    $Id: ReCaptcha.php 20096 2010-01-06 02:05:09Z bkarwin $
  */
 class Zend_Captcha_ReCaptcha extends Zend_Captcha_Base
 {
@@ -63,9 +63,15 @@ class Zend_Captcha_ReCaptcha extends Zend_Captcha_Base
      */
     protected $_serviceParams = array();
 
+    /**
+     * Options defined by the service
+     *
+     * @var array
+     */
+    protected $_serviceOptions = array();
+
     /**#@+
      * Error codes
-     * @const string
      */
     const MISSING_VALUE = 'missingValue';
     const ERR_CAPTCHA   = 'errCaptcha';
@@ -136,6 +142,7 @@ class Zend_Captcha_ReCaptcha extends Zend_Captcha_Base
     {
         $this->setService(new Zend_Service_ReCaptcha());
         $this->_serviceParams = $this->getService()->getParams();
+        $this->_serviceOptions = $this->getService()->getOptions();
 
         parent::__construct($options);
 
@@ -172,7 +179,8 @@ class Zend_Captcha_ReCaptcha extends Zend_Captcha_Base
     /**
      * Set option
      *
-     * If option is a service parameter, proxies to the service.
+     * If option is a service parameter, proxies to the service. The same
+     * goes for any service options (distinct from service params)
      *
      * @param  string $key
      * @param  mixed $value
@@ -183,6 +191,10 @@ class Zend_Captcha_ReCaptcha extends Zend_Captcha_Base
         $service = $this->getService();
         if (isset($this->_serviceParams[$key])) {
             $service->setParam($key, $value);
+            return $this;
+        }
+        if (isset($this->_serviceOptions[$key])) {
+            $service->setOption($key, $value);
             return $this;
         }
         return parent::setOption($key, $value);

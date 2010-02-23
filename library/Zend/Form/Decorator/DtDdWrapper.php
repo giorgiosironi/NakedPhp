@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Form
  * @subpackage Decorator
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -31,9 +31,9 @@ require_once 'Zend/Form/Decorator/Abstract.php';
  * @category   Zend
  * @package    Zend_Form
  * @subpackage Decorator
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: DtDdWrapper.php 13615 2009-01-13 19:52:10Z norm2782 $
+ * @version    $Id: DtDdWrapper.php 20096 2010-01-06 02:05:09Z bkarwin $
  */
 class Zend_Form_Decorator_DtDdWrapper extends Zend_Form_Decorator_Abstract
 {

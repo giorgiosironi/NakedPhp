@@ -15,12 +15,12 @@
  * @category   Zend
  * @package    Zend_Captcha
  * @subpackage Adapter
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Image.php 14290 2009-03-13 12:40:14Z alexander $
+ * @version    $Id: Image.php 20096 2010-01-06 02:05:09Z bkarwin $
  */
 
-/** Zend_Captcha_Word */
+/** @see Zend_Captcha_Word */
 require_once 'Zend/Captcha/Word.php';
 
 /**
@@ -31,7 +31,7 @@ require_once 'Zend/Captcha/Word.php';
  * @category   Zend
  * @package    Zend_Captcha
  * @subpackage Adapter
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Captcha_Image extends Zend_Captcha_Word
@@ -94,7 +94,7 @@ class Zend_Captcha_Image extends Zend_Captcha_Word
 
     /**
      * Image to use as starting point
-     * Default is blank image. If ptovided, should be PNG image.
+     * Default is blank image. If provided, should be PNG image.
      *
      * @var string
      */
@@ -423,8 +423,8 @@ class Zend_Captcha_Image extends Zend_Captcha_Word
         $tries = 5;
         // If there's already such file, try creating a new ID
         while($tries-- && file_exists($this->getImgDir() . $id . $this->getSuffix())) {
-        	$id = $this->_generateRandomId();
-        	$this->_setId($id);
+            $id = $this->_generateRandomId();
+            $this->_setId($id);
         }
         $this->_generateImage($id, $this->getWord());
 

@@ -15,8 +15,9 @@
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage Sitemap
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version    $Id: Priority.php 20358 2010-01-17 19:03:49Z thomas $
  */
 
 /**
@@ -32,7 +33,7 @@ require_once 'Zend/Validate/Abstract.php';
  * @category   Zend
  * @package    Zend_Validate
  * @subpackage Sitemap
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Validate_Sitemap_Priority extends Zend_Validate_Abstract
@@ -49,7 +50,7 @@ class Zend_Validate_Sitemap_Priority extends Zend_Validate_Abstract
      * @var array
      */
     protected $_messageTemplates = array(
-        self::NOT_VALID => "'%value%' is not a valid sitemap priority",
+        self::NOT_VALID => "'%value%' is no valid sitemap priority",
     );
 
     /**

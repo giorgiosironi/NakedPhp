@@ -15,9 +15,9 @@
  *
  * @category   Zend
  * @package    Zend_Filter
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: StripTags.php 14560 2009-03-31 14:41:22Z thomas $
+ * @version    $Id: StripTags.php 20486 2010-01-21 18:43:53Z matthew $
  */
 
 
@@ -30,7 +30,7 @@ require_once 'Zend/Filter/Interface.php';
 /**
  * @category   Zend
  * @package    Zend_Filter
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Filter_StripTags implements Zend_Filter_Interface
@@ -45,10 +45,12 @@ class Zend_Filter_StripTags implements Zend_Filter_Interface
      *
      * If false (the default), then comments are removed from the input string.
      *
+     * This setting is now deprecated, and ignored internally.
+     *
+     * @deprecated
      * @var boolean
-     * @depreciated
      */
-    public $commentsAllowed;
+    public $commentsAllowed = false;
 
     /**
      * Array of allowed tags and allowed attributes for each allowed tag
@@ -71,21 +73,52 @@ class Zend_Filter_StripTags implements Zend_Filter_Interface
 
     /**
      * Sets the filter options
+     * Allowed options are
+     *     'allowTags'     => Tags which are allowed
+     *     'allowAttribs'  => Attributes which are allowed
+     *     'allowComments' => Are comments allowed ?
      *
-     * @param  array|string $tagsAllowed
-     * @param  array|string $attributesAllowed
-     * @param  boolean      $allowComments
+     * @param  string|array|Zend_Config $options
      * @return void
      */
-    public function __construct($tagsAllowed = null, $attributesAllowed = null, $commentsAllowed = false)
+    public function __construct($options = null)
     {
-        $this->setTagsAllowed($tagsAllowed);
-        $this->setAttributesAllowed($attributesAllowed);
-        $this->setCommentsAllowed($commentsAllowed);
+        if ($options instanceof Zend_Config) {
+            $options = $options->toArray();
+        } else if (!is_array($options)) {
+            $options = func_get_args();
+            $temp['allowTags'] = array_shift($options);
+            if (!empty($options)) {
+                $temp['allowAttribs'] = array_shift($options);
+            }
+
+            if (!empty($options)) {
+                $temp['allowComments'] = array_shift($options);
+            }
+
+            $options = $temp;
+        }
+
+        if (array_key_exists('allowTags', $options)) {
+            $this->setTagsAllowed($options['allowTags']);
+        }
+
+        if (array_key_exists('allowAttribs', $options)) {
+            $this->setAttributesAllowed($options['allowAttribs']);
+        }
+
+        if (array_key_exists('allowComments', $options)) {
+            $this->setCommentsAllowed($options['allowComments']);
+        }
     }
 
     /**
      * Returns the commentsAllowed option
+     *
+     * This setting is now deprecated and ignored internally.
+     *
+     * @deprecated
+     * @return bool
      */
     public function getCommentsAllowed()
     {
@@ -95,7 +128,10 @@ class Zend_Filter_StripTags implements Zend_Filter_Interface
     /**
      * Sets the commentsAllowed option
      *
-     * @param boolean $commentsAllowed
+     * This setting is now deprecated and ignored internally.
+     *
+     * @deprecated
+     * @param  boolean $commentsAllowed
      * @return Zend_Filter_StripTags Provides a fluent interface
      */
     public function setCommentsAllowed($commentsAllowed)
@@ -201,16 +237,8 @@ class Zend_Filter_StripTags implements Zend_Filter_Interface
      */
     public function filter($value)
     {
-        $valueCopy = (string) $value;
-
-        // If comments are allowed, then replace them with unique identifiers
-        if ($this->getCommentsAllowed()) {
-            preg_match_all('/<\!--.*?--\s*>/s' , (string) $valueCopy, $matches);
-            $comments = array_unique($matches[0]);
-            foreach ($comments as $k => $v) {
-                $valueCopy = str_replace($v, self::UNIQUE_ID_PREFIX . $k, $valueCopy);
-            }
-        }
+        // Strip HTML comments first
+        $valueCopy = preg_replace('#<!--(?:[^<]+|<(?!\!--))*?(--\s*>)#s', '', (string) $value);
 
         // Initialize accumulator for filtered data
         $dataFiltered = '';
@@ -232,13 +260,6 @@ class Zend_Filter_StripTags implements Zend_Filter_Interface
             }
             // Add the filtered pre-tag text and filtered tag to the data buffer
             $dataFiltered .= $preTag . $tagFiltered;
-        }
-
-        // If comments are allowed, then replace the unique identifiers with the corresponding comments
-        if ($this->getCommentsAllowed()) {
-            foreach ($comments as $k => $v) {
-                $dataFiltered = str_replace(self::UNIQUE_ID_PREFIX . $k, $v, $dataFiltered);
-            }
         }
 
         // Return the filtered data

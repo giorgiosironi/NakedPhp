@@ -12,10 +12,11 @@
  * obtain it through the world-wide-web, please send an email
  * to license@zend.com so we can send you a copy immediately.
  *
+ * @category   Zend
  * @package    Zend_View
  * @subpackage Helper
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Placeholder.php 7078 2007-12-11 14:29:33Z matthew $
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @version    $Id: HeadTitle.php 20096 2010-01-06 02:05:09Z bkarwin $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -28,7 +29,7 @@ require_once 'Zend/View/Helper/Placeholder/Container/Standalone.php';
  * @uses       Zend_View_Helper_Placeholder_Container_Standalone
  * @package    Zend_View
  * @subpackage Helper
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_View_Helper_HeadTitle extends Zend_View_Helper_Placeholder_Container_Standalone
@@ -62,7 +63,8 @@ class Zend_View_Helper_HeadTitle extends Zend_View_Helper_Placeholder_Container_
      */
     public function headTitle($title = null, $setType = Zend_View_Helper_Placeholder_Container_Abstract::APPEND)
     {
-        if ($title) {
+        $title = (string) $title;
+        if ($title !== '') {
             if ($setType == Zend_View_Helper_Placeholder_Container_Abstract::SET) {
                 $this->set($title);
             } elseif ($setType == Zend_View_Helper_Placeholder_Container_Abstract::PREPEND) {
@@ -89,7 +91,9 @@ class Zend_View_Helper_HeadTitle extends Zend_View_Helper_Placeholder_Container_
             $this->_translator = $translate->getAdapter();
         } else {
             require_once 'Zend/View/Exception.php';
-            throw new Zend_View_Exception("You must set an instance of Zend_Translate or Zend_Translate_Adapter");
+            $e = new Zend_View_Exception("You must set an instance of Zend_Translate or Zend_Translate_Adapter");
+            $e->setView($this->view);
+            throw $e;
         }
         return $this;
     }

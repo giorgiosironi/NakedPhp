@@ -15,9 +15,9 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage Framework
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: Profile.php 20967 2010-02-07 18:17:49Z ralph $
  */
 
 /**
@@ -35,10 +35,10 @@ require_once 'Zend/Tool/Project/Profile/Resource/Container.php';
  *
  * A profile is a hierarchical set of resources that keep track of
  * items within a specific project.
- * 
+ *
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Zend_Tool_Project_Profile extends Zend_Tool_Project_Profile_Resource_Container
@@ -48,12 +48,7 @@ class Zend_Tool_Project_Profile extends Zend_Tool_Project_Profile_Resource_Conta
      * @var bool
      */
     protected static $_traverseEnabled = false;
-
-    /**
-     * @var array
-     */
-    protected $_attributes = array();
-
+    
     /**
      * Constructor, standard usage would allow the setting of options
      *
@@ -96,7 +91,7 @@ class Zend_Tool_Project_Profile extends Zend_Tool_Project_Profile_Resource_Conta
     }
 
     /**
-     * loadFromData() - Load a profile from data provided by the 
+     * loadFromData() - Load a profile from data provided by the
      * 'profilData' attribute
      *
      */
@@ -114,8 +109,8 @@ class Zend_Tool_Project_Profile extends Zend_Tool_Project_Profile_Resource_Conta
     }
 
     /**
-     * isLoadableFromFile() - can a profile be loaded from a file 
-     * 
+     * isLoadableFromFile() - can a profile be loaded from a file
+     *
      * wether or not a profile can be loaded from the
      * file in attribute 'projectProfileFile', or from a file named
      * '.zfproject.xml' inside a directory in key 'projectDirectory'
@@ -145,7 +140,7 @@ class Zend_Tool_Project_Profile extends Zend_Tool_Project_Profile_Resource_Conta
 
     /**
      * loadFromFile() - Load data from file
-     * 
+     *
      * this attempts to load a project profile file from a variety of locations depending
      * on what information the user provided vie $options or attributes, specifically the
      * 'projectDirectory' or 'projectProfileFile'
@@ -165,12 +160,14 @@ class Zend_Tool_Project_Profile extends Zend_Tool_Project_Profile_Resource_Conta
                 require_once 'Zend/Tool/Project/Exception.php';
                 throw new Zend_Tool_Project_Exception('"projectProfileFile" was supplied but file was not found at location ' . $projectProfileFilePath);
             }
+            $this->_attributes['projectDirectory'] = dirname($projectProfileFilePath);
         } else {
             $projectProfileFilePath = rtrim($this->_attributes['projectDirectory'], '/\\') . '/.zfproject.xml';
             if (!file_exists($projectProfileFilePath)) {
                 require_once 'Zend/Tool/Project/Exception.php';
                 throw new Zend_Tool_Project_Exception('"projectDirectory" was supplied but no profile file file was not found at location ' . $projectProfileFilePath);
             }
+            $this->_attributes['projectProfileFile'] = $projectProfileFilePath;
         }
 
         $profileData = file_get_contents($projectProfileFilePath);
@@ -186,7 +183,7 @@ class Zend_Tool_Project_Profile extends Zend_Tool_Project_Profile_Resource_Conta
      *
      * This will store the profile in memory to a place on disk determined by the attributes
      * available, specifically if the key 'projectProfileFile' is available
-     * 
+     *
      */
     public function storeToFile()
     {
@@ -207,7 +204,7 @@ class Zend_Tool_Project_Profile extends Zend_Tool_Project_Profile_Resource_Conta
     }
 
     /**
-     * storeToData() - create a string representation of the profile in memory 
+     * storeToData() - create a string representation of the profile in memory
      *
      * @return string
      */
@@ -217,7 +214,7 @@ class Zend_Tool_Project_Profile extends Zend_Tool_Project_Profile_Resource_Conta
         $xml = $parser->serialize($this);
         return $xml;
     }
-    
+
     /**
      * __toString() - cast this profile to string to be able to view it.
      *

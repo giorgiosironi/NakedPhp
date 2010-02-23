@@ -15,7 +15,7 @@
  * @category   Zend
  * @package    Zend_Form
  * @subpackage Element
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -24,13 +24,13 @@ require_once 'Zend/Form/Element/Xhtml.php';
 
 /**
  * Image form element
- * 
+ *
  * @category   Zend
  * @package    Zend_Form
  * @subpackage Element
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id: Image.php 14637 2009-04-04 13:53:25Z mcleod@spaceweb.nl $
+ * @version    $Id: Image.php 20096 2010-01-06 02:05:09Z bkarwin $
  */
 class Zend_Form_Element_Image extends Zend_Form_Element_Xhtml
 {
@@ -54,7 +54,7 @@ class Zend_Form_Element_Image extends Zend_Form_Element_Xhtml
 
     /**
      * Load default decorators
-     * 
+     *
      * @return void
      */
     public function loadDefaultDecorators()
@@ -75,8 +75,8 @@ class Zend_Form_Element_Image extends Zend_Form_Element_Xhtml
 
     /**
      * Set image path
-     * 
-     * @param  string $path 
+     *
+     * @param  string $path
      * @return Zend_Form_Element_Image
      */
     public function setImage($path)
@@ -87,7 +87,7 @@ class Zend_Form_Element_Image extends Zend_Form_Element_Xhtml
 
     /**
      * Get image path
-     * 
+     *
      * @return string
      */
     public function getImage()
@@ -97,8 +97,8 @@ class Zend_Form_Element_Image extends Zend_Form_Element_Xhtml
 
     /**
      * Set image value to use when submitted
-     * 
-     * @param  mixed $value 
+     *
+     * @param  mixed $value
      * @return Zend_Form_Element_Image
      */
     public function setImageValue($value)
@@ -109,7 +109,7 @@ class Zend_Form_Element_Image extends Zend_Form_Element_Xhtml
 
     /**
      * Get image value to use when submitted
-     * 
+     *
      * @return mixed
      */
     public function getImageValue()
@@ -119,7 +119,7 @@ class Zend_Form_Element_Image extends Zend_Form_Element_Xhtml
 
     /**
      * Was this element used to submit the form?
-     * 
+     *
      * @return bool
      */
     public function isChecked()
@@ -127,5 +127,5 @@ class Zend_Form_Element_Image extends Zend_Form_Element_Xhtml
         $imageValue = $this->getImageValue();
         return ((null !== $imageValue) && ($this->getValue() == $imageValue));
     }
-    
+
 }

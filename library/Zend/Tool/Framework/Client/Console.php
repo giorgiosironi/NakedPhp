@@ -15,25 +15,15 @@
  * @category   Zend
  * @package    Zend_Tool
  * @subpackage Framework
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * @version    $Id: Console.php 20096 2010-01-06 02:05:09Z bkarwin $
  */
-
-/**
- * @see Zend_Loader
- */
-require_once 'Zend/Loader.php';
 
 /**
  * @see Zend_Tool_Framework_Client_Abstract
  */
 require_once 'Zend/Tool/Framework/Client/Abstract.php';
-
-/**
- * @see Zend_Tool_Framework_Client_Console_ArgumentParser
- */
-require_once 'Zend/Tool/Framework/Client/Console/ArgumentParser.php';
 
 /**
  * @see Zend_Tool_Framework_Client_Interactive_InputInterface
@@ -46,43 +36,52 @@ require_once 'Zend/Tool/Framework/Client/Interactive/InputInterface.php';
 require_once 'Zend/Tool/Framework/Client/Interactive/OutputInterface.php';
 
 /**
- * @see Zend_Tool_Framework_Client_Response_ContentDecorator_Separator
- */
-require_once 'Zend/Tool/Framework/Client/Response/ContentDecorator/Separator.php';
-
-/**
  * Zend_Tool_Framework_Client_Console - the CLI Client implementation for Zend_Tool_Framework
- *  
+ *
  * @category   Zend
  * @package    Zend_Tool
- * @copyright  Copyright (c) 2005-2009 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Zend_Tool_Framework_Client_Console 
+class Zend_Tool_Framework_Client_Console
     extends Zend_Tool_Framework_Client_Abstract
     implements Zend_Tool_Framework_Client_Interactive_InputInterface,
-               Zend_Tool_Framework_Client_Interactive_OutputInterface 
+               Zend_Tool_Framework_Client_Interactive_OutputInterface
 {
+
+    /**
+     * @var array
+     */
+    protected $_configOptions = null;
+
+    /**
+     * @var array
+     */
+    protected $_storageOptions = null;
 
     /**
      * @var Zend_Filter_Word_CamelCaseToDash
      */
     protected $_filterToClientNaming = null;
-    
+
     /**
      * @var Zend_Filter_Word_DashToCamelCase
      */
     protected $_filterFromClientNaming = null;
+
+    /**
+     * @var array
+     */
+    protected $_classesToLoad = array();
     
     /**
-     * main() - This is typically called from zf.php. This method is a 
+     * main() - This is typically called from zf.php. This method is a
      * self contained main() function.
      *
      */
-    public static function main()
+    public static function main($options = array())
     {
-        ini_set('display_errors', true);
-        $cliClient = new self();
+        $cliClient = new self($options);
         $cliClient->dispatch();
     }
 
@@ -97,24 +96,77 @@ class Zend_Tool_Framework_Client_Console
     }
     
     /**
+     * setConfigOptions()
+     * 
+     * @param $configOptions
+     */
+    public function setConfigOptions($configOptions)
+    {
+        $this->_configOptions = $configOptions;
+        return $this;
+    }
+
+    /**
+     * setStorageOptions()
+     * 
+     * @param $storageOptions
+     */
+    public function setStorageOptions($storageOptions)
+    {
+        $this->_storageOptions = $storageOptions;
+        return $this;
+    }
+    
+    public function setClassesToLoad($classesToLoad)
+    {
+    	$this->_classesToLoad = $classesToLoad;
+    	return $this;
+    }
+
+    /**
      * _init() - Tasks processed before the constructor, generally setting up objects to use
      *
      */
     protected function _preInit()
     {
-        // support the changing of the current working directory, necessary for some providers
-        if (isset($_ENV['ZEND_TOOL_CURRENT_WORKING_DIRECTORY'])) {
-            chdir($_ENV['ZEND_TOOL_CURRENT_WORKING_DIRECTORY']);
+        $config = $this->_registry->getConfig();
+
+        if ($this->_configOptions != null) {
+            $config->setOptions($this->_configOptions);
+        }
+
+        $storage = $this->_registry->getStorage();
+
+        if ($this->_storageOptions != null && isset($this->_storageOptions['directory'])) {
+            $storage->setAdapter(
+                new Zend_Tool_Framework_Client_Storage_Directory($this->_storageOptions['directory'])
+                );
+        }
+
+        // which classes are essential to initializing Zend_Tool_Framework_Client_Console
+        $classesToLoad = array(
+            'Zend_Tool_Framework_Client_Console_Manifest',    
+            'Zend_Tool_Framework_System_Manifest'
+            );
+            
+        if ($this->_classesToLoad) {
+        	if (is_string($this->_classesToLoad)) {
+        		$classesToLoad[] = $this->_classesToLoad;
+        	} elseif (is_array($this->_classesToLoad)) {
+        		$classesToLoad = array_merge($classesToLoad, $this->_classesToLoad);
+        	}
         }
         
-        // support setting the loader from the environment
-        if (isset($_ENV['ZEND_TOOL_FRAMEWORK_LOADER_CLASS'])) {
-            if (class_exists($_ENV['ZEND_TOOL_FRAMEWORK_LOADER_CLASS'])
-                || Zend_Loader::loadClass($_ENV['ZEND_TOOL_FRAMEWORK_LOADER_CLASS'])
-            ) {
-                $this->_registry->setLoader(new $_ENV['ZEND_TOOL_FRAMEWORK_LOADER_CLASS']);
+        // add classes to the basic loader from the config file basicloader.classes.1 ..
+        if (isset($config->basicloader) && isset($config->basicloader->classes)) {
+            foreach ($config->basicloader->classes as $classKey => $className) {
+                array_push($classesToLoad, $className);
             }
         }
+
+        $this->_registry->setLoader(
+            new Zend_Tool_Framework_Loader_BasicLoader(array('classesToLoad' => $classesToLoad))
+            );
 
         return;
     }
@@ -126,20 +178,23 @@ class Zend_Tool_Framework_Client_Console
     protected function _preDispatch()
     {
         $response = $this->_registry->getResponse();
-            
+
+        $response->addContentDecorator(new Zend_Tool_Framework_Client_Console_ResponseDecorator_AlignCenter());
+        $response->addContentDecorator(new Zend_Tool_Framework_Client_Console_ResponseDecorator_Indention());
+        $response->addContentDecorator(new Zend_Tool_Framework_Client_Console_ResponseDecorator_Blockize());
+
         if (function_exists('posix_isatty')) {
-            require_once 'Zend/Tool/Framework/Client/Console/ResponseDecorator/Colorizer.php';
             $response->addContentDecorator(new Zend_Tool_Framework_Client_Console_ResponseDecorator_Colorizer());
         }
-
+        
         $response->addContentDecorator(new Zend_Tool_Framework_Client_Response_ContentDecorator_Separator())
             ->setDefaultDecoratorOptions(array('separator' => true));
-        
+
         $optParser = new Zend_Tool_Framework_Client_Console_ArgumentParser();
         $optParser->setArguments($_SERVER['argv'])
             ->setRegistry($this->_registry)
             ->parse();
-            
+
         return;
     }
 
@@ -151,9 +206,8 @@ class Zend_Tool_Framework_Client_Console
     {
         $request = $this->_registry->getRequest();
         $response = $this->_registry->getResponse();
-        
+
         if ($response->isException()) {
-            require_once 'Zend/Tool/Framework/Client/Console/HelpSystem.php';
             $helpSystem = new Zend_Tool_Framework_Client_Console_HelpSystem();
             $helpSystem->setRegistry($this->_registry)
                 ->respondWithErrorMessage($response->getException()->getMessage(), $response->getException())
@@ -162,17 +216,17 @@ class Zend_Tool_Framework_Client_Console
                     $request->getActionName()
                     );
         }
-        
+
         echo PHP_EOL;
         return;
     }
 
     /**
      * handleInteractiveInputRequest() is required by the Interactive InputInterface
-     * 
+     *
      *
      * @param Zend_Tool_Framework_Client_Interactive_InputRequest $inputRequest
-     * @return string 
+     * @return string
      */
     public function handleInteractiveInputRequest(Zend_Tool_Framework_Client_Interactive_InputRequest $inputRequest)
     {
@@ -180,10 +234,10 @@ class Zend_Tool_Framework_Client_Console
         $inputContent = fgets(STDIN);
         return rtrim($inputContent); // remove the return from the end of the string
     }
-    
+
     /**
      * handleInteractiveOutput() is required by the Interactive OutputInterface
-     * 
+     *
      * This allows us to display output immediately from providers, rather
      * than displaying it after the provider is done.
      *
@@ -193,9 +247,9 @@ class Zend_Tool_Framework_Client_Console
     {
         echo $output;
     }
-    
+
     /**
-     * getMissingParameterPromptString() 
+     * getMissingParameterPromptString()
      *
      * @param Zend_Tool_Framework_Provider_Interface $provider
      * @param Zend_Tool_Framework_Action_Interface $actionInterface
@@ -207,50 +261,46 @@ class Zend_Tool_Framework_Client_Console
         return 'Please provide a value for $' . $missingParameterName;
     }
 
-    
+
     /**
      * convertToClientNaming()
-     * 
+     *
      * Convert words to client specific naming, in this case is lower, dash separated
      *
      * Filters are lazy-loaded.
-     * 
+     *
      * @param string $string
      * @return string
      */
     public function convertToClientNaming($string)
     {
         if (!$this->_filterToClientNaming) {
-            require_once 'Zend/Filter.php';
-            require_once 'Zend/Filter/Word/CamelCaseToDash.php';
-            require_once 'Zend/Filter/StringToLower.php';
             $filter = new Zend_Filter();
             $filter->addFilter(new Zend_Filter_Word_CamelCaseToDash());
             $filter->addFilter(new Zend_Filter_StringToLower());
-            
+
             $this->_filterToClientNaming = $filter;
         }
-        
+
         return $this->_filterToClientNaming->filter($string);
     }
-    
+
     /**
      * convertFromClientNaming()
      *
      * Convert words from client specific naming to code naming - camelcased
-     * 
+     *
      * Filters are lazy-loaded.
-     * 
+     *
      * @param string $string
      * @return string
      */
     public function convertFromClientNaming($string)
     {
         if (!$this->_filterFromClientNaming) {
-            require_once 'Zend/Filter/Word/DashToCamelCase.php';
             $this->_filterFromClientNaming = new Zend_Filter_Word_DashToCamelCase();
         }
-        
+
         return $this->_filterFromClientNaming->filter($string);
     }
 

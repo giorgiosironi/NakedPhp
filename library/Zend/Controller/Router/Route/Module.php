@@ -12,10 +12,11 @@
  * obtain it through the world-wide-web, please send an email
  * to license@zend.com so we can send you a copy immediately.
  *
+ * @category   Zend
  * @package    Zend_Controller
  * @subpackage Router
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @version    $Id: Module.php 15461 2009-05-09 15:54:21Z dasprid $
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
+ * @version    $Id: Module.php 20096 2010-01-06 02:05:09Z bkarwin $
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
@@ -29,7 +30,7 @@ require_once 'Zend/Controller/Router/Route/Abstract.php';
  *
  * @package    Zend_Controller
  * @subpackage Router
- * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright  Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @see        http://manuals.rubyonrails.com/read/chapter/65
  */
@@ -79,11 +80,11 @@ class Zend_Controller_Router_Route_Module extends Zend_Controller_Router_Route_A
     public static function getInstance(Zend_Config $config)
     {
         $frontController = Zend_Controller_Front::getInstance();
-        
+
         $defs       = ($config->defaults instanceof Zend_Config) ? $config->defaults->toArray() : array();
         $dispatcher = $frontController->getDispatcher();
         $request    = $frontController->getRequest();
-        
+
         return new self($defs, $dispatcher, $request);
     }
 
@@ -150,7 +151,7 @@ class Zend_Controller_Router_Route_Module extends Zend_Controller_Router_Route_A
 
         $values = array();
         $params = array();
-        
+
         if (!$partial) {
             $path = trim($path, self::URI_DELIMITER);
         } else {
@@ -181,7 +182,7 @@ class Zend_Controller_Router_Route_Module extends Zend_Controller_Router_Route_A
                 }
             }
         }
-        
+
         if ($partial) {
             $this->setMatchedPath($matchedPath);
         }
@@ -232,9 +233,10 @@ class Zend_Controller_Router_Route_Module extends Zend_Controller_Router_Route_A
         unset($params[$this->_actionKey]);
 
         foreach ($params as $key => $value) {
+            $key = ($encode) ? urlencode($key) : $key;
             if (is_array($value)) {
                 foreach ($value as $arrayValue) {
-                    if ($encode) $arrayValue = urlencode($arrayValue);
+                    $arrayValue = ($encode) ? urlencode($arrayValue) : $arrayValue;
                     $url .= '/' . $key;
                     $url .= '/' . $arrayValue;
                 }
