@@ -29,13 +29,17 @@ class Factory
      * @param string $folder    folder containing classes' source files
      * @param string $prefix    prefix of contained classes 
      * <code>
-     * $factory = new \NakedPhp\Factory(APP_PATH . 'models/', 'Example_Model_');
+     * $factory = new \NakedPhp\Factory(array(
+     *      'folder' => APP_PATH . 'models/',
+     *      'prefix' => 'Example_Model_',
+     *      'serviceClassNames' => array('Example_Model_PlaceFactory')
+     * ));
      */
-    public function __construct($folder, $prefix, $serviceClassNames)
+    public function __construct(array $options)
     {
-        $this->_folder            = $folder;
-        $this->_prefix            = $prefix;
-        $this->_serviceClassNames = $serviceClassNames;
+        $this->_folder            = $options['folder'];
+        $this->_prefix            = $options['prefix'];
+        $this->_serviceClassNames = $options['serviceClassNames'];
         $this->_reflectFactory    = new \NakedPhp\Reflect\ReflectFactory();
     }
 

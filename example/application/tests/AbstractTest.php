@@ -26,6 +26,7 @@ abstract class Example_AbstractTest extends Zend_Test_PHPUnit_ControllerTestCase
         );
         $this->bootstrap = array($application, 'bootstrap');
         parent::setUp();
+        $this->frontController->setParam('bootstrap', $application->getBootstrap());
         $this->frontController->throwExceptions(true);
     }
 }
