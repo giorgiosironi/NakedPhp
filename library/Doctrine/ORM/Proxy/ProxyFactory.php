@@ -165,7 +165,8 @@ class ProxyFactory
         $methods = '';
         
         foreach ($class->reflClass->getMethods() as $method) {
-            if ($method->isConstructor()) {
+            /* @var $method ReflectionMethod */
+            if ($method->isConstructor() || strtolower($method->getName()) == "__sleep") {
                 continue;
             }
             
@@ -253,26 +254,25 @@ namespace <namespace> {
     class <proxyClassName> extends \<className> implements \Doctrine\ORM\Proxy\Proxy {
         private $_entityPersister;
         private $_identifier;
-        private $_loaded = false;
+        public $__isInitialized__ = false;
         public function __construct($entityPersister, $identifier) {
             $this->_entityPersister = $entityPersister;
             $this->_identifier = $identifier;
             <constructorInvocation>
         }
         private function _load() {
-            if ( ! $this->_loaded) {
+            if (!$this->__isInitialized__) {
+                $this->__isInitialized__ = true;
                 $this->_entityPersister->load($this->_identifier, $this);
                 unset($this->_entityPersister);
                 unset($this->_identifier);
-                $this->_loaded = true;
             }
         }
-        public function __isInitialized__() { return $this->_loaded; }
 
         <methods>
 
         public function __sleep() {
-            if (!$this->_loaded) {
+            if (!$this->__isInitialized__) {
                 throw new \RuntimeException("Not fully loaded proxy can not be serialized.");
             }
             <sleepImpl>

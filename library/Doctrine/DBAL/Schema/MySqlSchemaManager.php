@@ -44,7 +44,7 @@ class MySqlSchemaManager extends AbstractSchemaManager
 
     protected function _getPortableTableDefinition($table)
     {
-        return end($table);
+        return array_shift($table);
     }
 
     protected function _getPortableUserDefinition($user)
@@ -64,10 +64,10 @@ class MySqlSchemaManager extends AbstractSchemaManager
             } else {
                 $v['primary'] = false;
             }
-            $tablesIndexes[$k] = $v;
+            $tableIndexes[$k] = $v;
         }
         
-        return parent::_getPortableTableIndexesList($tablesIndexes, $tableName);
+        return parent::_getPortableTableIndexesList($tableIndexes, $tableName);
     }
 
     protected function _getPortableTableConstraintDefinition($tableConstraint)
@@ -239,9 +239,7 @@ class MySqlSchemaManager extends AbstractSchemaManager
             'fixed' => (bool) $fixed
         );
 
-        $column = array(
-            'name'          => $tableColumn['Field'],
-            'type'          => $type,
+        $options = array(
             'length'        => $length,
             'unsigned'      => (bool)$unsigned,
             'fixed'         => (bool)$fixed,
@@ -249,7 +247,7 @@ class MySqlSchemaManager extends AbstractSchemaManager
             'notnull'       => (bool) ($tableColumn['Null'] != 'YES'),
             'scale'         => null,
             'precision'     => null,
-            'platformDetails' => array(
+            'platformOptions' => array(
                 'primary' => (strtolower($tableColumn['Key']) == 'pri') ? true : false,
                 'unique' => (strtolower($tableColumn['Key']) == 'uni') ? true :false,
                 'autoincrement' => (bool) (strpos($tableColumn['Extra'], 'auto_increment') !== false),
@@ -257,88 +255,23 @@ class MySqlSchemaManager extends AbstractSchemaManager
         );
 
         if ($scale !== null && $precision !== null) {
-            $column['scale'] = $scale;
-            $column['precision'] = $precision;
+            $options['scale'] = $scale;
+            $options['precision'] = $precision;
         }
 
-        return $column;
+        return new Column($tableColumn['Field'], \Doctrine\DBAL\Types\Type::getType($type), $options);
     }
 
     public function _getPortableTableForeignKeyDefinition($tableForeignKey)
     {
         $tableForeignKey = array_change_key_case($tableForeignKey, CASE_LOWER);
-        $foreignKey = array(
-            'table'   => $tableForeignKey['referenced_table_name'],
-            'local'   => $tableForeignKey['column_name'],
-            'foreign' => $tableForeignKey['referenced_column_name']
-        );
-        return $foreignKey;
-    }
-    
-    /**
-     * {@inheritdoc}
-     */
-    public function createSequence($sequenceName, $start = 1, $allocationSize = 1)
-    {
-        $seqColumnName = 'mysql_sequence';
-
-        /* No support for options yet. Might add 4th options parameter later
-        $optionsStrings = array();
-         
-        if (isset($options['comment']) && ! empty($options['comment'])) {
-            $optionsStrings['comment'] = 'COMMENT = ' . $this->_conn->quote($options['comment'], 'string');
-        }
-
-        if (isset($options['charset']) && ! empty($options['charset'])) {
-            $optionsStrings['charset'] = 'DEFAULT CHARACTER SET ' . $options['charset'];
-
-            if (isset($options['collate'])) {
-                $optionsStrings['collate'] .= ' COLLATE ' . $options['collate'];
-            }
-        }
         
-        $type = false;
-
-        if (isset($options['type'])) {
-            $type = $options['type'];
-        } else {
-            $type = $this->_conn->default_table_type;
-        }
-        if ($type) {
-            $optionsStrings[] = 'ENGINE = ' . $type;
-        }*/
-
-        try {
-            $query  = 'CREATE TABLE ' . $sequenceName
-                    . ' (' . $seqcolName . ' INT NOT NULL AUTO_INCREMENT, PRIMARY KEY ('
-                    . $seqcolName . '))';
-
-            /*if (!empty($options_strings)) {
-                $query .= ' '.implode(' ', $options_strings);
-            }*/
-            $query .= ' ENGINE = INNODB';
-
-            $res = $this->_conn->exec($query);
-        } catch(Doctrine\DBAL\ConnectionException $e) {
-            throw \Doctrine\Common\DoctrineException::createSequenceFailed($query);
-        }
-
-        if ($start == 1) {
-            return;
-        }
-
-        $query = 'INSERT INTO ' . $sequenceName
-                . ' (' . $seqcolName . ') VALUES (' . ($start - 1) . ')';
-
-        $res = $this->_conn->exec($query);
-
-        // Handle error
-        try {
-            $res = $this->_conn->exec('DROP TABLE ' . $sequenceName);
-        } catch (\Exception $e) {
-            throw \Doctrine\Common\DoctrineException::couldNotDropSequenceTable($sequenceName);
-        }
-    
-        return $res;
+        return new ForeignKeyConstraint(
+            (array)$tableForeignKey['column_name'],
+            $tableForeignKey['referenced_table_name'],
+            (array)$tableForeignKey['referenced_column_name'],
+            $tableForeignKey['constraint_name'],
+            array()
+        );
     }
 }

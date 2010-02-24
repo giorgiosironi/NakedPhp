@@ -19,9 +19,9 @@
  * <http://www.doctrine-project.org>.
  */
  
-namespace Doctrine\ORM\Tools\Cli\Tasks;
+namespace Doctrine\Common\Cli\Tasks;
 
-use Doctrine\Common\Util\Inflector;
+use Doctrine\Common\Cli\CliException;
 
 /**
  * CLI Task to display available commands help
@@ -30,6 +30,7 @@ use Doctrine\Common\Util\Inflector;
  * @link    www.doctrine-project.org
  * @since   2.0
  * @version $Revision$
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
@@ -39,25 +40,19 @@ class HelpTask extends AbstractTask
     /**
      * @inheritdoc
      */
-    public function extendedHelp()
+    public function buildDocumentation()
     {
-        $this->run();
+        $doc = $this->getDocumentation();
+        $doc->setName('help')
+            ->setDescription('Exposes helpful information about all available tasks.');
     }
-
+    
     /**
      * @inheritdoc
      */
-    public function basicHelp()
+    public function extendedHelp()
     {
         $this->run();
-    }
-
-    /**
-     * @inheritdoc
-     */    
-    public function validate()
-    {
-        return true;
     }
 
     /**
@@ -66,25 +61,19 @@ class HelpTask extends AbstractTask
      */
     public function run()
     {
-        $this->getPrinter()->writeln('Available Tasks:', 'NONE');
+        $this->getPrinter()->writeln('Available Tasks:', 'HEADER')->write(PHP_EOL);
+        
+        // Find the CLI Controller
+        $cliController = $this->getNamespace()->getParentNamespace();
         
         // Switch between ALL available tasks and display the basic Help of each one
-        $availableTasks = $this->getAvailableTasks();
-        
-        $helpTaskName = Inflector::classify(str_replace('-', '_', 'help'));
-        unset($availableTasks[$helpTaskName]);
+        $availableTasks = $cliController->getAvailableTasks();
+        //unset($availableTasks['Core:Help']);
         
         ksort($availableTasks);
         
-        foreach ($availableTasks as $taskName => $taskClass) {
-            $task = new $taskClass();
-            
-            $task->setAvailableTasks($availableTasks);
-            $task->setEntityManager($this->getEntityManager());
-            $task->setPrinter($this->getPrinter());
-            $task->setArguments($this->getArguments());
-            
-            $task->basicHelp();
+        foreach (array_keys($availableTasks) as $taskName) {
+            $cliController->runTask($taskName, array('basic-help' => true));
         }
     }
 }

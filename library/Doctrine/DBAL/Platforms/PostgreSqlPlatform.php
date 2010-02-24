@@ -21,6 +21,8 @@
 
 namespace Doctrine\DBAL\Platforms;
 
+use Doctrine\DBAL\Schema\TableDiff;
+
 /**
  * PostgreSqlPlatform.
  *
@@ -341,7 +343,7 @@ class PostgreSqlPlatform extends AbstractPlatform
 
     public function getListTableForeignKeysSql($table, $database = null)
     {
-        return "SELECT pg_catalog.pg_get_constraintdef(oid, true) as condef
+        return "SELECT r.conname, pg_catalog.pg_get_constraintdef(r.oid, true) as condef
                   FROM pg_catalog.pg_constraint r
                   WHERE r.conrelid =
                   (
@@ -453,28 +455,23 @@ class PostgreSqlPlatform extends AbstractPlatform
      * Return the FOREIGN KEY query section dealing with non-standard options
      * as MATCH, INITIALLY DEFERRED, ON UPDATE, ...
      *
-     * @param array $definition         foreign key definition
+     * @param \Doctrine\DBAL\Schema\ForeignKeyConstraint $foreignKey         foreign key definition
      * @return string
      * @override
      */
-    public function getAdvancedForeignKeyOptionsSql(array $definition)
+    public function getAdvancedForeignKeyOptionsSql(\Doctrine\DBAL\Schema\ForeignKeyConstraint $foreignKey)
     {
         $query = '';
-        if (isset($definition['match'])) {
-            $query .= ' MATCH ' . $definition['match'];
+        if ($foreignKey->hasOption('match')) {
+            $query .= ' MATCH ' . $foreignKey->getOption('match');
         }
-        if (isset($definition['onUpdate'])) {
-            $query .= ' ON UPDATE ' . $definition['onUpdate'];
-        }
-        if (isset($definition['onDelete'])) {
-            $query .= ' ON DELETE ' . $definition['onDelete'];
-        }
-        if (isset($definition['deferrable'])) {
+        $query .= parent::getAdvancedForeignKeyOptionsSql($foreignKey);
+        if ($foreignKey->hasOption('deferrable') && $foreignKey->getOption('deferrable') !== false) {
             $query .= ' DEFERRABLE';
         } else {
             $query .= ' NOT DEFERRABLE';
         }
-        if (isset($definition['feferred'])) {
+        if ($foreignKey->hasOption('feferred') && $foreignKey->getOption('feferred') !== false) {
             $query .= ' INITIALLY DEFERRED';
         } else {
             $query .= ' INITIALLY IMMEDIATE';
@@ -494,128 +491,121 @@ class PostgreSqlPlatform extends AbstractPlatform
      * @return array
      * @override
      */
-    public function getAlterTableSql($name, array $changes, $check = false)
+    public function getAlterTableSql(TableDiff $diff)
     {
-        foreach ($changes as $changeName => $change) {
-            switch ($changeName) {
-                case 'add':
-                case 'remove':
-                case 'change':
-                case 'name':
-                case 'rename':
-                    break;
-                default:
-                    throw DoctrineException::alterTableChangeNotSupported($changeName);
-            }
-        }
-
-        if ($check) {
-            return true;
-        }
-
         $sql = array();
 
-        if (isset($changes['add']) && is_array($changes['add'])) {
-            foreach ($changes['add'] as $fieldName => $field) {
-                $query = 'ADD ' . $this->getColumnDeclarationSql($fieldName, $field);
-                $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
+        foreach ($diff->addedColumns as $column) {
+            $query = 'ADD ' . $this->getColumnDeclarationSql($column->getName(), $column->toArray());
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' ' . $query;
+        }
+
+        foreach ($diff->removedColumns as $column) {
+            $query = 'DROP ' . $column->getName();
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' ' . $query;
+        }
+
+        foreach ($diff->changedColumns AS $columnDiff) {
+            $oldColumnName = $columnDiff->oldColumnName;
+            $column = $columnDiff->column;
+            
+            if ($columnDiff->hasChanged('type')) {
+                $type = $column->getType();
+
+                // here was a server version check before, but DBAL API does not support this anymore.
+                $query = 'ALTER ' . $oldColumnName . ' TYPE ' . $type->getSqlDeclaration($column->toArray(), $this);
+                $sql[] = 'ALTER TABLE ' . $diff->name . ' ' . $query;
+            }
+            if ($columnDiff->hasChanged('default')) {
+                $query = 'ALTER ' . $oldColumnName . ' SET ' . $this->getDefaultValueDeclarationSql($column->toArray());
+                $sql[] = 'ALTER TABLE ' . $diff->name . ' ' . $query;
+            }
+            if ($columnDiff->hasChanged('notnull')) {
+                $query = 'ALTER ' . $oldColumnName . ' ' . ($column->getNotNull() ? 'SET' : 'DROP') . ' NOT NULL';
+                $sql[] = 'ALTER TABLE ' . $diff->name . ' ' . $query;
             }
         }
 
-        if (isset($changes['remove']) && is_array($changes['remove'])) {
-            foreach ($changes['remove'] as $fieldName => $field) {
-                $query = 'DROP ' . $fieldName;
-                $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
-            }
+        foreach ($diff->renamedColumns as $oldColumnName => $column) {
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' RENAME COLUMN ' . $oldColumnName . ' TO ' . $column->getName();
         }
 
-        if (isset($changes['change']) && is_array($changes['change'])) {
-            foreach ($changes['change'] as $fieldName => $field) {
-                if (isset($field['definition']['type']) && $field['definition']['type'] instanceof \Doctrine\DBAL\Types\Type) {
-                    $type = $field['definition']['type'];
-                    
-                    // here was a server version check before, but DBAL API does not support this anymore.
-                    $query = 'ALTER ' . $fieldName . ' TYPE ' . $type->getSqlDeclaration($field['definition'], $this);
-                    $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
-                }
-                if (isset($field['definition']['default'])) {
-                    $query = 'ALTER ' . $fieldName . ' SET DEFAULT ' . $field['definition']['default'];
-                    $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
-                }
-                if (isset($field['definition']['notnull']) && is_bool($field['definition']['notnull'])) {
-                    $query = 'ALTER ' . $fieldName . ' ' . ($field['definition']['notnull'] ? 'SET' : 'DROP') . ' NOT NULL';
-                    $sql[] = 'ALTER TABLE ' . $name . ' ' . $query;
-                }
-                
-            }
+        if ($diff->newName !== false) {
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' RENAME TO ' . $diff->newName;
         }
 
-        if (isset($changes['rename']) && is_array($changes['rename'])) {
-            foreach ($changes['rename'] as $fieldName => $field) {
-                $sql[] = 'ALTER TABLE ' . $name . ' RENAME COLUMN ' . $fieldName . ' TO ' . $field['name'];
-            }
-        }
-
-        if (isset($changes['name'])) {
-            $sql[] = 'ALTER TABLE ' . $name . ' RENAME TO ' . $changes['name'];
-        }
+        $sql = array_merge($sql, $this->_getAlterTableIndexForeignKeySql($diff));
 
         return $sql;
     }
     
     /**
-     * {@inheritdoc}
-     * 
-     * @return string
-     * @override
+     * Gets the SQL to create a sequence on this platform.
+     *
+     * @param \Doctrine\DBAL\Schema\Sequence $sequence
+     * @throws DoctrineException
      */
-    public function getCreateSequenceSql($sequenceName, $start = 1, $allocationSize = 1)
+    public function getCreateSequenceSql(\Doctrine\DBAL\Schema\Sequence $sequence)
     {
-        return 'CREATE SEQUENCE ' . $sequenceName
-                . ' INCREMENT BY ' . $allocationSize . ' START ' . $start;
+        return 'CREATE SEQUENCE ' . $sequence->getName() .
+               ' INCREMENT BY ' . $sequence->getAllocationSize() .
+               ' MINVALUE ' . $sequence->getInitialValue() .
+               ' START ' . $sequence->getInitialValue();
     }
     
     /**
-     * drop existing sequence
-     *
-     * @param string $sequenceName name of the sequence to be dropped
-     * @override
+     * Drop existing sequence
+     * @param  \Doctrine\DBAL\Schema\Sequence $sequence
+     * @return string
      */
-    public function getDropSequenceSql($sequenceName)
+    public function getDropSequenceSql($sequence)
     {
-        return 'DROP SEQUENCE ' . $sequenceName;
+        if ($sequence instanceof \Doctrine\DBAL\Schema\Sequence) {
+            $sequence = $sequence->getName();
+        }
+        return 'DROP SEQUENCE ' . $sequence;
+    }
+
+    /**
+     * @param  ForeignKeyConstraint|string $foreignKey
+     * @param  Table|string $table
+     * @return string
+     */
+    public function getDropForeignKeySql($foreignKey, $table)
+    {
+        return $this->getDropConstraintSql($foreignKey, $table);
     }
     
     /**
      * Gets the SQL used to create a table.
      *
-     * @param unknown_type $name
-     * @param array $fields
+     * @param unknown_type $tableName
+     * @param array $columns
      * @param array $options
      * @return unknown
      */
-    public function getCreateTableSql($name, array $fields, array $options = array())
+    protected function _getCreateTableSql($tableName, array $columns, array $options = array())
     {
-        $queryFields = $this->getColumnDeclarationListSql($fields);
+        $queryFields = $this->getColumnDeclarationListSql($columns);
 
         if (isset($options['primary']) && ! empty($options['primary'])) {
             $keyColumns = array_unique(array_values($options['primary']));
             $queryFields .= ', PRIMARY KEY(' . implode(', ', $keyColumns) . ')';
         }
 
-        $query = 'CREATE TABLE ' . $name . ' (' . $queryFields . ')';
+        $query = 'CREATE TABLE ' . $tableName . ' (' . $queryFields . ')';
 
         $sql[] = $query;
 
         if (isset($options['indexes']) && ! empty($options['indexes'])) {
-            foreach($options['indexes'] as $index => $definition) {
-                $sql[] = $this->getCreateIndexSql($name, $index, $definition);
+            foreach ($options['indexes'] AS $index) {
+                $sql[] = $this->getCreateIndexSql($index, $tableName);
             }
         }
 
         if (isset($options['foreignKeys'])) {
-            foreach ((array) $options['foreignKeys'] as $k => $definition) {
-                $sql[] = $this->getCreateForeignKeySql($name, $definition);
+            foreach ((array) $options['foreignKeys'] as $definition) {
+                $sql[] = $this->getCreateForeignKeySql($definition, $tableName);
             }
         }
 

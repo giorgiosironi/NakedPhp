@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id: DebugStack.php 6662 2009-11-04 11:39:49Z beberlei $
+ *  $Id: DebugStack.php 6913 2009-12-09 16:06:39Z romanb $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -29,7 +29,7 @@ class DebugStack implements SqlLogger
 
     public function logSql($sql, array $params = null)
     {
-        if($this->enabled) {
+        if ($this->enabled) {
             $this->queries[] = array('sql' => $sql, 'params' => $params);
         }
     }

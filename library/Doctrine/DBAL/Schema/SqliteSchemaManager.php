@@ -242,9 +242,7 @@ class SqliteSchemaManager extends AbstractSchemaManager
                 $length = null;
         }
 
-        return array(
-            'name'     => $tableColumn['name'],
-            'type'     => $type,
+        $options = array(
             'length'   => $length,
             'unsigned' => (bool) $unsigned,
             'fixed'    => $fixed,
@@ -253,8 +251,10 @@ class SqliteSchemaManager extends AbstractSchemaManager
             'precision' => $precision,
             'scale'     => $scale,
             'platformDetails' => array(
-                'primary'  => (bool) $tableColumn['pk'],
+                'autoincrement' => (bool) $tableColumn['pk'],
             ),
         );
+
+        return new Column($tableColumn['name'], \Doctrine\DBAL\Types\Type::getType($type), $options);
     }
 }

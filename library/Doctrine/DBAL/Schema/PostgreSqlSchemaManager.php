@@ -35,17 +35,60 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
 {
     protected function _getPortableTableForeignKeyDefinition($tableForeignKey)
     {
-        preg_match('/FOREIGN KEY \((.+)\) REFERENCES (.+)\((.+)\)/', $tableForeignKey['condef'], $values);
+        $onUpdate = null;
+        $onDelete = null;
 
-        if ((strpos(',', $values[1]) === false) && (strpos(',', $values[3]) === false)) {
-            return array(
-                'table'   => $values[2],
-                'local'   => $values[1],
-                'foreign' => $values[3]
-            );
+        if(preg_match('(ON UPDATE ([a-zA-Z0-9]+))', $tableForeignKey['condef'], $match)) {
+            $onUpdate = $match[1];
         }
+        if(preg_match('(ON DELETE ([a-zA-Z0-9]+))', $tableForeignKey['condef'], $match)) {
+            $onDelete = $match[1];
+        }
+
+        if(preg_match('/FOREIGN KEY \((.+)\) REFERENCES (.+)\((.+)\)/', $tableForeignKey['condef'], $values)) {
+            $localColumns = explode(",", $values[1]);
+            $foreignColumns = explode(",", $values[3]);
+            $foreignTable = $values[2];
+        }
+
+        return new ForeignKeyConstraint(
+            $localColumns, $foreignTable, $foreignColumns, $tableForeignKey['conname'],
+            array('onUpdate' => $onUpdate, 'onDelete' => $onDelete)
+        );
     }
 
+    public function dropDatabase($database)
+    {
+      $params = $this->_conn->getParams();
+      $params["dbname"] = "postgres";
+      $tmpPlatform = $this->_platform;
+      $tmpConn = $this->_conn;
+      
+      $this->_conn = \Doctrine\DBAL\DriverManager::getConnection($params);
+      $this->_platform = $this->_conn->getDatabasePlatform(); 
+      
+      parent::dropDatabase($database);
+      
+      $this->_platform = $tmpPlatform;
+      $this->_conn = $tmpConn;
+    }
+
+    public function createDatabase($database)
+    {
+      $params = $this->_conn->getParams();
+      $params["dbname"] = "postgres";
+      $tmpPlatform = $this->_platform;
+      $tmpConn = $this->_conn;
+      
+      $this->_conn = \Doctrine\DBAL\DriverManager::getConnection($params);
+      $this->_platform = $this->_conn->getDatabasePlatform(); 
+      
+      parent::createDatabase($database);
+      
+      $this->_platform = $tmpPlatform;
+      $this->_conn = $tmpConn;
+    }
+    
     protected function _getPortableTriggerDefinition($trigger)
     {
         return $trigger['trigger_name'];
@@ -85,19 +128,24 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
         foreach($tableIndexes AS $row) {
             $colNumbers = explode( ' ', $row['indkey'] );
             $colNumbersSql = 'IN (' . join( ' ,', $colNumbers ) . ' )';
-            $columnNameSql = "SELECT attname FROM pg_attribute
-                WHERE attrelid={$row['indrelid']} AND attnum $colNumbersSql;";
+            $columnNameSql = "SELECT attnum, attname FROM pg_attribute
+                WHERE attrelid={$row['indrelid']} AND attnum $colNumbersSql ORDER BY attnum ASC;";
                 
             $stmt = $this->_conn->execute($columnNameSql);
             $indexColumns = $stmt->fetchAll();
 
-            foreach ( $indexColumns as $colRow ) {
-                $buffer[] = array(
-                    'key_name' => $row['relname'],
-                    'column_name' => $colRow['attname'],
-                    'non_unique' => !$row['indisunique'],
-                    'primary' => $row['indisprimary']
-                );
+            // required for getting the order of the columns right.
+            foreach ($colNumbers AS $colNum) {
+                foreach ( $indexColumns as $colRow ) {
+                    if ($colNum == $colRow['attnum']) {
+                        $buffer[] = array(
+                            'key_name' => $row['relname'],
+                            'column_name' => $colRow['attname'],
+                            'non_unique' => !$row['indisunique'],
+                            'primary' => $row['indisprimary']
+                        );
+                    }
+                }
             }
         }
         return parent::_getPortableTableIndexesList($buffer);
@@ -110,7 +158,8 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
 
     protected function _getPortableSequenceDefinition($sequence)
     {
-        return $sequence['relname'];
+        $data = $this->_conn->fetchAll('SELECT min_value, increment_by FROM '.$sequence['relname']);
+        return new Sequence($sequence['relname'], $data[0]['increment_by'], $data[0]['min_value']);
     }
 
     protected function _getPortableTableConstraintDefinition($tableConstraint)
@@ -157,25 +206,30 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
         $scale = null;
         
         $dbType = strtolower($tableColumn['type']);
-        
+
+        $autoincrement = false;
         switch ($dbType) {
             case 'smallint':
             case 'int2':
                 $type = 'smallint';
                 $length = null;
                 break;
+            case 'serial':
+            case 'serial4':
+                $autoincrement = true;
+                // break missing intentionally
             case 'int':
             case 'int4':
             case 'integer':
-            case 'serial':
-            case 'serial4':
                 $type = 'integer';
                 $length = null;
                 break;
-            case 'bigint':
-            case 'int8':
             case 'bigserial':
             case 'serial8':
+                $autoincrement = true;
+                // break missing intentionally
+            case 'bigint':
+            case 'int8':
                 $type = 'bigint';
                 $length = null;
                 break;
@@ -267,9 +321,7 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
                 $type = 'string';
         }
 
-        $description = array(
-            'name'      => $tableColumn['field'],
-            'type'      => $type,
+        $options = array(
             'length'    => $length,
             'notnull'   => (bool) $tableColumn['isnotnull'],
             'default'   => $tableColumn['default'],
@@ -278,9 +330,11 @@ class PostgreSqlSchemaManager extends AbstractSchemaManager
             'scale'     => $scale,
             'fixed'     => $fixed,
             'unsigned'  => false,
-            'platformDetails' => array(),
+            'platformDetails' => array(
+                'autoincrement' => $autoincrement,
+            ),
         );
 
-        return $description;
+        return new Column($tableColumn['field'], \Doctrine\DBAL\Types\Type::getType($type), $options);
     }
 }

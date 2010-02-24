@@ -41,7 +41,7 @@ use Doctrine\Common\DoctrineException;
  * @author Jonathan H. Wage <jonwage@gmail.com>
  * @since 2.0
  */
-final class ClassMetadata extends ClassMetadataInfo
+class ClassMetadata extends ClassMetadataInfo
 {
     /**
      * The ReflectionClass instance of the mapped class.
@@ -121,12 +121,12 @@ final class ClassMetadata extends ClassMetadataInfo
      * Gets the ReflectionProperty for the single identifier field.
      *
      * @return ReflectionProperty
-     * @throws DoctrineException If the class has a composite identifier.
+     * @throws BadMethodCallException If the class has a composite identifier.
      */
     public function getSingleIdReflectionProperty()
     {
         if ($this->isIdentifierComposite) {
-            throw DoctrineException::singleIdNotAllowedOnCompositePrimaryKey();
+            throw new \BadMethodCallException("Class " . $this->name . " has a composite identifier.");
         }
         return $this->reflFields[$this->identifier[0]];
     }
@@ -136,6 +136,8 @@ final class ClassMetadata extends ClassMetadataInfo
      *
      * @param array $mapping  The field mapping to validated & complete.
      * @return array  The validated and completed field mapping.
+     * 
+     * @throws MappingException
      */
     protected function _validateAndCompleteFieldMapping(array &$mapping)
     {
@@ -163,12 +165,12 @@ final class ClassMetadata extends ClassMetadataInfo
             foreach ($this->identifier as $idField) {
                 $value = $this->reflFields[$idField]->getValue($entity);
                 if ($value !== null) {
-                    $id[] = $value;
+                    $id[$idField] = $value;
                 }
             }
             return $id;
         } else {
-            return $this->reflFields[$this->identifier[0]]->getValue($entity);
+            return array($this->identifier[0] => $this->reflFields[$this->identifier[0]]->getValue($entity));
         }
     }
     
@@ -234,9 +236,10 @@ final class ClassMetadata extends ClassMetadataInfo
 
         // Store ReflectionProperty of mapped field
         $sourceFieldName = $assocMapping->sourceFieldName;
-        $refProp = $this->reflClass->getProperty($sourceFieldName);
-        $refProp->setAccessible(true);
-        $this->reflFields[$sourceFieldName] = $refProp;
+        
+	    $refProp = $this->reflClass->getProperty($sourceFieldName);
+	    $refProp->setAccessible(true);
+	    $this->reflFields[$sourceFieldName] = $refProp;
     }
     
     /**
@@ -319,33 +322,29 @@ final class ClassMetadata extends ClassMetadataInfo
     public function __sleep()
     {
         return array(
-            'associationMappings',
+            'associationMappings', // unserialization bottleneck with many assocs
             'changeTrackingPolicy',
-            'columnNames',
+            'columnNames', //TODO: Not really needed. Can use fieldMappings[$fieldName]['columnName']
             'customRepositoryClassName',
             'discriminatorColumn',
             'discriminatorValue',
             'discriminatorMap',
             'fieldMappings',
-            'fieldNames',
+            'fieldNames', //TODO: Not all of this stuff needs to be serialized. Only type, columnName and fieldName.
             'generatorType',
             'identifier',
-            'idGenerator',
+            'idGenerator', //TODO: Does not really need to be serialized. Could be moved to runtime.
             'inheritanceType',
             'inheritedAssociationFields',
-            'insertSql',
-            'inverseMappings',
+            'inverseMappings', //TODO: Remove!
             'isIdentifierComposite',
             'isMappedSuperclass',
             'isVersioned',
             'lifecycleCallbacks',
             'name',
-            'namespace',
             'parentClasses',
             'primaryTable',
-            'resultColumnNames',
             'rootEntityName',
-            'sequenceGeneratorDefinition',
             'subClasses',
             'versionField'
         );
@@ -360,13 +359,27 @@ final class ClassMetadata extends ClassMetadataInfo
     {
         // Restore ReflectionClass and properties
         $this->reflClass = new \ReflectionClass($this->name);
-        foreach ($this->fieldNames as $field) {
-            $this->reflFields[$field] = $this->reflClass->getProperty($field);
-            $this->reflFields[$field]->setAccessible(true);
+        
+        foreach ($this->fieldMappings as $field => $mapping) {
+	        if (isset($mapping['inherited'])) {
+	            $reflField = new \ReflectionProperty($mapping['inherited'], $field);
+	        } else {
+	            $reflField = $this->reflClass->getProperty($field);
+	        }
+	            
+            $reflField->setAccessible(true);
+            $this->reflFields[$field] = $reflField;
         }
+        
         foreach ($this->associationMappings as $field => $mapping) {
-            $this->reflFields[$field] = $this->reflClass->getProperty($field);
-            $this->reflFields[$field]->setAccessible(true);
+            if (isset($this->inheritedAssociationFields[$field])) {
+                $reflField = new \ReflectionProperty($this->inheritedAssociationFields[$field], $field);
+            } else {
+                $reflField = $this->reflClass->getProperty($field);
+            }
+                
+            $reflField->setAccessible(true);
+            $this->reflFields[$field] = $reflField;
         }
         
         //$this->prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));

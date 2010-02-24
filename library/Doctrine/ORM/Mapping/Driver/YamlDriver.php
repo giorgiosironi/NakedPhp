@@ -101,11 +101,13 @@ class YamlDriver extends AbstractFileDriver
                 if ( ! isset($index['name'])) {
                     $index['name'] = $name;
                 }
+                
                 if (is_string($index['columns'])) {
                     $columns = explode(',', $index['columns']);
                 } else {
                     $columns = $index['columns'];
                 }
+                
                 $metadata->primaryTable['indexes'][$index['name']] = array(
                     'columns' => $columns
                 );
@@ -114,13 +116,20 @@ class YamlDriver extends AbstractFileDriver
 
         // Evaluate uniqueConstraints
         if (isset($element['uniqueConstraints'])) {
-            foreach ($element['uniqueConstraints'] as $unique) {
-                if (is_string($index['columns'])) {
+            foreach ($element['uniqueConstraints'] as $name => $unique) {
+                if ( ! isset($unique['name'])) {
+                    $unique['name'] = $name;
+                }
+                
+                if (is_string($unique['columns'])) {
                     $columns = explode(',', $unique['columns']);
                 } else {
                     $columns = $unique['columns'];
                 }
-                $metadata->primaryTable['uniqueConstraints'][] = $columns;
+                
+                $metadata->primaryTable['uniqueConstraints'][$unique['name']] = array(
+                    'columns' => $columns
+                );
             }
         }
 
@@ -189,11 +198,14 @@ class YamlDriver extends AbstractFileDriver
                 if (isset($fieldMapping['options'])) {
                     $mapping['options'] = $fieldMapping['options'];
                 }
-                if (isset($fieldMapping['notnull'])) {
-                    $mapping['notnull'] = $fieldMapping['notnull'];
+                if (isset($fieldMapping['nullable'])) {
+                    $mapping['nullable'] = $fieldMapping['nullable'];
                 }
                 if (isset($fieldMapping['version']) && $fieldMapping['version']) {
                     $metadata->setVersionMapping($mapping);
+                }
+                if (isset($fieldMapping['columnDefinition'])) {
+                    $mapping['columnDefinition'] = $fieldMapping['columnDefinition'];
                 }
                 
                 $metadata->mapField($mapping);
@@ -235,7 +247,7 @@ class YamlDriver extends AbstractFileDriver
                 }
 
                 if (isset($oneToOneElement['cascade'])) {
-                    $mapping['cascade'] = $this->_getCascadeMappings($oneToOneElement['cascade']);
+                    $mapping['cascade'] = $oneToOneElement['cascade'];
                 }
 
                 $metadata->mapOneToOne($mapping);
@@ -256,7 +268,7 @@ class YamlDriver extends AbstractFileDriver
                 }
                 
                 if (isset($oneToManyElement['cascade'])) {
-                    $mapping['cascade'] = $this->_getCascadeMappings($oneToManyElement['cascade']);
+                    $mapping['cascade'] = $oneToManyElement['cascade'];
                 }
                 
                 $metadata->mapOneToMany($mapping);
@@ -294,7 +306,7 @@ class YamlDriver extends AbstractFileDriver
                 $mapping['joinColumns'] = $joinColumns;
                 
                 if (isset($manyToOneElement['cascade'])) {
-                    $mapping['cascade'] = $this->_getCascadeMappings($manyToOneElement['cascade']);
+                    $mapping['cascade'] = $manyToOneElement['cascade'];
                 }
                 
                 $metadata->mapManyToOne($mapping);
@@ -347,7 +359,7 @@ class YamlDriver extends AbstractFileDriver
                 }
                 
                 if (isset($manyToManyElement['cascade'])) {
-                    $mapping['cascade'] = $this->_getCascadeMappings($manyToManyElement['cascade']);
+                    $mapping['cascade'] = $manyToManyElement['cascade'];
                 }
 
                 $metadata->mapManyToMany($mapping);
@@ -399,35 +411,6 @@ class YamlDriver extends AbstractFileDriver
         return $joinColumn;
     }
     
-    /**
-     * Gathers a list of cascade options found in the given cascade element.
-     * 
-     * @param $cascadeElement The cascade element.
-     * @return array The list of cascade options.
-     */
-    private function _getCascadeMappings($cascadeElement)
-    {
-        $cascades = array();
-        
-        if (isset($cascadeElement['cascadePersist'])) {
-            $cascades[] = 'persist';
-        }
-        
-        if (isset($cascadeElement['cascadeRemove'])) {
-            $cascades[] = 'remove';
-        }
-        
-        if (isset($cascadeElement['cascadeMerge'])) {
-            $cascades[] = 'merge';
-        }
-        
-        if (isset($cascadeElement['cascadeRefresh'])) {
-            $cascades[] = 'refresh';
-        }
-        
-        return $cascades;
-    }
-
     /**
      * Loads a mapping file with the given name and returns a map
      * from class/entity names to their corresponding elements.

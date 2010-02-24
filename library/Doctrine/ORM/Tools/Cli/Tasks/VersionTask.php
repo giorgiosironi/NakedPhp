@@ -21,6 +21,8 @@
  
 namespace Doctrine\ORM\Tools\Cli\Tasks;
 
+use Doctrine\Common\Cli\Tasks\AbstractTask;
+
 /**
  * CLI Task to display the doctrine version
  *
@@ -28,6 +30,7 @@ namespace Doctrine\ORM\Tools\Cli\Tasks;
  * @link    www.doctrine-project.org
  * @since   2.0
  * @version $Revision$
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
@@ -37,38 +40,14 @@ class VersionTask extends AbstractTask
     /**
      * @inheritdoc
      */
-    public function extendedHelp()
+    public function buildDocumentation()
     {
-        $printer = $this->getPrinter();
-        
-        $printer->write('Task: ')->writeln('version', 'KEYWORD')
-                ->write('Synopsis: ');
-        $this->_writeSynopsis($printer);
-        
-        $printer->writeln('Description: Displays the current installed Doctrine version.')
-                ->writeln('Options:')
-                ->writeln('No available options', 'INFO');
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function basicHelp()
-    {
-        $this->_writeSynopsis($this->getPrinter());
-    }
+        // There're no options on this task
+        $this->getDocumentation()->getOptionGroup()->clear();
     
-    private function _writeSynopsis($printer)
-    {
-        $printer->writeln('version', 'KEYWORD');
-    }
-    
-    /**
-     * @inheritdoc
-     */
-    public function validate()
-    {
-        return true;
+        $doc = $this->getDocumentation();
+        $doc->setName('version')
+            ->setDescription('Displays the current installed Doctrine version.');
     }
 
     /**
@@ -77,6 +56,6 @@ class VersionTask extends AbstractTask
      */
     public function run()
     {
-        $this->getPrinter()->writeln('You are currently running Doctrine 2.0.0 Alpha 3', 'INFO');
+        $this->getPrinter()->writeln('You are currently running Doctrine 2.0.0 Alpha 4', 'INFO');
     }
 }

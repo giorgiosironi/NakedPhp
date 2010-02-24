@@ -143,13 +143,13 @@ class OCI8Statement implements \Doctrine\DBAL\Driver\Statement
     /**
      * {@inheritdoc}
      */
-    public function fetch($fetchStyle = Connection::FETCH_BOTH, $cursorOrientation = \PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
+    public function fetch($fetchStyle = Connection::FETCH_BOTH)
     {
         if ( ! isset(self::$fetchStyleMap[$fetchStyle])) {
             throw new \InvalidArgumentException("Invalid fetch style: " . $fetchStyle);
         }
         
-        return oci_fetch_array($this->_sth, self::$fetchStyleMap[$fetchStyle] | OCI_RETURN_NULLS);
+        return oci_fetch_array($this->_sth, self::$fetchStyleMap[$fetchStyle] | OCI_RETURN_NULLS | OCI_RETURN_LOBS);
     }
 
     /**
@@ -179,57 +179,8 @@ class OCI8Statement implements \Doctrine\DBAL\Driver\Statement
     /**
      * {@inheritdoc}
      */
-    public function fetchObject($className = 'stdClass', $args = array())
-    {
-        throw new \Exception(__METHOD__ . " not supported.");
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAttribute($attribute)
-    {
-        throw new \Exception(__METHOD__ . " not supported.");
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getColumnMeta($column)
-    {
-        throw new \Exception(__METHOD__ . " not supported.");
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function nextRowset()
-    {
-        throw new \Exception(__METHOD__ . " not supported.");
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function rowCount()
     {
         return oci_num_rows($this->_sth);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setAttribute($attribute, $value)
-    {
-        throw new \Exception(__METHOD__ . " not supported.");
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setFetchMode($mode, $arg1)
-    {
-        throw new \Exception(__METHOD__ . " not supported.");
-    }
-    
+    }    
 }

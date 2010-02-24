@@ -21,7 +21,8 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadataInfo,
+    Doctrine\ORM\Mapping\MappingException;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
@@ -50,7 +51,7 @@ class XmlDriver extends AbstractFileDriver
 
         if ($xmlRoot->getName() == 'entity') {
             $metadata->setCustomRepositoryClass(
-                isset($xmlRoot['repository-class']) ? $xmlRoot['repository-class'] : null
+                isset($xmlRoot['repository-class']) ? (string)$xmlRoot['repository-class'] : null
             );
         } else if ($xmlRoot->getName() == 'mapped-superclass') {
             $metadata->isMappedSuperclass = true;
@@ -100,6 +101,7 @@ class XmlDriver extends AbstractFileDriver
                 } else {
                     $columns = $index['columns'];
                 }
+                
                 $metadata->primaryTable['indexes'][$index['name']] = array(
                     'columns' => $columns
                 );
@@ -114,7 +116,10 @@ class XmlDriver extends AbstractFileDriver
                 } else {
                     $columns = $unique['columns'];
                 }
-                $metadata->primaryTable['uniqueConstraints'][] = $columns;
+                
+                $metadata->primaryTable['uniqueConstraints'][$unique['name']] = array(
+                    'columns' => $columns
+                );
             }
         }
 
@@ -154,6 +159,10 @@ class XmlDriver extends AbstractFileDriver
                     $metadata->setVersionMapping($mapping);
                 }
                 
+                if (isset($fieldMapping['columnDefinition'])) {
+                    $mapping['columnDefinition'] = (string)$fieldMapping['columnDefinition'];
+                }
+                
                 $metadata->mapField($mapping);
             }
         }
@@ -174,7 +183,7 @@ class XmlDriver extends AbstractFileDriver
 
             if (isset($idElement->generator)) {
                 $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
-                        . (string)$idElement->generator['strategy']));
+                        . strtoupper((string)$idElement->generator['strategy'])));
             }
 
             // Check for SequenceGenerator/TableGenerator definition
@@ -223,7 +232,7 @@ class XmlDriver extends AbstractFileDriver
                 if (isset($oneToOneElement->cascade)) {
                     $mapping['cascade'] = $this->_getCascadeMappings($oneToOneElement->cascade);
                 }
-                
+
                 if (isset($oneToOneElement->{'orphan-removal'})) {
                     $mapping['orphanRemoval'] = (bool)$oneToOneElement->{'orphan-removal'};
                 }
@@ -311,7 +320,7 @@ class XmlDriver extends AbstractFileDriver
                     $mapping['fetch'] = constant('Doctrine\ORM\Mapping\AssociationMapping::FETCH_' . (string)$manyToManyElement['fetch']);
                 }
                 
-                if (isset($manyToManyElement['mappedBy'])) {
+                if (isset($manyToManyElement['mapped-by'])) {
                     $mapping['mappedBy'] = (string)$manyToManyElement['mapped-by'];
                 } else if (isset($manyToManyElement->{'join-table'})) {
                     $joinTableElement = $manyToManyElement->{'join-table'};
@@ -425,23 +434,14 @@ class XmlDriver extends AbstractFileDriver
     private function _getCascadeMappings($cascadeElement)
     {
         $cascades = array();
-        
-        if (isset($cascadeElement->{'cascade-persist'})) {
-            $cascades[] = 'persist';
+        foreach ($cascadeElement->children() as $action) {
+            // According to the JPA specifications, XML uses "cascade-persist"
+            // instead of "persist". Here, both variations
+            // are supported because both YAML and Annotation use "persist"
+            // and we want to make sure that this driver doesn't need to know
+            // anything about the supported cascading actions
+            $cascades[] = str_replace('cascade-', '', $action->getName());
         }
-        
-        if (isset($cascadeElement->{'cascade-remove'})) {
-            $cascades[] = 'remove';
-        }
-        
-        if (isset($cascadeElement->{'cascade-merge'})) {
-            $cascades[] = 'merge';
-        }
-        
-        if (isset($cascadeElement->{'cascade-refresh'})) {
-            $cascades[] = 'refresh';
-        }
-        
         return $cascades;
     }
 }

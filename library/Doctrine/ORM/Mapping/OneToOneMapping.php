@@ -225,10 +225,15 @@ class OneToOneMapping extends AssociationMapping
             if ($inverseField) {
                 $hints['fetched'][$targetClass->rootEntityName][$inverseField] = true;
             }
+            /* cascade read-only status
+            if ($em->getUnitOfWork()->isReadOnly($sourceEntity)) {
+                $hints[Query::HINT_READ_ONLY] = true;
+            }
+            */
 
             $targetEntity = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName)->load($joinColumnValues, $targetEntity, $this, $hints);
             
-            if ($targetEntity !== null && $inverseField) {
+            if ($targetEntity !== null && $inverseField &&  ! $targetClass->isCollectionValuedAssociation($inverseField)) {
                 $targetClass->reflFields[$inverseField]->setValue($targetEntity, $sourceEntity);
             }
         } else {
@@ -254,5 +259,34 @@ class OneToOneMapping extends AssociationMapping
         }
         
         return $targetEntity;
+    }
+    
+    /**
+     * @internal Experimental. For MetaModel API, Doctrine 2.1.
+     */
+    public static function __set_state(array $state)
+    {
+        $assoc = new self(array());
+        $assoc->isOptional = $state['isOptional'];
+        $assoc->joinColumnFieldNames = $state['joinColumnFieldNames'];
+        $assoc->joinColumns = $state['joinColumns'];
+        $assoc->orphanRemoval = $state['orphanRemoval'];
+        $assoc->sourceToTargetKeyColumns = $state['sourceToTargetKeyColumns'];
+        $assoc->targetToSourceKeyColumns = $state['targetToSourceKeyColumns'];
+        
+        $assoc->fetchMode = $state['fetchMode'];
+        $assoc->isCascadeDetach = $state['isCascadeDetach'];
+        $assoc->isCascadeRefresh = $state['isCascadeRefresh'];
+        $assoc->isCascadeRemove = $state['isCascadeRemove'];
+        $assoc->isCascadePersist = $state['isCascadePersist'];
+        $assoc->isCascadeMerge = $state['isCascadeMerge'];
+        $assoc->isOwningSide = $state['isOwningSide'];
+        $assoc->joinTable = $state['joinTable'];
+        $assoc->mappedByFieldName = $state['mappedByFieldName'];
+        $assoc->sourceEntityName = $state['sourceEntityName'];
+        $assoc->targetEntityName = $state['targetEntityName'];
+        $assoc->sourceFieldName = $state['sourceFieldName'];
+        
+        return $assoc;
     }
 }

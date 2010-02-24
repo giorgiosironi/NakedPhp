@@ -38,7 +38,6 @@ use Doctrine\Common\DoctrineException,
  * @version $Revision$
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class DatabaseDriver implements Driver
 {
@@ -68,35 +67,42 @@ class DatabaseDriver implements Driver
         $metadata->primaryTable['name'] = $tableName;
 
         $columns = $this->_sm->listTableColumns($tableName);
-        try {
+        
+        if($this->_sm->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $foreignKeys = $this->_sm->listTableForeignKeys($tableName);
-        } catch (\Doctrine\Common\DoctrineException $e) {
+        } else {
             $foreignKeys = array();
         }
+
+        $indexes = $this->_sm->listTableIndexes($tableName);
 
         $ids = array();
         $fieldMappings = array();
         foreach ($columns as $column) {
             // Skip columns that are foreign keys
             foreach ($foreignKeys as $foreignKey) {
-                if ($column['name'] == $foreignKey['local']) {
+                if (in_array(strtolower($column->getName()), array_map('strtolower', $foreignKey->getColumns()))) {
                     continue(2);
                 }
             }
 
             $fieldMapping = array();
-            if ($column['primary']) {
+            if (isset($indexes['primary']) && in_array($column->getName(), $indexes['primary']->getColumns())) {
                 $fieldMapping['id'] = true;
             }
 
-            $fieldMapping['fieldName'] = Inflector::camelize($column['name']);
-            $fieldMapping['columnName'] = $column['name'];
-            $fieldMapping['type'] = strtolower((string) $column['type']);
-            $fieldMapping['length'] = $column['length'];
-            $fieldMapping['unsigned'] = $column['unsigned'];
-            $fieldMapping['fixed'] = $column['fixed'];
-            $fieldMapping['notnull'] = $column['notnull'];
-            $fieldMapping['default'] = $column['default'];
+            $fieldMapping['fieldName'] = Inflector::camelize($column->getName());
+            $fieldMapping['columnName'] = $column->getName();
+            $fieldMapping['type'] = strtolower((string) $column->getType());
+
+            if ($column->getType() instanceof \Doctrine\DBAL\Types\StringType) {
+                $fieldMapping['length'] = $column->getLength();
+                $fieldMapping['fixed'] = $column->getFixed();
+            } else if ($column->getType() instanceof \Doctrine\DBAL\Types\IntegerType) {
+                $fieldMapping['unsigned'] = $column->getUnsigned();
+            }
+            $fieldMapping['notnull'] = $column->getNotNull();
+            $fieldMapping['default'] = $column->getDefault();
 
             if (isset($fieldMapping['id'])) {
                 $ids[] = $fieldMapping;
@@ -120,13 +126,29 @@ class DatabaseDriver implements Driver
         }
 
         foreach ($foreignKeys as $foreignKey) {
+            if (count($foreignKey->getColumns()) != 1) {
+                throw new MappingException(
+                    "Cannot generate mapping for table '".$tableName."' with foreign keys with multiple local columns."
+                );
+            }
+            $cols = $foreignKey->getColumns();
+            $localColumn = current($cols);
+
+            $fkCols = $foreignKey->getForeignColumns();
+            if (count($fkCols) != 1) {
+                throw new MappingException(
+                    "Cannot generate mapping for table '".$tableName."' with foreign keys with multiple foreign columns."
+                );
+            }
+            $foreignColumn = current($fkCols);
+
             $associationMapping = array();
-            $associationMapping['fieldName'] = Inflector::camelize(str_replace('_id', '', $foreignKey['local']));
-            $associationMapping['columnName'] = $foreignKey['local'];
-            $associationMapping['targetEntity'] = Inflector::classify($foreignKey['table']);
+            $associationMapping['fieldName'] = Inflector::camelize(str_ireplace('_id', '', $localColumn));
+            $associationMapping['columnName'] = $localColumn;
+            $associationMapping['targetEntity'] = Inflector::classify($foreignKey->getForeignTableName());
             $associationMapping['joinColumns'][] = array(
-                'name' => $foreignKey['local'],
-                'referencedColumnName' => $foreignKey['foreign']
+                'name' => $localColumn,
+                'referencedColumnName' => $foreignColumn
             );
 
             $metadata->mapManyToOne($associationMapping);
@@ -147,16 +169,13 @@ class DatabaseDriver implements Driver
     }
 
     /**
-     * Preloads all mapping information found in any documents within the
-     * configured paths and returns a list of class names that have been preloaded.
-     * 
-     * @return array The list of class names that have been preloaded.
+     * {@inheritDoc}
      */
-    public function preload()
+    public function getAllClassNames()
     {
         $tables = array();
         foreach ($this->_sm->listTables() as $table) {
-            $tables[] = $table;
+            $tables[] = $table->getName();
         }
 
         return $tables;

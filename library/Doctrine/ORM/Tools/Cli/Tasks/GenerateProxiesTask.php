@@ -2,6 +2,11 @@
 
 namespace Doctrine\ORM\Tools\Cli\Tasks;
 
+use Doctrine\Common\Cli\Tasks\AbstractTask,
+    Doctrine\Common\Cli\CliException,
+    Doctrine\Common\Cli\Option,
+    Doctrine\Common\Cli\OptionGroup;
+
 /**
  * Task to (re)generate the proxy classes used by doctrine.
  * 
@@ -18,33 +23,22 @@ class GenerateProxiesTask extends AbstractTask
     /**
      * @inheritdoc
      */
-    public function extendedHelp()
+    public function buildDocumentation()
     {
-        $printer = $this->getPrinter();
+        $classDir = new OptionGroup(OptionGroup::CARDINALITY_1_1, array(
+            new Option('class-dir', '<PATH>', 'Specified directory where mapping classes are located.')
+        ));
         
-        $printer->write('Task: ')->writeln('generate-proxies', 'KEYWORD')
-                ->write('Synopsis: ');
-        $this->_writeSynopsis($printer);
+        $toDir = new OptionGroup(OptionGroup::CARDINALITY_0_1, array(
+            new Option('to-dir', '<PATH>', 'Generates the classes in the specified directory.')
+        ));
         
-        $printer->writeln('Description: Generates proxy classes for entity classes.')
-                ->writeln('Options:')
-                ->write('--to-dir', 'OPT_ARG')
-                ->writeln("\t\tGenerates the classes in the specified directory.")
-                ->write(PHP_EOL);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function basicHelp()
-    {
-        $this->_writeSynopsis($this->getPrinter());
-    }
-    
-    private function _writeSynopsis($printer)
-    {
-        $printer->write('generate-proxies', 'KEYWORD')
-                ->writeln(' [--to-dir=<PATH>]', 'OPT_ARG');
+        $doc = $this->getDocumentation();
+        $doc->setName('generate-proxies')
+            ->setDescription('Generates proxy classes for entity classes.')
+            ->getOptionGroup()
+                ->addOption($classDir)
+                ->addOption($toDir);
     }
     
     /**
@@ -52,18 +46,25 @@ class GenerateProxiesTask extends AbstractTask
      */
     public function validate()
     {
-        $args = $this->getArguments();
-        $printer = $this->getPrinter();
+        $arguments = $this->getArguments();
+        $em = $this->getConfiguration()->getAttribute('em');
         
-        $metadataDriver = $this->getEntityManager()->getConfiguration()->getMetadataDriverImpl();
+        if ($em === null) {
+            throw new CliException(
+                "Attribute 'em' of CLI Configuration is not defined or it is not a valid EntityManager."
+            );
+        }
+        
+        $metadataDriver = $em->getConfiguration()->getMetadataDriverImpl();
         
         if ($metadataDriver instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
-            if ( ! isset($args['class-dir'])) {
-                $printer->writeln("The supplied configuration uses the annotation metadata driver."
-                        . " The 'class-dir' argument is required for this driver.", 'ERROR');
-                return false;
+            if (isset($arguments['class-dir'])) {
+                $metadataDriver->setClassDirectory($arguments['class-dir']);
             } else {
-                $metadataDriver->setClassDirectory($args['class-dir']);
+                throw new CliException(
+                    'The supplied configuration uses the annotation metadata driver. ' .
+                    "The 'class-dir' argument is required for this driver."
+                );
             }
         }
         
@@ -71,36 +72,29 @@ class GenerateProxiesTask extends AbstractTask
     }
 
     /**
-     * Executes the task.
+     * @inheritdoc
      */
     public function run()
     {
-        $args = $this->getArguments();
-
-        $em = $this->getEntityManager();
-        $cmf = $em->getMetadataFactory();
-        $driver = $em->getConfiguration()->getMetadataDriverImpl();
-        
-        $classes = array();
-        $preloadedClasses = $driver->preload(true);
-        
-        foreach ($preloadedClasses as $className) {
-            $classes[] = $cmf->getMetadataFor($className);
-        }
-
+        $arguments = $this->getArguments();
         $printer = $this->getPrinter();
+        
+        $em = $this->getConfiguration()->getAttribute('em');
+        $cmf = $em->getMetadataFactory();
+        $classes = $cmf->getAllMetadata();
         $factory = $em->getProxyFactory();
         
         if (empty($classes)) {
             $printer->writeln('No classes to process.', 'INFO');
-            return;
-        }
-
-        $factory->generateProxyClasses($classes, isset($args['to-dir']) ? $args['to-dir'] : null);
+        } else {
+            $factory->generateProxyClasses(
+                $classes, isset($arguments['to-dir']) ? $arguments['to-dir'] : null
+            );
         
-        $printer->writeln(
-            'Proxy classes generated to: ' . 
-            (isset($args['to-dir']) ? $args['to-dir'] : $em->getConfiguration()->getProxyDir())
-        );
+            $printer->writeln(
+                'Proxy classes generated to: ' . (isset($arguments['to-dir']) 
+                    ? $arguments['to-dir'] : $em->getConfiguration()->getProxyDir())
+            );
+        }
     }
 }

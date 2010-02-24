@@ -36,8 +36,19 @@ namespace Doctrine\ORM;
  */
 class EntityRepository
 {
+    /**
+     * @var string
+     */
     protected $_entityName;
+
+    /**
+     * @var EntityManager
+     */
     protected $_em;
+
+    /**
+     * @var Doctrine\ORM\Mapping\ClassMetadata
+     */
     protected $_class;
     
     /**
@@ -63,7 +74,7 @@ class EntityRepository
     {
         return $this->_em->createQueryBuilder()
             ->select($alias)
-            ->from($this->_entityName);
+            ->from($this->_entityName, $alias);
     }
     
     /**
@@ -89,6 +100,7 @@ class EntityRepository
         }
 
         if ( ! is_array($id) || count($id) <= 1) {
+            //FIXME: Not correct. Relies on specific order.
             $value = is_array($id) ? array_values($id) : array($id);
             $id = array_combine($this->_class->identifier, $value);
         }
@@ -136,8 +148,8 @@ class EntityRepository
      *
      * @return array|object The found entity/entities.
      * @throws BadMethodCallException  If the method called is an invalid find* method
-     *                                    or no find* method at all and therefore an invalid
-     *                                    method call.
+     *                                 or no find* method at all and therefore an invalid
+     *                                 method call.
      */
     public function __call($method, $arguments)
     {

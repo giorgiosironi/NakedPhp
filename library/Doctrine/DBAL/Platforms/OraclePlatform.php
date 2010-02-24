@@ -21,6 +21,8 @@
 
 namespace Doctrine\DBAL\Platforms;
 
+use Doctrine\DBAL\Schema\TableDiff;
+
 /**
  * OraclePlatform.
  *
@@ -106,15 +108,19 @@ class OraclePlatform extends AbstractPlatform
      * Gets the SQL used to create a sequence that starts with a given value
      * and increments by the given allocation size.
      *
-     * @param string $sequenceName
-     * @param integer $start
-     * @param integer $allocationSize
-     * @return string The SQL.
+     * Need to specifiy minvalue, since start with is hidden in the system and MINVALUE <= START WITH.
+     * Therefore we can use MINVALUE to be able to get a hint what START WITH was for later introspection
+     * in {@see listSequences()}
+     *
+     * @param \Doctrine\DBAL\Schema\Sequence $sequence
+     * @throws DoctrineException
      */
-    public function getCreateSequenceSql($sequenceName, $start = 1, $allocationSize = 1)
+    public function getCreateSequenceSql(\Doctrine\DBAL\Schema\Sequence $sequence)
     {
-        return 'CREATE SEQUENCE ' . $sequenceName 
-                . ' START WITH ' . $start . ' INCREMENT BY ' . $allocationSize; 
+        return 'CREATE SEQUENCE ' . $sequence->getName() .
+               ' START WITH ' . $sequence->getInitialValue() .
+               ' MINVALUE ' . $sequence->getInitialValue() . 
+               ' INCREMENT BY ' . $sequence->getAllocationSize();
     }
 
     /**
@@ -249,7 +255,7 @@ class OraclePlatform extends AbstractPlatform
 
     public function getListDatabasesSql()
     {
-        return 'SELECT username FROM sys.dba_users';
+        return 'SELECT username FROM all_users';
     }
 
     public function getListFunctionsSql()
@@ -259,14 +265,22 @@ class OraclePlatform extends AbstractPlatform
 
     public function getListSequencesSql($database)
     {
-        return 'SELECT sequence_name FROM sys.user_sequences';
+        return "SELECT sequence_name, min_value, increment_by FROM sys.all_sequences ".
+               "WHERE SEQUENCE_OWNER = '".strtoupper($database)."'";
     }
 
-    public function getCreateTableSql($table, array $columns, array $options = array())
+    /**
+     *
+     * @param string $table
+     * @param array $columns
+     * @param array $options
+     * @return array
+     */
+    protected function _getCreateTableSql($table, array $columns, array $options = array())
     {
         $indexes = isset($options['indexes']) ? $options['indexes'] : array();
         $options['indexes'] = array();
-        $sql = parent::getCreateTableSql($table, $columns, $options);
+        $sql = parent::_getCreateTableSql($table, $columns, $options);
 
         foreach ($columns as $name => $column) {
             if (isset($column['sequence'])) {
@@ -280,12 +294,8 @@ class OraclePlatform extends AbstractPlatform
         }
         
         if (isset($indexes) && ! empty($indexes)) {
-            foreach ($indexes as $indexName => $definition) {
-                // create nonunique indexes, as they are a part of CREATE TABLE DDL
-                if ( ! isset($definition['type']) || 
-                        (isset($definition['type']) && strtolower($definition['type']) != 'unique')) {
-                    $sql[] = $this->getCreateIndexSql($table, $indexName, $definition);
-                }
+            foreach ($indexes as $indexName => $index) {
+                $sql[] = $this->getCreateIndexSql($index, $table);
             }
         }
 
@@ -293,7 +303,6 @@ class OraclePlatform extends AbstractPlatform
     }
 
     /**
-     *
      * @license New BSD License
      * @link http://ezcomponents.org/docs/api/trunk/DatabaseSchema/ezcDbSchemaOracleReader.html
      * @param  string $table
@@ -301,13 +310,16 @@ class OraclePlatform extends AbstractPlatform
      */
     public function getListTableIndexesSql($table)
     {
+        $table = strtoupper($table);
+        
         return "SELECT uind.index_name AS name, " .
              "       uind.index_type AS type, " .
              "       decode( uind.uniqueness, 'NONUNIQUE', 0, 'UNIQUE', 1 ) AS is_unique, " .
              "       uind_col.column_name AS column_name, " .
-             "       uind_col.column_position AS column_pos " .
+             "       uind_col.column_position AS column_pos, " .
+             "       (SELECT ucon.constraint_type FROM user_constraints ucon WHERE ucon.constraint_name = uind.index_name) AS is_primary ".
              "FROM user_indexes uind, user_ind_columns uind_col " .
-             "WHERE uind.index_name = uind_col.index_name AND uind_col.table_name = '$table'";
+             "WHERE uind.index_name = uind_col.index_name AND uind_col.table_name = '$table' ORDER BY uind_col.column_position ASC";
     }
 
     public function getListTablesSql()
@@ -317,7 +329,7 @@ class OraclePlatform extends AbstractPlatform
 
     public function getListUsersSql()
     {
-        return 'SELECT * FROM sys.dba_users';
+        return 'SELECT * FROM all_users';
     }
 
     public function getListViewsSql()
@@ -346,17 +358,20 @@ class OraclePlatform extends AbstractPlatform
             'columns' => array($name => true),
         );
 
+        $idx = new \Doctrine\DBAL\Schema\Index($indexName, array($name), true, true);
+
         $sql[] = 'DECLARE
   constraints_Count NUMBER;
 BEGIN
   SELECT COUNT(CONSTRAINT_NAME) INTO constraints_Count FROM USER_CONSTRAINTS WHERE TABLE_NAME = \''.$table.'\' AND CONSTRAINT_TYPE = \'P\';
   IF constraints_Count = 0 OR constraints_Count = \'\' THEN
-    EXECUTE IMMEDIATE \''.$this->getCreateConstraintSql($table, $indexName, $definition).'\';
+    EXECUTE IMMEDIATE \''.$this->getCreateConstraintSql($idx, $table).'\';
   END IF;
 END;';   
 
         $sequenceName = $table . '_SEQ';
-        $sql[] = $this->getCreateSequenceSql($sequenceName, $start);
+        $sequence = new \Doctrine\DBAL\Schema\Sequence($sequenceName, $start);
+        $sql[] = $this->getCreateSequenceSql($sequence);
 
         $triggerName  = $table . '_AI_PK';
         $sql[] = 'CREATE TRIGGER ' . $triggerName . '
@@ -393,10 +408,28 @@ END;';
             $sql[] = $this->getDropSequenceSql($table.'_SEQ');
 
             $indexName = $table . '_AI_PK';
-            $sql[] = $this->getDropConstraintSql($table, $indexName);
+            $sql[] = $this->getDropConstraintSql($indexName, $table);
         }
 
         return $sql;
+    }
+
+    public function getListTableForeignKeysSql($table)
+    {
+        $table = strtoupper($table);
+
+        return "SELECT rel.constraint_name, rel.position, col.column_name AS local_column, ".
+               "     rel.table_name, rel.column_name AS foreign_column, cc.delete_rule ".
+               "FROM (user_tab_columns col ".
+               "JOIN user_cons_columns con ".
+               "  ON col.table_name = con.table_name ".
+               " AND col.column_name = con.column_name ".
+               "JOIN user_constraints cc ".
+               "  ON con.constraint_name = cc.constraint_name ".
+               "JOIN user_cons_columns rel ".
+               "  ON cc.r_constraint_name = rel.constraint_name ".
+               " AND con.position = rel.position) ".
+               "WHERE cc.constraint_type = 'R' AND col.table_name = '".$table."'";
     }
 
     public function getListTableConstraintsSql($table)
@@ -411,9 +444,18 @@ END;';
         return "SELECT * FROM all_tab_columns WHERE table_name = '" . $table . "' ORDER BY column_name";
     }
 
-    public function getDropSequenceSql($sequenceName)
+    /**
+     *
+     * @param  \Doctrine\DBAL\Schema\Sequence $sequence
+     * @return string
+     */
+    public function getDropSequenceSql($sequence)
     {
-        return 'DROP SEQUENCE ' . $sequenceName;
+        if ($sequence instanceof \Doctrine\DBAL\Schema\Sequence) {
+            $sequence = $sequence->getName();
+        }
+
+        return 'DROP SEQUENCE ' . $sequence;
     }
 
     public function getDropDatabaseSql($database)
@@ -426,70 +468,51 @@ END;';
      *
      * The method returns an array of sql statements, since some platforms need several statements.
      *
-     * @param string $name          name of the table that is intended to be changed.
+     * @param string $diff->name          name of the table that is intended to be changed.
      * @param array $changes        associative array that contains the details of each type      *
      * @param boolean $check        indicates whether the function should just check if the DBMS driver
      *                              can perform the requested table alterations if the value is true or
      *                              actually perform them otherwise.
      * @return array
      */
-    public function getAlterTableSql($name, array $changes, $check = false)
+    public function getAlterTableSql(TableDiff $diff)
     {
-        if ( ! $name) {
-            throw DoctrineException::missingTableName();
+        $sql = array();
+
+        $fields = array();
+        foreach ($diff->addedColumns AS $column) {
+            $fields[] = $this->getColumnDeclarationSql($column->getName(), $column->toArray());
         }
-        foreach ($changes as $changeName => $change) {
-            switch ($changeName) {
-                case 'add':
-                case 'remove':
-                case 'change':
-                case 'name':
-                case 'rename':
-                    break;
-                default:
-                    throw \Doctrine\Common\DoctrineException::alterTableChangeNotSupported($changeName);
-            }
+        if (count($fields)) {
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' ADD (' . implode(', ', $fields) . ')';
         }
 
-        if ($check) {
-            return false;
+        $fields = array();
+        foreach ($diff->changedColumns AS $columnDiff) {
+            $column = $columnDiff->column;
+            $fields[] = $column->getName(). ' ' . $this->getColumnDeclarationSql('', $column->toArray());
+        }
+        if (count($fields)) {
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' MODIFY (' . implode(', ', $fields) . ')';
         }
 
-        if ( ! empty($changes['add']) && is_array($changes['add'])) {
-            $fields = array();
-            foreach ($changes['add'] as $fieldName => $field) {
-                $fields[] = $this->getColumnDeclarationSql($fieldName, $field);
-            }
-            $sql[] = 'ALTER TABLE ' . $name . ' ADD (' . implode(', ', $fields) . ')';
+        foreach ($diff->renamedColumns AS $oldColumnName => $column) {
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' RENAME COLUMN ' . $oldColumnName .' TO ' . $column->getName();
         }
 
-        if ( ! empty($changes['change']) && is_array($changes['change'])) {
-            $fields = array();
-            foreach ($changes['change'] as $fieldName => $field) {
-                $fields[] = $fieldName. ' ' . $this->getColumnDeclarationSql('', $field['definition']);
-            }
-            $sql[] = 'ALTER TABLE ' . $name . ' MODIFY (' . implode(', ', $fields) . ')';
+        $fields = array();
+        foreach ($diff->removedColumns AS $column) {
+            $fields[] = $column->getName();
+        }
+        if (count($fields)) {
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' DROP COLUMN ' . implode(', ', $fields);
         }
 
-        if ( ! empty($changes['rename']) && is_array($changes['rename'])) {
-            foreach ($changes['rename'] as $fieldName => $field) {
-                $sql[] = 'ALTER TABLE ' . $name . ' RENAME COLUMN ' . $fieldName
-                       . ' TO ' . $field['name'];
-            }
+        if ($diff->newName !== false) {
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' RENAME TO ' . $diff->newName;
         }
 
-        if ( ! empty($changes['remove']) && is_array($changes['remove'])) {
-            $fields = array();
-            foreach ($changes['remove'] as $fieldName => $field) {
-                $fields[] = $fieldName;
-            }
-            $sql[] = 'ALTER TABLE ' . $name . ' DROP COLUMN ' . implode(', ', $fields);
-        }
-
-        if ( ! empty($changes['name'])) {
-            $changeName = $changes['name'];
-            $sql[] = 'ALTER TABLE ' . $name . ' RENAME TO ' . $changeName;
-        }
+        $sql = array_merge($sql, $this->_getAlterTableIndexForeignKeySql($diff));
 
         return $sql;
     }
@@ -578,5 +601,30 @@ END;';
             return substr($schemaElementName, 0, 30);
         }
         return $schemaElementName;
+    }
+
+    /**
+     * Maximum length of any given databse identifier, like tables or column names.
+     *
+     * @return int
+     */
+    public function getMaxIdentifierLength()
+    {
+        return 30;
+    }
+
+    /**
+     * Whether the platform supports sequences.
+     *
+     * @return boolean
+     */
+    public function supportsSequences()
+    {
+        return true;
+    }
+
+    public function supportsForeignKeyOnUpdate()
+    {
+        return false;
     }
 }

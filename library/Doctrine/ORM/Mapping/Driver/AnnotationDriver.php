@@ -79,7 +79,7 @@ class AnnotationDriver implements Driver
         } else if (isset($classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass'])) {
             $metadata->isMappedSuperclass = true;
         } else {
-            throw DoctrineException::classIsNotAValidEntityOrMapperSuperClass($className);
+            throw DoctrineException::classIsNotAValidEntityOrMappedSuperClass($className);
         }
 
         // Evaluate DoctrineTable annotation
@@ -92,13 +92,17 @@ class AnnotationDriver implements Driver
             
             if ($tableAnnot->indexes !== null) {
                 foreach ($tableAnnot->indexes as $indexAnnot) {
-                    $primaryTable['indexes'][$indexAnnot->name] = array('columns' => $indexAnnot->columns);
+                    $primaryTable['indexes'][$indexAnnot->name] = array(
+                        'columns' => $indexAnnot->columns
+                    );
                 }
             }
             
             if ($tableAnnot->uniqueConstraints !== null) {
                 foreach ($tableAnnot->uniqueConstraints as $uniqueConstraint) {
-                    $primaryTable['uniqueConstraints'][] = $uniqueConstraint->columns;
+                    $primaryTable['uniqueConstraints'][$uniqueConstraint->name] = array(
+                        'columns' => $uniqueConstraint->columns
+                    );
                 }
             }
             
@@ -183,8 +187,10 @@ class AnnotationDriver implements Driver
                 $mapping['precision'] = $columnAnnot->precision;
                 $mapping['scale'] = $columnAnnot->scale;
                 $mapping['nullable'] = $columnAnnot->nullable;
-                $mapping['options'] = $columnAnnot->options;
                 $mapping['unique'] = $columnAnnot->unique;
+                if ($columnAnnot->options) {
+                    $mapping['options'] = $columnAnnot->options;
+                }
                 
                 if (isset($columnAnnot->default)) {
                     $mapping['default'] = $columnAnnot->default;
@@ -192,6 +198,10 @@ class AnnotationDriver implements Driver
                 
                 if (isset($columnAnnot->name)) {
                     $mapping['columnName'] = $columnAnnot->name;
+                }
+                
+                if (isset($columnAnnot->columnDefinition)) {
+                    $mapping['columnDefinition'] = $columnAnnot->columnDefinition;
                 }
                 
                 if ($idAnnot = $this->_reader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Id')) {
@@ -334,16 +344,19 @@ class AnnotationDriver implements Driver
                ! isset($classAnnotations['Doctrine\ORM\Mapping\MappedSuperclass']);
     }
     
-    public function preload()
+    /**
+     * {@inheritDoc}
+     */
+    public function getAllClassNames()
     {
         if ($this->_classDirectory) {
             $iter = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->_classDirectory),
-                                                  \RecursiveIteratorIterator::LEAVES_ONLY);
+                    \RecursiveIteratorIterator::LEAVES_ONLY);
         
             $declared = get_declared_classes();          
             foreach ($iter as $item) {
                 $info = pathinfo($item->getPathName());
-                if (! isset($info['extension']) || $info['extension'] != 'php') {
+                if ( ! isset($info['extension']) || $info['extension'] != 'php') {
                     continue;
                 }
                 require_once $item->getPathName();
@@ -361,4 +374,5 @@ class AnnotationDriver implements Driver
             return array();
         }
     }
+    
 }

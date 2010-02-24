@@ -92,5 +92,21 @@
             </fileset>
         </copy>
     </target>
+
+    <target name="doctrine-import">
+        <delete>
+            <fileset dir="${srcRoot}library/Doctrine/">
+                <include name="**.php" />
+                <include name="**/*.php" />
+            </fileset>
+        </delete>
+        <copy todir="${srcRoot}library/Doctrine/">
+            <fileset dir="${doctrineRoot}/Doctrine/">
+                <include name="**" />
+                <include name="**/*.php" />
+            </fileset>
+        </copy>
+    </target>
+
 </project>
 

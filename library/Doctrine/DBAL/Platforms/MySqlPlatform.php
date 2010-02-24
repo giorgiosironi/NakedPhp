@@ -21,7 +21,8 @@
 
 namespace Doctrine\DBAL\Platforms;
 
-use Doctrine\Common\DoctrineException;
+use Doctrine\Common\DoctrineException,
+    Doctrine\DBAL\Schema\TableDiff;
 
 /**
  * The MySqlPlatform provides the behavior, features and SQL dialect of the
@@ -202,13 +203,14 @@ class MySqlPlatform extends AbstractPlatform
 
     public function getListTableForeignKeysSql($table, $database = null)
     {
-        $sql = "SELECT column_name, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.key_column_usage WHERE table_name = '" . $table . "'";
+        $sql = "SELECT `CONSTRAINT_NAME`, `COLUMN_NAME`, `REFERENCED_TABLE_NAME`, ".
+               "`REFERENCED_COLUMN_NAME` FROM information_schema.key_column_usage WHERE table_name = '" . $table . "'";
 
         if ( ! is_null($database)) {
             $sql .= " AND table_schema = '$database'";
         }
 
-        $sql .= " AND REFERENCED_COLUMN_NAME is not NULL";
+        $sql .= " AND `REFERENCED_COLUMN_NAME` is not NULL";
 
         return $sql;
     }
@@ -366,7 +368,7 @@ class MySqlPlatform extends AbstractPlatform
     
     public function getListTablesSql()
     {
-        return 'SHOW TABLES';
+        return 'SHOW FULL TABLES WHERE Table_type = "BASE TABLE"';
     }
 
     public function getListTableColumnsSql($table)
@@ -401,8 +403,8 @@ class MySqlPlatform extends AbstractPlatform
     /**
      * create a new table
      *
-     * @param string $name   Name of the database that should be created
-     * @param array $fields  Associative array that contains the definition of each field of the new table
+     * @param string $tableName   Name of the database that should be created
+     * @param array $columns  Associative array that contains the definition of each field of the new table
      *                       The indexes of the array entries are the names of the fields of the table an
      *                       the array entry values are associative arrays like those that are meant to be
      *                       passed with the field definitions to get[Type]Declaration() functions.
@@ -433,19 +435,19 @@ class MySqlPlatform extends AbstractPlatform
      * @return void
      * @override
      */
-    public function getCreateTableSql($name, array $fields, array $options = array())
+    protected function _getCreateTableSql($tableName, array $columns, array $options = array())
     {
-        if ( ! $name) {
+        if ( ! $tableName) {
             throw DoctrineException::missingTableName();
         }
-        if (empty($fields)) {
-            throw DoctrineException::missingFieldsArrayForTable($name);
+        if (empty($columns)) {
+            throw DoctrineException::missingFieldsArrayForTable($tableName);
         }
-        $queryFields = $this->getColumnDeclarationListSql($fields);
+        $queryFields = $this->getColumnDeclarationListSql($columns);
 
         if (isset($options['uniqueConstraints']) && ! empty($options['uniqueConstraints'])) {
-            foreach ($options['uniqueConstraints'] as $uniqueConstraint) {
-                $queryFields .= ', UNIQUE(' . implode(', ', array_values($uniqueConstraint)) . ')';
+            foreach ($options['uniqueConstraints'] as $index => $definition) {
+                $queryFields .= ', ' . $this->getUniqueConstraintDeclarationSql($index, $definition);
             }
         }
 
@@ -466,7 +468,7 @@ class MySqlPlatform extends AbstractPlatform
         if (!empty($options['temporary'])) {
             $query .= 'TEMPORARY ';
         }
-        $query.= 'TABLE ' . $name . ' (' . $queryFields . ')';
+        $query.= 'TABLE ' . $tableName . ' (' . $queryFields . ')';
 
         $optionStrings = array();
 
@@ -494,10 +496,8 @@ class MySqlPlatform extends AbstractPlatform
         $sql[] = $query;
 
         if (isset($options['foreignKeys'])) {
-            foreach ((array) $options['foreignKeys'] as $k => $definition) {
-                if (is_array($definition)) {
-                    $sql[] = $this->getCreateForeignKeySql($name, $definition);
-                }
+            foreach ((array) $options['foreignKeys'] as $definition) {
+                $sql[] = $this->getCreateForeignKeySql($definition, $tableName);
             }
         }
         
@@ -593,91 +593,39 @@ class MySqlPlatform extends AbstractPlatform
      * @return boolean
      * @override
      */
-    public function getAlterTableSql($name, array $changes, $check = false)
+    public function getAlterTableSql(TableDiff $diff)
     {
-        if ( ! $name) {
-            throw DoctrineException::missingTableName();
-        }
-        
-        foreach ($changes as $changeName => $change) {
-            switch ($changeName) {
-                case 'add':
-                case 'remove':
-                case 'change':
-                case 'rename':
-                case 'name':
-                    break;
-                default:
-                    throw \Doctrine\Common\DoctrineException::alterTableChangeNotSupported($changeName);
-            }
+        $queryParts = array();
+        if ($diff->newName !== false) {
+            $queryParts[] =  'RENAME TO ' . $diff->newName;
         }
 
-        if ($check) {
-            return true;
+        foreach ($diff->addedColumns AS $fieldName => $column) {
+            $queryParts[] = 'ADD ' . $this->getColumnDeclarationSql($column->getName(), $column->toArray());
         }
 
-        $query = '';
-        if ( ! empty($changes['name'])) {
-            $query .= 'RENAME TO ' . $changes['name'];
+        foreach ($diff->removedColumns AS $column) {
+            $queryParts[] =  'DROP ' . $column->getName();
         }
 
-        if ( ! empty($changes['add']) && is_array($changes['add'])) {
-            foreach ($changes['add'] as $fieldName => $field) {
-                if ($query) {
-                    $query.= ', ';
-                }
-                $query.= 'ADD ' . $this->getColumnDeclarationSql($fieldName, $field);
-            }
+        foreach ($diff->changedColumns AS $columnDiff) {
+            /* @var $columnDiff Doctrine\DBAL\Schema\ColumnDiff */
+            $column = $columnDiff->column;
+            $queryParts[] =  'CHANGE ' . ($columnDiff->oldColumnName) . ' '
+                    . $this->getColumnDeclarationSql($column->getName(), $column->toArray());
         }
 
-        if ( ! empty($changes['remove']) && is_array($changes['remove'])) {
-            foreach ($changes['remove'] as $fieldName => $field) {
-                if ($query) {
-                    $query .= ', ';
-                }
-                $query .= 'DROP ' . $fieldName;
-            }
+        foreach ($diff->renamedColumns AS $oldColumnName => $column) {
+            $queryParts[] =  'CHANGE ' . $oldColumnName . ' '
+                    . $this->getColumnDeclarationSql($column->getName(), $column->toArray());
         }
 
-        $rename = array();
-        if ( ! empty($changes['rename']) && is_array($changes['rename'])) {
-            foreach ($changes['rename'] as $fieldName => $field) {
-                $rename[$field['name']] = $fieldName;
-            }
+        $sql = array();
+        if (count($queryParts) > 0) {
+            $sql[] = 'ALTER TABLE ' . $diff->name . ' ' . implode(", ", $queryParts);
         }
-
-        if ( ! empty($changes['change']) && is_array($changes['change'])) {
-            foreach ($changes['change'] as $fieldName => $field) {
-                if ($query) {
-                    $query.= ', ';
-                }
-                if (isset($rename[$fieldName])) {
-                    $oldFieldName = $rename[$fieldName];
-                    unset($rename[$fieldName]);
-                } else {
-                    $oldFieldName = $fieldName;
-                }
-                $query .= 'CHANGE ' . $oldFieldName . ' '
-                        . $this->getColumnDeclarationSql($fieldName, $field['definition']);
-            }
-        }
-
-        if ( ! empty($rename) && is_array($rename)) {
-            foreach ($rename as $renameName => $renamedField) {
-                if ($query) {
-                    $query.= ', ';
-                }
-                $field = $changes['rename'][$renamedField];
-                $query .= 'CHANGE ' . $renamedField . ' '
-                        . $this->getColumnDeclarationSql($field['name'], $field['definition']);
-            }
-        }
-
-        if ( ! $query) {
-            return false;
-        }
-
-        return array('ALTER TABLE ' . $name . ' ' . $query);
+        $sql = array_merge($sql, $this->_getAlterTableIndexForeignKeySql($diff));
+        return $sql;
     }
     
     /**
@@ -739,41 +687,6 @@ class MySqlPlatform extends AbstractPlatform
      * Obtain DBMS specific SQL code portion needed to set an index
      * declaration to be used in statements like CREATE TABLE.
      *
-     * @param string $charset       name of the index
-     * @param array $definition     index definition
-     * @return string  DBMS specific SQL code portion needed to set an index
-     * @override
-     */
-    public function getIndexDeclarationSql($name, array $definition)
-    {
-        $type = '';
-        if (isset($definition['type'])) {
-            switch (strtolower($definition['type'])) {
-                case 'fulltext':
-                case 'unique':
-                    $type = strtoupper($definition['type']) . ' ';
-                break;
-                default:
-                    throw DoctrineException::invalidIndexType($definition['type']);
-            }
-        }
-
-        if ( ! isset($definition['columns'])) {
-            throw DoctrineException::indexFieldsArrayRequired();
-        }
-        $definition['columns'] = (array) $definition['columns'];
-
-        $query = $type . 'INDEX ' . $name;
-
-        $query .= ' (' . $this->getIndexFieldDeclarationListSql($definition['columns']) . ')';
-
-        return $query;
-    }
-    
-    /**
-     * Obtain DBMS specific SQL code portion needed to set an index
-     * declaration to be used in statements like CREATE TABLE.
-     *
      * @return string
      * @override
      */
@@ -812,35 +725,42 @@ class MySqlPlatform extends AbstractPlatform
      * Return the FOREIGN KEY query section dealing with non-standard options
      * as MATCH, INITIALLY DEFERRED, ON UPDATE, ...
      *
-     * @param array $definition
+     * @param ForeignKeyConstraint $foreignKey
      * @return string
      * @override
      */
-    public function getAdvancedForeignKeyOptionsSql(array $definition)
+    public function getAdvancedForeignKeyOptionsSql(\Doctrine\DBAL\Schema\ForeignKeyConstraint $foreignKey)
     {
         $query = '';
-        if ( ! empty($definition['match'])) {
-            $query .= ' MATCH ' . $definition['match'];
+        if ($foreignKey->hasOption('match')) {
+            $query .= ' MATCH ' . $foreignKey->getOption('match');
         }
-        if ( ! empty($definition['onUpdate'])) {
-            $query .= ' ON UPDATE ' . $this->getForeignKeyReferentialActionSql($definition['onUpdate']);
-        }
-        if ( ! empty($definition['onDelete'])) {
-            $query .= ' ON DELETE ' . $this->getForeignKeyReferentialActionSql($definition['onDelete']);
-        }
+        $query .= parent::getAdvancedForeignKeyOptionsSql($foreignKey);
         return $query;
     }
     
     /**
      * Gets the SQL to drop an index of a table.
      *
-     * @param string    $table          name of table that should be used in method
-     * @param string    $name           name of the index to be dropped
+     * @param Index $index           name of the index to be dropped
+     * @param string|Table $table          name of table that should be used in method
      * @override
      */
-    public function getDropIndexSql($table, $name)
+    public function getDropIndexSql($index, $table=null)
     {
-        return 'DROP INDEX ' . $name . ' ON ' . $table;
+        if($index instanceof \Doctrine\DBAL\Schema\Index) {
+            $index = $index->getName();
+        } else if(!is_string($index)) {
+            throw new \InvalidArgumentException('MysqlPlatform::getDropIndexSql() expects $index parameter to be string or \Doctrine\DBAL\Schema\Index.');
+        }
+        
+        if($table instanceof \Doctrine\DBAL\Schema\Table) {
+            $table = $table->getName();
+        } else if(!is_string($table)) {
+            throw new \InvalidArgumentException('MysqlPlatform::getDropIndexSql() expects $table parameter to be string or \Doctrine\DBAL\Schema\Table.');
+        }
+
+        return 'DROP INDEX ' . $index . ' ON ' . $table;
     }
     
     /**
@@ -851,6 +771,12 @@ class MySqlPlatform extends AbstractPlatform
      */
     public function getDropTableSql($table)
     {
+        if ($table instanceof \Doctrine\DBAL\Schema\Table) {
+            $table = $table->getName();
+        } else if(!is_string($table)) {
+            throw new \InvalidArgumentException('MysqlPlatform::getDropTableSql() expects $table parameter to be string or \Doctrine\DBAL\Schema\Table.');
+        }
+
         return 'DROP TABLE ' . $table;
     }
 
@@ -867,5 +793,10 @@ class MySqlPlatform extends AbstractPlatform
     public function getName()
     {
         return 'mysql';
+    }
+
+    public function createsExplicitIndexForForeignKeys()
+    {
+        return true;
     }
 }

@@ -21,7 +21,11 @@
  
 namespace Doctrine\ORM\Tools\Cli\Tasks;
 
-use Doctrine\Common\Cache\AbstractDriver;
+use Doctrine\Common\Cli\Tasks\AbstractTask,
+    Doctrine\Common\Cli\CliException,
+    Doctrine\Common\Cli\Option,
+    Doctrine\Common\Cli\OptionGroup,
+    Doctrine\Common\Cache\AbstractDriver;
 
 /**
  * CLI Task to clear the cache of the various cache drivers
@@ -36,118 +40,105 @@ use Doctrine\Common\Cache\AbstractDriver;
  */
 class ClearCacheTask extends AbstractTask
 {
-    public function basicHelp()
+    /**
+     * @inheritdoc
+     */
+    public function buildDocumentation()
     {
-        $this->_writeSynopsis($this->getPrinter());
+        $cacheOptions = new OptionGroup(OptionGroup::CARDINALITY_1_1, array(
+            new Option('query', null, 'Clear the query cache.'),
+            new Option('metadata', null, 'Clear the metadata cache.'),
+            new OptionGroup(OptionGroup::CARDINALITY_M_N, array(
+                new OptionGroup(OptionGroup::CARDINALITY_1_1, array(
+                    new Option('result', null, 'Clear the result cache.')
+                )), 
+                new OptionGroup(OptionGroup::CARDINALITY_0_N, array(
+                    new Option('id', '<ID>', 'The id of the cache entry to delete (accepts * wildcards).'),
+                    new Option('regex', '<REGEX>', 'Delete cache entries that match the given regular expression.'),
+                    new Option('prefix', '<PREFIX>', 'Delete cache entries that have the given prefix.'),
+                    new Option('suffix', '<SUFFIX>', 'Delete cache entries that have the given suffix.')
+                ))
+            ))
+        ));
+        
+        $doc = $this->getDocumentation();
+        $doc->setName('clear-cache')
+            ->setDescription('Clear cache from configured query, result and metadata drivers.')
+            ->getOptionGroup()
+                ->addOption($cacheOptions);
     }
 
-    public function extendedHelp()
-    {
-        $printer = $this->getPrinter();
-    
-        $printer->write('Task: ')->writeln('clear-cache', 'KEYWORD')
-                ->write('Synopsis: ');
-        $this->_writeSynopsis($printer);
-
-        $printer->writeln('Description: Clear cache from configured query, result and metadata drivers.')
-                ->writeln('Options:')
-                ->write('--query', 'OPT_ARG')
-                ->writeln("\t\t\tClear the query cache.")
-                ->write('--result', 'OPT_ARG')
-                ->writeln("\t\tClear the result cache.")
-                ->write('--metadata', 'OPT_ARG')
-                ->writeln("\t\tClear the metadata cache.")
-                ->write('--id=<ID>', 'REQ_ARG')
-                ->writeln("\t\tThe id of the cache entry to delete (accepts * wildcards).")
-                ->write('--regex=<REGEX>', 'REQ_ARG')
-                ->writeln("\t\tDelete cache entries that match the given regular expression.")
-                ->write('--prefix=<PREFIX>', 'REQ_ARG')
-                ->writeln("\tDelete cache entries that have the given prefix.")
-                ->write('--suffix=<SUFFIX>', 'REQ_ARG')
-                ->writeln("\tDelete cache entries that have the given suffix.");
-    }
-
-    private function _writeSynopsis($printer)
-    {
-        $printer->write('clear-cache', 'KEYWORD')
-                ->write(' (--query | --result | --metadata)', 'OPT_ARG')
-                ->write(' [--id=<ID>]', 'REQ_ARG')
-                ->write(' [--regex=<REGEX>]', 'REQ_ARG')
-                ->write(' [--prefix=<PREFIX>]', 'REQ_ARG')
-                ->writeln(' [--suffix=<SUFFIX>]', 'REQ_ARG');
-    }
-
+    /**
+     * @inheritdoc
+     */
     public function validate()
     {
-        $printer = $this->getPrinter();
-        $args = $this->getArguments();
-
+        $arguments = $this->getArguments();
+        
+        // Check if we have an active EntityManager
+        $em = $this->getConfiguration()->getAttribute('em');
+        
+        if ($em === null) {
+            throw new CliException(
+                "Attribute 'em' of CLI Configuration is not defined or it is not a valid EntityManager."
+            );
+        }
+        
         // When clearing the query cache no need to specify
         // id, regex, prefix or suffix.
-        if ((isset($args['query']) || isset($args['metadata']))
-            && (isset($args['id'])
-                || isset($args['regex'])
-                || isset($args['prefix'])
-                || isset($args['suffix']))) {
-
-            $printer->writeln('When clearing the query or metadata cache do not specify any --id, --regex, --prefix or --suffix.', 'ERROR');
-
-            return false;
+        if (
+            (isset($arguments['query']) || isset($arguments['metadata'])) && (isset($arguments['id']) || 
+            isset($arguments['regex']) || isset($arguments['prefix']) || isset($arguments['suffix']))
+        ) {
+            throw new CliException(
+                'When clearing the query or metadata cache do not ' .
+                'specify any --id, --regex, --prefix or --suffix.'
+            );
         }
 
         return true;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function run()
     {
+        $arguments = $this->getArguments();
         $printer = $this->getPrinter();
-        $args = $this->getArguments();
-
-        $query = isset($args['query']);
-        $result = isset($args['result']);
-        $metadata = isset($args['metadata']);
-        $id = isset($args['id']) ? $args['id'] : null;
-        $regex = isset($args['regex']) ? $args['regex'] : null;
-        $prefix = isset($args['prefix']) ? $args['prefix'] : null;
-        $suffix = isset($args['suffix']) ? $args['suffix'] : null;
+        
+        $query = isset($arguments['query']);
+        $result = isset($arguments['result']);
+        $metadata = isset($arguments['metadata']);
+        $id = isset($arguments['id']) ? $arguments['id'] : null;
+        $regex = isset($arguments['regex']) ? $arguments['regex'] : null;
+        $prefix = isset($arguments['prefix']) ? $arguments['prefix'] : null;
+        $suffix = isset($arguments['suffix']) ? $arguments['suffix'] : null;
 
         $all = false;
+        
         if ( ! $query && ! $result && ! $metadata) {
             $all = true;
         }
 
-        $configuration = $this->getEntityManager()->getConfiguration();
+        $em = $this->getConfiguration()->getAttribute('em');
+        $configuration = $em->getConfiguration();
 
         if ($query || $all) {
             $this->_doDelete(
-                'query',
-                $configuration->getQueryCacheImpl(),
-                $id,
-                $regex,
-                $prefix,
-                $suffix
+                'query', $configuration->getQueryCacheImpl(), $id, $regex, $prefix, $suffix
             );
         }
 
         if ($result || $all) {
             $this->_doDelete(
-                'result',
-                $configuration->getResultCacheImpl(),
-                $id,
-                $regex,
-                $prefix,
-                $suffix
+                'result', $configuration->getResultCacheImpl(), $id, $regex, $prefix, $suffix
             );
         }
 
         if ($metadata || $all) {
             $this->_doDelete(
-                'metadata',
-                $configuration->getMetadataCacheImpl(),
-                $id,
-                $regex,
-                $prefix,
-                $suffix
+                'metadata', $configuration->getMetadataCacheImpl(), $id, $regex, $prefix, $suffix
             );
         }
     }
@@ -157,55 +148,58 @@ class ClearCacheTask extends AbstractTask
         $printer = $this->getPrinter();
 
         if ( ! $cacheDriver) {
-            $printer->writeln('No driver has been configured for the ' . $type . ' cache.', 'ERROR');
-            return false;
+            throw new CliException('No driver has been configured for the ' . $type . ' cache.');
         }
 
         if ($id) {
-            $printer->writeln('Clearing ' . $type . ' cache entries that match the id "' . $id . '"', 'INFO');
+            $printer->writeln('Clearing ' . $type . ' cache entries that match the id "' . $id . '".', 'INFO');
 
             $deleted = $cacheDriver->delete($id);
+            
             if (is_array($deleted)) {
-                $this->_printDeleted($printer, $type, $deleted);
+                $this->_printDeleted($type, $deleted);
             } else if (is_bool($deleted) && $deleted) {
-                $this->_printDeleted($printer, $type, array($id));
+                $this->_printDeleted($type, array($id));
             }
         }
 
         if ($regex) {
-            $printer->writeln('Clearing ' . $type . ' cache entries that match the regular expression "' . $regex . '"', 'INFO');
+            $printer->writeln('Clearing ' . $type . ' cache entries that match the regular expression ".' . $regex . '"', 'INFO');
 
-            $this->_printDeleted($printer, $type, $cacheDriver->deleteByRegex('/' . $regex. '/'));
+            $this->_printDeleted($type, $cacheDriver->deleteByRegex('/' . $regex. '/'));
         }
 
         if ($prefix) {
-            $printer->writeln('Clearing ' . $type . ' cache entries that have the prefix "' . $prefix . '"', 'INFO');
+            $printer->writeln('Clearing ' . $type . ' cache entries that have the prefix "' . $prefix . '".', 'INFO');
 
-            $this->_printDeleted($printer, $type, $cacheDriver->deleteByPrefix($prefix));
+            $this->_printDeleted($type, $cacheDriver->deleteByPrefix($prefix));
         }
 
         if ($suffix) {
-            $printer->writeln('Clearing ' . $type . ' cache entries that have the suffix "' . $suffix . '"', 'INFO');
+            $printer->writeln('Clearing ' . $type . ' cache entries that have the suffix "' . $suffix . '".', 'INFO');
 
-            $this->_printDeleted($printer, $type, $cacheDriver->deleteBySuffix($suffix));
+            $this->_printDeleted($type, $cacheDriver->deleteBySuffix($suffix));
         }
 
         if ( ! $id && ! $regex && ! $prefix && ! $suffix) {
-            $printer->writeln('Clearing all ' . $type . ' cache entries', 'INFO');
+            $printer->writeln('Clearing all ' . $type . ' cache entries.', 'INFO');
 
-            $this->_printDeleted($printer, $type, $cacheDriver->deleteAll());
+            $this->_printDeleted($type, $cacheDriver->deleteAll());
         }
     }
 
-    private function _printDeleted($printer, $type, array $ids)
+    private function _printDeleted($type, array $ids)
     {
+        $printer = $this->getPrinter();
+    
         if ( ! empty($ids)) {
             foreach ($ids as $id) {
                 $printer->writeln(' - ' . $id);
             }
         } else {
-            $printer->writeln('No ' . $type . ' cache entries found', 'ERROR');
+            throw new CliException('No ' . $type . ' cache entries found.');
         }
-        $printer->writeln("");
+        
+        $printer->write(PHP_EOL);
     }
 }

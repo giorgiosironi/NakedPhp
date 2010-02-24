@@ -31,6 +31,8 @@ namespace Doctrine\Common;
  * 
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
+ * 
+ * @deprecated Use Doctrine\Common\ClassLoader instead.
  */
 class IsolatedClassLoader
 {
@@ -45,7 +47,7 @@ class IsolatedClassLoader
      * 
      * @param string $ns The namespace to use.
      */
-    public function __construct($ns)
+    public function __construct($ns = null)
     {
         $this->_namespace = $ns;
     }
@@ -96,11 +98,7 @@ class IsolatedClassLoader
      */
     public function loadClass($className)
     {
-        /*if (class_exists($className, false) || interface_exists($className, false)) {
-            return false;
-        }*/
-
-        if (strpos($className, $this->_namespace.$this->_namespaceSeparator) !== 0) {
+        if ($this->_namespace && strpos($className, $this->_namespace.$this->_namespaceSeparator) !== 0) {
             return false;
         }
 

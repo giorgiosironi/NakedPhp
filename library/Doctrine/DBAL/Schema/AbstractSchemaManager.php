@@ -23,6 +23,8 @@ namespace Doctrine\DBAL\Schema;
 
 use \Doctrine\DBAL\Types;
 use \Doctrine\Common\DoctrineException;
+use \Doctrine\DBAL\DBALException;
+use \Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
  * Base class for schema managers. Schema managers are used to inspect and/or
@@ -42,14 +44,14 @@ abstract class AbstractSchemaManager
     /**
      * Holds instance of the Doctrine connection for this schema manager
      *
-     * @var object \Doctrine\DBAL\Connection
+     * @var \Doctrine\DBAL\Connection
      */
     protected $_conn;
 
     /**
      * Holds instance of the database platform used for this schema manager
      *
-     * @var string
+     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
      */
     protected $_platform;
 
@@ -62,6 +64,16 @@ abstract class AbstractSchemaManager
     {
         $this->_conn = $conn;
         $this->_platform = $this->_conn->getDatabasePlatform();
+    }
+
+    /**
+     * Return associated platform.
+     *
+     * @return \Doctrine\DBAL\Platform\AbstractPlatform
+     */
+    public function getDatabasePlatform()
+    {
+        return $this->_platform;
     }
 
     /**
@@ -210,32 +222,12 @@ abstract class AbstractSchemaManager
     }
 
     /**
-     * List the indexes for a given table
-     * 
-     * @example
-     * $indexes = array(
-     *  'primary' => array(
-     *      'name' => 'primary',
-     *      'columns' => array('id'),
-     *      'unique' => true,
-     *      'primary' => true,
-     *  ),
-     *  'fieldUnq' => array(
-     *      'name' => 'fieldUnq',
-     *      'columns' => array('foo', 'bar'),
-     *      'unique' => true,
-     *      'primary' => false,
-     *  ),
-     *  'fieldIdx' => array(
-     *      'name' => 'fieldIdx',
-     *      'columns' => array('baz'),
-     *      'unique' => false,
-     *      'primary' => false,
-     *  ),
-     * );
+     * List the indexes for a given table returning an array of Index instances.
+     *
+     * Keys of the portable indexes list are all lower-cased.
      *
      * @param string $table The name of the table
-     * @return array $tableIndexes
+     * @return Index[] $tableIndexes
      */
     public function listTableIndexes($table)
     {
@@ -249,7 +241,7 @@ abstract class AbstractSchemaManager
     /**
      * List the tables for this connection
      *
-     * @return array $tables
+     * @return Table[]
      */
     public function listTables()
     {
@@ -257,7 +249,51 @@ abstract class AbstractSchemaManager
 
         $tables = $this->_conn->fetchAll($sql);
 
-        return $this->_getPortableTablesList($tables);
+        $tableNames = $this->_getPortableTablesList($tables);
+        $tables = array();
+
+        foreach ($tableNames AS $tableName) {
+            $columns = $this->listTableColumns($tableName);
+            $foreignKeys = array();
+            if ($this->_platform->supportsForeignKeyConstraints()) {
+                $foreignKeys = $this->listTableForeignKeys($tableName);
+            }
+            $indexes = $this->listTableIndexes($tableName);
+
+            $idGeneratorType = Table::ID_NONE;
+            foreach ($columns AS $column) {
+                if ($column->hasPlatformOption('autoincrement') && $column->getPlatformOption('autoincrement')) {
+                    $idGeneratorType = Table::ID_IDENTITY;
+                }
+            }
+
+            $tables[] = $this->listTableDetails($tableName);
+        }
+
+        return $tables;
+    }
+
+    /**
+     * @param  string $tableName
+     * @return Table
+     */
+    public function listTableDetails($tableName)
+    {
+        $columns = $this->listTableColumns($tableName);
+        $foreignKeys = array();
+        if ($this->_platform->supportsForeignKeyConstraints()) {
+            $foreignKeys = $this->listTableForeignKeys($tableName);
+        }
+        $indexes = $this->listTableIndexes($tableName);
+
+        $idGeneratorType = Table::ID_NONE;
+        foreach ($columns AS $column) {
+            if ($column->hasPlatformOption('autoincrement') && $column->getPlatformOption('autoincrement')) {
+                $idGeneratorType = Table::ID_IDENTITY;
+            }
+        }
+
+        return new Table($tableName, $columns, $indexes, $foreignKeys, $idGeneratorType, array());
     }
 
     /**
@@ -336,36 +372,39 @@ abstract class AbstractSchemaManager
     /**
      * Drop the index from the given table
      *
-     * @param string $table The name of the table
-     * @param string $name  The name of the index
+     * @param Index|string $index  The name of the index
+     * @param string|Table $table The name of the table
      */
-    public function dropIndex($table, $name)
+    public function dropIndex($index, $table)
     {
-        $this->_execSql($this->_platform->getDropIndexSql($table, $name));
+        if($index instanceof Index) {
+            $index = $index->getName();
+        }
+
+        $this->_execSql($this->_platform->getDropIndexSql($index, $table));
     }
 
     /**
      * Drop the constraint from the given table
      *
+     * @param Constraint $constraint
      * @param string $table   The name of the table
-     * @param string $name    The name of the constraint
-     * @param string $primary Whether or not it is a primary constraint
      */
-    public function dropConstraint($table, $name, $primary = false)
+    public function dropConstraint(Constraint $constraint, $table)
     {
-        $this->_execSql($this->_platform->getDropConstraintSql($table, $name, $primary));
+        $this->_execSql($this->_platform->getDropConstraintSql($constraint, $table));
     }
 
     /**
      * Drops a foreign key from a table.
      *
-     * @param string $table The name of the table with the foreign key.
-     * @param string $name  The name of the foreign key.
+     * @param ForeignKeyConstraint|string $table The name of the table with the foreign key.
+     * @param Table|string $name  The name of the foreign key.
      * @return boolean $result
      */
-    public function dropForeignKey($table, $name)
+    public function dropForeignKey($foreignKey, $table)
     {
-        $this->_execSql($this->_platform->getDropForeignKeySql($table, $name));
+        $this->_execSql($this->_platform->getDropForeignKeySql($foreignKey, $table));
     }
 
     /**
@@ -404,109 +443,57 @@ abstract class AbstractSchemaManager
     /**
      * Create a new table.
      *
-     * @param string $name Name of the database that should be created
-     * @param array $columns Associative array that contains the definition of each field of the new table
-     * @param array $options An associative array of table options.
+     * @param Table $table
+     * @param int $createFlags
      */
-    public function createTable($name, array $columns, array $options = array())
+    public function createTable(Table $table)
     {
-        // Build array of the primary keys if any of the individual field definitions
-        // specify primary => true
-        $count = 0;
-        foreach ($columns as $columnName => $definition) {
-            if (isset($definition['primary']) && $definition['primary']) {
-                if ($count == 0) {
-                    $options['primary'] = array();
-                }
-                ++$count;
-                $options['primary'][] = $columnName;
-            }
-        }
-        $this->_execSql($this->_platform->getCreateTableSql($name, $columns, $options));
+        $createFlags = AbstractPlatform::CREATE_INDEXES|AbstractPlatform::CREATE_FOREIGNKEYS;
+        $this->_execSql($this->_platform->getCreateTableSql($table, $createFlags));
     }
 
     /**
      * Create a new sequence
      *
-     * @param string    $seqName        name of the sequence to be created
-     * @param string    $start          start value of the sequence; default is 1
-     * @param array     $allocationSize The size to allocate for sequence
+     * @param Sequence $sequence
      * @throws Doctrine\DBAL\ConnectionException     if something fails at database level
      */
-    public function createSequence($seqName, $start = 1, $allocationSize = 1)
+    public function createSequence($sequence)
     {
-        $this->_execSql($this->_platform->getCreateSequenceSql($seqName, $start, $allocationSize));
+        $this->_execSql($this->_platform->getCreateSequenceSql($sequence));
     }
 
     /**
      * Create a constraint on a table
      *
-     * @param string    $table         name of the table on which the constraint is to be created
-     * @param string    $name          name of the constraint to be created
-     * @param array     $definition    associative array that defines properties of the constraint to be created.
-     *                                 Currently, only one property named FIELDS is supported. This property
-     *                                 is also an associative with the names of the constraint fields as array
-     *                                 constraints. Each entry of this array is set to another type of associative
-     *                                 array that specifies properties of the constraint that are specific to
-     *                                 each field.
-     *
-     *                                 Example
-     *                                    array(
-     *                                        'columns' => array(
-     *                                            'user_name' => array(),
-     *                                            'last_login' => array()
-     *                                        )
-     *                                    )
+     * @param Constraint $constraint
+     * @param string|Table $table
      */
-    public function createConstraint($table, $name, $definition)
+    public function createConstraint(Constraint $constraint, $table)
     {
-        $this->_execSql($this->_platform->getCreateConstraintSql($table, $name, $definition));
+        $this->_execSql($this->_platform->getCreateConstraintSql($constraint, $table));
     }
 
     /**
      * Create a new index on a table
      *
+     * @param Index     $index
      * @param string    $table         name of the table on which the index is to be created
-     * @param string    $name          name of the index to be created
-     * @param array     $definition    associative array that defines properties of the index to be created.
-     *                                 Currently, only one property named FIELDS is supported. This property
-     *                                 is also an associative with the names of the index fields as array
-     *                                 indexes. Each entry of this array is set to another type of associative
-     *                                 array that specifies properties of the index that are specific to
-     *                                 each field.
-     *
-     *                                 Currently, only the sorting property is supported. It should be used
-     *                                 to define the sorting direction of the index. It may be set to either
-     *                                 ascending or descending.
-     *
-     *                                 Not all DBMS support index sorting direction configuration. The DBMS
-     *                                 drivers of those that do not support it ignore this property. Use the
-     *                                 function supports() to determine whether the DBMS driver can manage indexes.
-     *
-     *                                 Example
-     *                                    array(
-     *                                        'columns' => array(
-     *                                            'user_name' => array(
-     *                                                'sorting' => 'ascending'
-     *                                            ),
-     *                                            'last_login' => array()
-     *                                        )
-     *                                    )
      */
-    public function createIndex($table, $name, array $definition)
+    public function createIndex(Index $index, $table)
     {
-        $this->_execSql($this->_platform->getCreateIndexSql($table, $name, $definition));
+        $this->_execSql($this->_platform->getCreateIndexSql($index, $table));
     }
 
     /**
      * Create a new foreign key
      *
-     * @param string    $table         name of the table on which the foreign key is to be created
-     * @param array     $definition    associative array that defines properties of the foreign key to be created.
+     * @param ForeignKeyConstraint  $foreignKey    ForeignKey instance
+     * @param string|Table          $table         name of the table on which the foreign key is to be created
      */
-    public function createForeignKey($table, array $definition)
+    public function createForeignKey(ForeignKeyConstraint $foreignKey, $table)
     {
-        $this->_execSql($this->_platform->getCreateForeignKeySql($table, $definition));
+        $this->_execSql($this->_platform->getCreateForeignKeySql($foreignKey, $table));
     }
 
     /**
@@ -525,89 +512,48 @@ abstract class AbstractSchemaManager
     /**
      * Drop and create a constraint
      *
-     * @param string    $table         name of the table on which the constraint is to be created
-     * @param string    $name          name of the constraint to be created
-     * @param array     $definition    associative array that defines properties of the constraint to be created.
-     *                                 Currently, only one property named FIELDS is supported. This property
-     *                                 is also an associative with the names of the constraint fields as array
-     *                                 constraints. Each entry of this array is set to another type of associative
-     *                                 array that specifies properties of the constraint that are specific to
-     *                                 each field.
-     *
-     *                                 Example
-     *                                    array(
-     *                                        'columns' => array(
-     *                                            'user_name' => array(),
-     *                                            'last_login' => array()
-     *                                        )
-     *                                    )
-     * @param boolean $primary Whether or not it is a primary constraint
+     * @param Constraint    $constraint
+     * @param string        $table
      * @see dropConstraint()
      * @see createConstraint()
      */
-    public function dropAndCreateConstraint($table, $name, $definition, $primary = false)
+    public function dropAndCreateConstraint(Constraint $constraint, $table)
     {
-        $this->tryMethod('dropConstraint', $table, $name, $primary);
-        $this->createConstraint($table, $name, $definition);
+        $this->tryMethod('dropConstraint', $constraint, $table);
+        $this->createConstraint($constraint, $table);
     }
 
     /**
      * Drop and create a new index on a table
      *
-     * @param string    $table         name of the table on which the index is to be created
-     * @param string    $name          name of the index to be created
-     * @param array     $definition    associative array that defines properties of the index to be created.
-     *                                 Currently, only one property named FIELDS is supported. This property
-     *                                 is also an associative with the names of the index fields as array
-     *                                 indexes. Each entry of this array is set to another type of associative
-     *                                 array that specifies properties of the index that are specific to
-     *                                 each field.
-     *
-     *                                 Currently, only the sorting property is supported. It should be used
-     *                                 to define the sorting direction of the index. It may be set to either
-     *                                 ascending or descending.
-     *
-     *                                 Not all DBMS support index sorting direction configuration. The DBMS
-     *                                 drivers of those that do not support it ignore this property. Use the
-     *                                 function supports() to determine whether the DBMS driver can manage indexes.
-     *
-     *                                 Example
-     *                                    array(
-     *                                        'columns' => array(
-     *                                            'user_name' => array(
-     *                                                'sorting' => 'ascending'
-     *                                            ),
-     *                                            'last_login' => array()
-     *                                        )
-     *                                    )
+     * @param string|Table $table         name of the table on which the index is to be created
+     * @param Index $index
      */
-    public function dropAndCreateIndex($table, $name, array $definition)
+    public function dropAndCreateIndex(Index $index, $table)
     {
-        $this->tryMethod('dropIndex', $table, $name);
-        $this->createIndex($table, $name, $definition);
+        $this->tryMethod('dropIndex', $index->getName(), $table);
+        $this->createIndex($index, $table);
     }
 
     /**
      * Drop and create a new foreign key
      *
-     * @param string    $table         name of the table on which the foreign key is to be created
-     * @param array     $definition    associative array that defines properties of the foreign key to be created.
+     * @param ForeignKeyConstraint  $foreignKey    associative array that defines properties of the foreign key to be created.
+     * @param string|Table          $table         name of the table on which the foreign key is to be created
      */
-    public function dropAndCreateForeignKey($table, $definition)
+    public function dropAndCreateForeignKey(ForeignKeyConstraint $foreignKey, $table)
     {
-        $this->tryMethod('dropForeignKey', $table, $definition['name']);
-        $this->createForeignKey($table, $definition);
+        $this->tryMethod('dropForeignKey', $foreignKey, $table);
+        $this->createForeignKey($foreignKey, $table);
     }
 
     /**
      * Drop and create a new sequence
      *
-     * @param string    $seqName        name of the sequence to be created
-     * @param string    $start          start value of the sequence; default is 1
-     * @param array     $allocationSize The size to allocate for sequence
+     * @param Sequence $sequence
      * @throws Doctrine\DBAL\ConnectionException     if something fails at database level
      */
-    public function dropAndCreateSequence($seqName, $start = 1, $allocationSize = 1)
+    public function dropAndCreateSequence(Sequence $sequence)
     {
         $this->tryMethod('createSequence', $seqName, $start, $allocationSize);
         $this->createSequence($seqName, $start, $allocationSize);
@@ -616,14 +562,12 @@ abstract class AbstractSchemaManager
     /**
      * Drop and create a new table.
      *
-     * @param string $name Name of the database that should be created
-     * @param array $columns Associative array that contains the definition of each field of the new table
-     * @param array $options An associative array of table options.
+     * @param Table $table
      */
-    public function dropAndCreateTable($name, array $columns, array $options = array())
+    public function dropAndCreateTable(Table $table)
     {
-        $this->tryMethod('dropTable', $name);
-        $this->createTable($name, $columns, $options);
+        $this->tryMethod('dropTable', $table->getName());
+        $this->createTable($table);
     }
 
     /**
@@ -654,95 +598,15 @@ abstract class AbstractSchemaManager
     /**
      * Alter an existing tables schema
      *
-     * @param string $name         name of the table that is intended to be changed.
-     * @param array $changes     associative array that contains the details of each type
-     *                             of change that is intended to be performed. The types of
-     *                             changes that are currently supported are defined as follows:
-     *
-     *                             name
-     *
-     *                                New name for the table.
-     *
-     *                            add
-     *
-     *                                Associative array with the names of fields to be added as
-     *                                 indexes of the array. The value of each entry of the array
-     *                                 should be set to another associative array with the properties
-     *                                 of the fields to be added. The properties of the fields should
-     *                                 be the same as defined by the MDB2 parser.
-     *
-     *
-     *                            remove
-     *
-     *                                Associative array with the names of fields to be removed as indexes
-     *                                 of the array. Currently the values assigned to each entry are ignored.
-     *                                 An empty array should be used for future compatibility.
-     *
-     *                            rename
-     *
-     *                                Associative array with the names of fields to be renamed as indexes
-     *                                 of the array. The value of each entry of the array should be set to
-     *                                 another associative array with the entry named name with the new
-     *                                 field name and the entry named Declaration that is expected to contain
-     *                                 the portion of the field declaration already in DBMS specific SQL code
-     *                                 as it is used in the CREATE TABLE statement.
-     *
-     *                            change
-     *
-     *                                Associative array with the names of the fields to be changed as indexes
-     *                                 of the array. Keep in mind that if it is intended to change either the
-     *                                 name of a field and any other properties, the change array entries
-     *                                 should have the new names of the fields as array indexes.
-     *
-     *                                The value of each entry of the array should be set to another associative
-     *                                 array with the properties of the fields to that are meant to be changed as
-     *                                 array entries. These entries should be assigned to the new values of the
-     *                                 respective properties. The properties of the fields should be the same
-     *                                 as defined by the MDB2 parser.
-     *
-     *                            Example
-     *                                array(
-     *                                    'name' => 'userlist',
-     *                                    'add' => array(
-     *                                        'quota' => array(
-     *                                            'type' => 'integer',
-     *                                            'unsigned' => 1
-     *                                        )
-     *                                    ),
-     *                                    'remove' => array(
-     *                                        'file_limit' => array(),
-     *                                        'time_limit' => array()
-     *                                    ),
-     *                                    'change' => array(
-     *                                        'name' => array(
-     *                                            'length' => '20',
-     *                                            'definition' => array(
-     *                                                'type' => 'text',
-     *                                                'length' => 20,
-     *                                            ),
-     *                                        )
-     *                                    ),
-     *                                    'rename' => array(
-     *                                        'sex' => array(
-     *                                            'name' => 'gender',
-     *                                            'definition' => array(
-     *                                                'type' => 'text',
-     *                                                'length' => 1,
-     *                                                'default' => 'M',
-     *                                            ),
-     *                                        )
-     *                                    )
-     *                                )
-     *
-     * @param boolean $check     indicates whether the function should just check if the DBMS driver
-     *                             can perform the requested table alterations if the value is true or
-     *                             actually perform them otherwise.
+     * @param TableDiff $tableDiff
      */
-    public function alterTable($name, array $changes, $check = false)
+    public function alterTable(TableDiff $tableDiff)
     {
-        $queries = $this->_platform->getAlterTableSql($name, $changes, $check);
-        foreach($queries AS $ddlQuery) {
-            $this->_execSql($ddlQuery);
+        $queries = $this->_platform->getAlterTableSql($tableDiff);
+        if (is_array($queries) && count($queries)) {
+            foreach ($queries AS $ddlQuery) {
+                $this->_execSql($ddlQuery);
+            }
         }
     }
 
@@ -754,10 +618,9 @@ abstract class AbstractSchemaManager
      */
     public function renameTable($name, $newName)
     {
-        $change = array(
-            'name' => $newName
-        );
-        $this->alterTable($name, $change);
+        $tableDiff = new TableDiff($name);
+        $tableDiff->newName = $newName;
+        $this->alterTable($tableDiff);
     }
 
     /**
@@ -899,9 +762,13 @@ abstract class AbstractSchemaManager
         return $list;
     }
 
+    /**
+     * @param array $sequence
+     * @return Sequence
+     */
     protected function _getPortableSequenceDefinition($sequence)
     {
-        return $sequence;
+        throw DBALException::notSupported('Sequences');
     }
 
     protected function _getPortableTableConstraintsList($tableConstraints)
@@ -920,40 +787,50 @@ abstract class AbstractSchemaManager
         return $tableConstraint;
     }
 
+    /**
+     * Independent of the database the keys of the column list result are lowercased.
+     *
+     * The name of the created column instance however is kept in its case.
+     *
+     * @param  array $tableColumns
+     * @return array
+     */
     protected function _getPortableTableColumnList($tableColumns)
     {
         $list = array();
-        foreach ($tableColumns as $key => $value) {
-            if ($value = $this->_getPortableTableColumnDefinition($value)) {
-                if (is_string($value['type'])) {
-                    $value['type'] = \Doctrine\DBAL\Types\Type::getType($value['type']);
-                }
-                $list[$value['name']] = $value;
+        foreach ($tableColumns as $key => $column) {
+            if ($column = $this->_getPortableTableColumnDefinition($column)) {
+                $name = strtolower($column->getName());
+                $list[$name] = $column;
             }
         }
         return $list;
     }
 
-    protected function _getPortableTableColumnDefinition($tableColumn)
-    {
-        return $tableColumn;
-    }
+    /**
+     * Get Table Column Definition
+     *
+     * @param array $tableColumn
+     * @return Column
+     */
+    abstract protected function _getPortableTableColumnDefinition($tableColumn);
 
     /**
      * Aggregate and group the index results according to the required data result.
      *
-     * @param  array $tableIndexes
+     * @param  array $tableIndexRows
      * @param  string $tableName
      * @return array
      */
-    protected function _getPortableTableIndexesList($tableIndexes, $tableName=null)
+    protected function _getPortableTableIndexesList($tableIndexRows, $tableName=null)
     {
         $result = array();
-        foreach($tableIndexes AS $tableIndex) {
+        foreach($tableIndexRows AS $tableIndex) {
             $indexName = $keyName = $tableIndex['key_name'];
             if($tableIndex['primary']) {
                 $keyName = 'primary';
             }
+            $keyName = strtolower($keyName);
 
             if(!isset($result[$keyName])) {
                 $result[$keyName] = array(
@@ -967,7 +844,12 @@ abstract class AbstractSchemaManager
             }
         }
 
-        return $result;
+        $indexes = array();
+        foreach($result AS $indexKey => $data) {
+            $indexes[$indexKey] = new Index($data['name'], $data['columns'], $data['unique'], $data['primary']);
+        }
+
+        return $indexes;
     }
 
     protected function _getPortableTablesList($tables)
@@ -1039,5 +921,35 @@ abstract class AbstractSchemaManager
         foreach ((array) $sql as $query) {
             $this->_conn->executeUpdate($query);
         }
+    }
+
+    /**
+     * Create a schema instance for the current database.
+     * 
+     * @return Schema
+     */
+    public function createSchema()
+    {
+        $sequences = array();
+        if($this->_platform->supportsSequences()) {
+            $sequences = $this->listSequences();
+        }
+        $tables = $this->listTables();
+
+        return new Schema($tables, $sequences, $this->createSchemaConfig());
+    }
+
+    /**
+     * Create the configuration for this schema.
+     *
+     * @return SchemaConfig
+     */
+    public function createSchemaConfig()
+    {
+        $schemaConfig = new SchemaConfig();
+        $schemaConfig->setExplicitForeignKeyIndexes($this->_platform->createsExplicitIndexForForeignKeys());
+        $schemaConfig->setMaxIdentifierLength($this->_platform->getMaxIdentifierLength());
+
+        return $schemaConfig;
     }
 }

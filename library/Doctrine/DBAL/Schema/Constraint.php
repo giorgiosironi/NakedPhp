@@ -1,6 +1,6 @@
 <?php
 /*
- *  $Id$
+ *  $Id: Constraint.php 6848 2009-12-02 22:28:38Z beberlei $
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,17 +19,20 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM;
+namespace Doctrine\DBAL\Schema;
 
 /**
- * EntityManagerException
+ * Marker interface for contraints
  *
- * @author      Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @author      Roman Borschel <roman@code-factory.org>
- * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link        www.doctrine-project.org
- * @since       2.0
- * @version     $Revision$
+ * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    www.doctrine-project.org
+ * @since   2.0
+ * @version $Revision$
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  */
-class EntityManagerException extends \Doctrine\Common\DoctrineException
-{}
+interface Constraint
+{
+    public function getName();
+
+    public function getColumns();
+}

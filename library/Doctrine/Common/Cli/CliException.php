@@ -19,28 +19,39 @@
  * <http://www.doctrine-project.org>.
  */
  
-namespace Doctrine\ORM\Tools\Cli\Printers;
+namespace Doctrine\Common\Cli;
 
-use Doctrine\ORM\Tools\Cli\Style;
+use Doctrine\Common\DoctrineException;
 
 /**
- * CLI Output Printer for Normal terminal
+ * CLI Exception class
  *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
  * @version $Revision$
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class NormalPrinter extends AbstractPrinter
+class CliException extends DoctrineException
 {
-    /**
-     * @inheritdoc
-     */
-    public function format($message, $style)
+    public static function namespaceDoesNotExist($namespaceName, $namespacePath = '')
     {
-        return $message;
+        return new self(
+            "Namespace '{$namespaceName}' does not exist" . 
+            (( ! empty($namespacePath)) ? " in '{$namespacePath}'." : '.')
+        );
+    }
+
+    public static function taskDoesNotExist($taskName, $namespacePath)
+    {
+        return new self("Task '{$taskName}' does not exist in '{$namespacePath}'.");
+    }
+    
+    public static function cannotOverrideTask($taskName)
+    {
+        return new self("Task '{$taskName}' cannot be overriden.");
     }
 }

@@ -78,6 +78,11 @@ final class Query extends AbstractQuery
     //const HINT_READ_ONLY = 'doctrine.readOnly';
 
     /**
+     * @var string
+     */
+    const HINT_INTERNAL_ITERATION = 'doctrine.internal.iteration';
+
+    /**
      * @var integer $_state   The current state of this query.
      */
     private $_state = self::STATE_CLEAN;
@@ -207,7 +212,16 @@ final class Query extends AbstractQuery
         $sqlParams = array();
         
         $paramMappings = $this->_parserResult->getParameterMappings();
+
+        if (count($paramMappings) != count($params)) {
+            throw QueryException::invalidParameterNumber();
+        }
+
         foreach ($params as $key => $value) {
+            if ( ! isset($paramMappings[$key])) {
+                throw QueryException::unknownParameter($key);
+            }
+
             if (is_object($value)) {
                 $values = $this->_em->getClassMetadata(get_class($value))->getIdentifierValues($value);
                 $sqlPositions = $paramMappings[$key];
@@ -287,7 +301,7 @@ final class Query extends AbstractQuery
      * @param boolean $expire Whether or not to force query cache expiration.
      * @return Query This query instance.
      */
-    public function setExpireQueryCache($expire = true)
+    public function expireQueryCache($expire = true)
     {
         $this->_expireQueryCache = $expire;
 
@@ -318,6 +332,7 @@ final class Query extends AbstractQuery
      * Sets a DQL query string.
      *
      * @param string $dqlQuery DQL Query
+     * @return Doctrine\ORM\AbstractQuery
      */
     public function setDql($dqlQuery)
     {
@@ -325,6 +340,7 @@ final class Query extends AbstractQuery
             $this->_dql = $dqlQuery;
             $this->_state = self::STATE_DIRTY;
         }
+        return $this;
     }
 
     /**
@@ -407,5 +423,19 @@ final class Query extends AbstractQuery
     public function getMaxResults()
     {
         return $this->_maxResults;
+    }
+
+    /**
+     * Executes the query and returns an IterableResult that can be used to incrementally
+     * iterated over the result.
+     *
+     * @param array $params The query parameters.
+     * @param integer $hydrationMode The hydration mode to use.
+     * @return IterableResult
+     */
+    public function iterate(array $params = array(), $hydrationMode = self::HYDRATE_OBJECT)
+    {
+        $this->setHint(self::HINT_INTERNAL_ITERATION, true);
+        return parent::iterate($params, $hydrationMode);
     }
 }

@@ -157,13 +157,8 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
     {
         return $this->_owner;
     }
-
-    /**
-     * Gets the class descriptor for the owning entity class.
-     *
-     * @return Doctrine\ORM\Mapping\ClassMetadata
-     */
-    public function getOwnerClass()
+    
+    public function getTypeClass()
     {
         return $this->_typeClass;
     }
@@ -187,6 +182,10 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
                 // OneToMany
                 $this->_typeClass->reflFields[$this->_backRefFieldName]
                         ->setValue($element, $this->_owner);
+                $this->_em->getUnitOfWork()->setOriginalEntityProperty(
+                        spl_object_hash($element),
+                        $this->_backRefFieldName,
+                        $this->_owner);
             } else {
                 // ManyToMany
                 $this->_typeClass->reflFields[$this->_backRefFieldName] 
@@ -235,11 +234,13 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
             }
             $this->_coll->clear();
             $this->_association->load($this->_owner, $this, $this->_em);
+            $this->takeSnapshot();
             // Reattach NEW objects added through add(), if any.
             if (isset($newObjects)) {
                 foreach ($newObjects as $obj) {
                     $this->_coll->add($obj);
                 }
+                $this->_isDirty = true;
             }
             $this->_initialized = true;
         }
@@ -274,7 +275,8 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
      */
     public function getDeleteDiff()
     {
-        return array_udiff($this->_snapshot, $this->_coll->toArray(), array($this, '_compareRecords'));
+        return array_udiff_assoc($this->_snapshot, $this->_coll->toArray(),
+                function($a, $b) {return $a === $b ? 0 : 1;});
     }
 
     /**
@@ -285,17 +287,8 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
      */
     public function getInsertDiff()
     {
-        return array_udiff($this->_coll->toArray(), $this->_snapshot, array($this, '_compareRecords'));
-    }
-
-    /**
-     * Compares two records. To be used on _snapshot diffs using array_udiff.
-     *
-     * @return integer
-     */
-    private function _compareRecords($a, $b)
-    {
-        return $a === $b ? 0 : 1;
+        return array_udiff_assoc($this->_coll->toArray(), $this->_snapshot,
+                function($a, $b) {return $a === $b ? 0 : 1;});
     }
 
     /**
@@ -376,6 +369,10 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
      */
     public function remove($key)
     {
+        // TODO: If the keys are persistent as well (not yet implemented)
+        //       and the collection is not initialized and orphanRemoval is
+        //       not used we can issue a straight SQL delete/update on the
+        //       association (table). Without initializing the collection.
         $this->_initialize();
         $removed = $this->_coll->remove($key);
         if ($removed) {
@@ -394,6 +391,16 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
      */
     public function removeElement($element)
     {
+        // TODO: Assuming the identity of entities in a collection is always based
+        //       on their primary key (there is no equals/hashCode in PHP),
+        //       if the collection is not initialized, we could issue a straight
+        //       SQL DELETE/UPDATE on the association (table) without initializing
+        //       the collection.
+        /*if ( ! $this->_initialized) {
+            $this->_em->getUnitOfWork()->getCollectionPersister($this->_association)
+                ->deleteRows($this, $element);
+        }*/
+        
         $this->_initialize();
         $result = $this->_coll->removeElement($element);
         $this->_changed();
@@ -414,6 +421,23 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
      */
     public function contains($element)
     {
+        /* DRAFT
+        if ($this->_initialized) {
+            return $this->_coll->contains($element);
+        } else {
+            if ($element is MANAGED) {
+                if ($this->_coll->contains($element)) {
+                    return true;
+                }
+                $exists = check db for existence;
+                if ($exists) {
+                    $this->_coll->add($element);
+                }
+                return $exists;
+            }
+            return false;
+        }*/
+        
         $this->_initialize();
         return $this->_coll->contains($element);
     }
@@ -547,6 +571,15 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
         $this->_initialize();
         return $this->_coll->partition($p);
     }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function toArray()
+    {
+        $this->_initialize();
+        return $this->_coll->toArray();
+    }
 
     /**
      * {@inheritdoc}
@@ -611,11 +644,6 @@ final class PersistentCollection implements \Doctrine\Common\Collections\Collect
     public function offsetUnset($offset)
     {
         return $this->remove($offset);
-    }
-    
-    public function toArray()
-    {
-        return $this->_coll->toArray();
     }
     
     public function key()

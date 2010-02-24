@@ -19,26 +19,21 @@
  * <http://www.doctrine-project.org>.
  */
  
-namespace Doctrine\ORM\Tools\Cli\Tasks;
+namespace Doctrine\Common\Cli\Tasks;
 
-use Doctrine\ORM\Tools\Cli\Printers\AbstractPrinter;
+use Doctrine\Common\Cli\AbstractNamespace,
+    Doctrine\Common\Cli\TaskDocumentation;
 
 /**
  * Base class for CLI Tasks.
  * Provides basic methods and requires implementation of methods that
  * each task should implement in order to correctly work.
  * 
- * The following arguments are common to all tasks:
- * 
- * Argument: --config=<path>
- * Description: Specifies the path to the configuration file to use. The configuration file
- *              can bootstrap an EntityManager as well as provide defaults for any cli
- *              arguments.
- *
  * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
  * @link    www.doctrine-project.org
  * @since   2.0
  * @version $Revision$
+ * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
@@ -46,33 +41,76 @@ use Doctrine\ORM\Tools\Cli\Printers\AbstractPrinter;
 abstract class AbstractTask
 {
     /**
-     * @var AbstractPrinter CLI Output Printer
+     * @var AbstractNamespace CLI Namespace
      */
     protected $_printer;
-    
+
     /**
-     * @var array CLI argument options
+     * @var TaskDocumentation CLI Task Documentation
      */
-    protected $_arguments;
+    protected $_documentation;
     
     /**
-     * @var array Available CLI tasks
+     * @var array CLI Task arguments
      */
-    protected $_availableTasks;
+    protected $_arguments = array();
     
     /**
-     * @var EntityManager The EntityManager instance
-     */
-    protected $_em;
-    
-    /**
-     * Defines a CLI Output Printer
+     * Constructor of CLI Task
      *
-     * @param AbstractPrinter CLI Output Printer
+     * @param AbstractNamespace CLI Namespace
      */
-    public function setPrinter(AbstractPrinter $printer)
+    public function __construct(AbstractNamespace $namespace)
     {
-        $this->_printer = $printer;
+        $this->_namespace = $namespace;
+        $this->_documentation = new TaskDocumentation($namespace);
+        
+        // Complete the CLI Task Documentation creation
+        $this->buildDocumentation();
+    }
+
+    /**
+     * Retrieves the CLI Namespace
+     *
+     * @return AbstractNamespace
+     */
+    public function getNamespace()
+    {
+        return $this->_namespace;
+    }
+    
+    /**
+     * Retrieves the CLI Task Documentation
+     *
+     * @return TaskDocumentation
+     */
+    public function getDocumentation()
+    {
+        return $this->_documentation;
+    }
+    
+    /**
+     * Defines the CLI Task arguments
+     *
+     * @param array $arguments CLI Task arguments
+     *
+     * @return AbstractTask
+     */
+    public function setArguments(array $arguments = array())
+    {
+        $this->_arguments = $arguments;
+        
+        return $this;
+    }
+    
+    /**
+     * Retrieves the CLI Task arguments
+     *
+     * @return array
+     */
+    public function getArguments()
+    {
+        return $this->_arguments;
     }
 
     /**
@@ -82,67 +120,17 @@ abstract class AbstractTask
      */
     public function getPrinter()
     {
-        return $this->_printer;
+        return $this->_namespace->getPrinter();
     }
-    
+
     /**
-     * Defines the CLI arguments
+     * Retrieves current used CLI Configuration
      *
-     * @param array CLI argument options
+     * @return Configuration
      */
-    public function setArguments($arguments)
+    public function getConfiguration()
     {
-        $this->_arguments = $arguments;
-    }
-    
-    /**
-     * Retrieves current CLI arguments
-     *
-     * @return array
-     */
-    public function getArguments()
-    {
-        return $this->_arguments;
-    }
-    
-    /**
-     * Defines the available CLI tasks
-     *
-     * @param array Available CLI tasks
-     */
-    public function setAvailableTasks($availableTasks)
-    {
-        $this->_availableTasks = $availableTasks;
-    }
-    
-    /**
-     * Retrieves the available CLI tasks
-     *
-     * @return array
-     */
-    public function getAvailableTasks()
-    {
-        return $this->_availableTasks;
-    }
-    
-    /**
-     * Defines the EntityManager
-     *
-     * @param EntityManager The EntityManager instance
-     */
-    public function setEntityManager($em)
-    {
-        $this->_em = $em;
-    }
-    
-    /**
-     * Retrieves current EntityManager
-     *
-     * @return EntityManager
-     */
-    public function getEntityManager()
-    {
-        return $this->_em;
+        return $this->_namespace->getConfiguration();
     }
     
     /**
@@ -155,7 +143,10 @@ abstract class AbstractTask
      *     ./doctrine task --help
      *
      */
-    abstract public function extendedHelp();
+    public function extendedHelp()
+    {
+        $this->getPrinter()->output($this->_documentation->getCompleteDocumentation());
+    }
     
     /**
      * Expose to CLI Output Printer the basic help of the given task.
@@ -173,7 +164,14 @@ abstract class AbstractTask
      *     ./doctrine --help
      *
      */
-    abstract public function basicHelp();
+    public function basicHelp()
+    {
+        $this->getPrinter()
+             ->output($this->_documentation->getSynopsis())
+             ->output(PHP_EOL)
+             ->output('  ' . $this->_documentation->getDescription())
+             ->output(PHP_EOL . PHP_EOL);
+    }
     
     /**
      * Assures the given arguments matches with required/optional ones.
@@ -182,7 +180,11 @@ abstract class AbstractTask
      *
      * @return boolean
      */
-    abstract public function validate();
+    public function validate()
+    {
+        // TODO implement DAG here!
+        return true;
+    }
     
     /**
      * Safely execution of task.
@@ -190,4 +192,9 @@ abstract class AbstractTask
      * what is supposed to do.
      */
     abstract public function run();
+    
+    /**
+     * Generate the CLI Task Documentation
+     */
+    abstract public function buildDocumentation();
 }

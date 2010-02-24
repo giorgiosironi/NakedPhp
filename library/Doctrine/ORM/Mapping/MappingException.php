@@ -26,7 +26,7 @@ namespace Doctrine\ORM\Mapping;
  *
  * @since 2.0
  */
-class MappingException extends \Doctrine\Common\DoctrineException
+class MappingException extends \Doctrine\ORM\ORMException
 {
     public static function identifierRequired($entityName)
     {
@@ -75,6 +75,26 @@ class MappingException extends \Doctrine\Common\DoctrineException
     }
     
     /**
+     * Called if a required option was not found but is required
+     * 
+     * @param string $field which field cannot be processed?
+     * @param string $expectedOption which option is required
+     * @param string $hint  Can optionally be used to supply a tip for common mistakes, 
+     *                      e.g. "Did you think of the plural s?"
+     * @return MappingException 
+     */
+    static function missingRequiredOption($field, $expectedOption, $hint = '') 
+    {
+        $message = "The mapping of field '{$field}' is invalid: The option '{$expectedOption}' is required.";
+
+        if ( ! empty($hint)) {
+            $message .= ' (Hint: ' . $hint . ')';
+        }
+
+        return new self($message);
+    }
+    
+    /**
      * Generic exception for invalid mappings.
      *
      * @param string $fieldName
@@ -82,5 +102,18 @@ class MappingException extends \Doctrine\Common\DoctrineException
     public static function invalidMapping($fieldName)
     {
         return new self("The mapping of field '$fieldName' is invalid.");
+    }
+    
+    /**
+     * Exception for reflection exceptions - adds the entity name,
+     * because there might be long classnames that will be shortened
+     * within the stacktrace
+     * 
+     * @param string $entity The entity's name
+     * @param \ReflectionException $previousException
+     */
+    public static function reflectionFailure($entity, \ReflectionException $previousException)
+    {
+        return new self('An error occurred in ' . $entity, 0, $previousException);
     }
 }

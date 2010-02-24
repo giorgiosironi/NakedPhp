@@ -124,6 +124,7 @@ class ClassMetadataInfo
      * The namespace the entity class is contained in.
      *
      * @var string
+     * @todo Not really needed. Usage could be localized.
      */
     public $namespace;
 
@@ -229,12 +230,8 @@ class ClassMetadataInfo
      * - <b>scale</b> (integer, optional, schema-only)
      * The scale of a decimal column. Only valid if the column type is decimal.
      * 
-     * - <b>index (string, optional, schema-only)</b>
-     * Whether an index should be generated for the column.
-     * The value specifies the name of the index. To create a multi-column index,
-     * just use the same name for several mappings.
-     * 
-     * - <b>foreignKey (string, optional, schema-only)</b>
+     * - <b>unique (string, optional, schema-only)</b>
+     * Whether a unique constraint should be generated for the column.
      *
      * @var array
      */    
@@ -255,17 +252,9 @@ class ClassMetadataInfo
      * This is the reverse lookup map of $_fieldNames.
      *
      * @var array
+     * @todo We could get rid of this array by just using $fieldMappings[$fieldName]['columnName'].
      */
     public $columnNames = array();
-    
-    /**
-     * A map of column names as they appear in an SQL result set to column names as they
-     * are defined in the mapping. This includes the columns of all mapped fields as well
-     * as any join columns and discriminator columns.
-     * 
-     * @var array
-     */
-    public $resultColumnNames = array();
 
     /**
      * Whether to automatically OUTER JOIN subtypes when a basetype is queried.
@@ -337,6 +326,7 @@ class ClassMetadataInfo
      * List of inverse association mappings, indexed by mappedBy field name.
      *
      * @var array
+     * @todo Remove! See http://www.doctrine-project.org/jira/browse/DDC-193
      */
     public $inverseMappings = array();
     
@@ -376,13 +366,6 @@ class ClassMetadataInfo
      * @var integer
      */
     public $changeTrackingPolicy = self::CHANGETRACKING_DEFERRED_IMPLICIT;
-
-    /**
-     * The SQL INSERT string for entities of this class.
-     *
-     * @var string
-     */
-    public $insertSql;
 
     /**
      * A map of field names to class names, where the field names are association
@@ -486,7 +469,7 @@ class ClassMetadataInfo
      * @param string $fieldName
      * @return string
      */
-    public function getOwningClass($fieldName)
+    /*public function getOwningClass($fieldName)
     {
         if ($this->inheritanceType == self::INHERITANCE_TYPE_NONE) {
             return $this->name;
@@ -494,7 +477,7 @@ class ClassMetadataInfo
             $mapping = $this->getFieldMapping($fieldName);
             return $mapping['inherited'];
         }
-    }
+    }*/
 
     /**
      * Gets the name of the root class of the mapped entity hierarchy. If the entity described
