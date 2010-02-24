@@ -13,17 +13,17 @@
  * @package    NakedPhp_Reflect
  */
 
-namespace NakedPhp\Reflect;
+namespace NakedPhp\Reflect\SpecificationFactory;
 use NakedPhp\ProgModel\PhpSpecification;
 
-class PhpSpecificationFactoryTest extends \PHPUnit_Framework_TestCase
+class PhpClassesSpecificationFactoryTest extends \PHPUnit_Framework_TestCase
 {
     private $_specifications;
 
     public function setUp()
     {
         $classDiscoverer = new DummyClassDiscoverer();
-        $specFactory = new PhpSpecificationFactory($classDiscoverer);
+        $specFactory = new PhpClassesSpecificationFactory($classDiscoverer);
         $this->_specifications = $specFactory->getSpecifications();
     }
 

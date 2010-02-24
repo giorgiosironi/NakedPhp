@@ -13,10 +13,11 @@
  * @package    NakedPhp_Reflect
  */
 
-namespace NakedPhp\Reflect;
+namespace NakedPhp\Reflect\SpecificationFactory;
 use NakedPhp\ProgModel\PhpSpecification;
+use NakedPhp\Reflect\SpecificationFactory;
 
-class PhpSpecificationFactory implements SpecificationFactory
+class PhpClassesSpecificationFactory implements SpecificationFactory
 {
     protected $_discoverer;
 

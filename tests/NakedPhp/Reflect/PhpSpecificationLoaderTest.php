@@ -24,22 +24,30 @@ class PhpSpecificationLoaderTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $specFactory = new DummySpecificationFactory();
+        $secondSpecFactory = new DummySecondSpecificationFactory();
         $introspectorFactory = new
         DummyIntrospectorFactory($this->_getIntrospector());
-        $this->_specLoader = new PhpSpecificationLoader($specFactory, $introspectorFactory);
+        $this->_specLoader = new PhpSpecificationLoader(array(
+                $specFactory,
+                $secondSpecFactory
+            ), $introspectorFactory);
         $this->_specLoader->init();
     }
 
-    public function testObtainsPhpSpecificationObjectsFromTheFactory()
+    public function testObtainsPhpSpecificationObjectsFromTheFactories()
     {
         $specification = $this->_specLoader->loadSpecification('My_Model_EntityA');
         $this->assertTrue($specification instanceof NakedObjectSpecification);
         $this->assertEquals('My_Model_EntityA', (string) $specification);
+
+        $specification = $this->_specLoader->loadSpecification('string');
+        $this->assertTrue($specification instanceof NakedObjectSpecification);
+        $this->assertEquals('string', (string) $specification);
     }
 
     private function _getIntrospector()
     {
-        $classes = 3;
+        $classes = 4;
         $introspector = $this->getMock('NakedPhp\Reflect\PhpIntrospector');
         $introspector->expects($this->exactly($classes))
                      ->method('introspectClass');
@@ -61,6 +69,16 @@ class DummySpecificationFactory implements SpecificationFactory
             'My_Model_EntityA' => new PhpSpecification('My_Model_EntityA'),
             'My_Model_EntityB' => new PhpSpecification('My_Model_EntityB'),
             'My_Model_Service' => $serviceSpec
+        );
+    }
+}
+
+class DummySecondSpecificationFactory implements SpecificationFactory
+{
+    public function getSpecifications()
+    {
+        return array(
+            'string' => new PhpSpecification('string')
         );
     }
 }

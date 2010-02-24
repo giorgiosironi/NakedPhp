@@ -121,6 +121,9 @@ class NakedObjectMethodDecoratorTest extends \NakedPhp\Test\TestCase
         $this->assertFalse($no->hasObjectAction('notExistentMethodName'));
     }
 
+    /**
+     * @deprecated
+     */
     public function testDelegatesToTheMergerForCallingMethods()
     {
         $bareNo = new NakedBareObject();

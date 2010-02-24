@@ -13,20 +13,20 @@
  * @package    NakedPhp_Reflect
  */
 
-namespace NakedPhp\Reflect;
+namespace NakedPhp\Reflect\SpecificationFactory;
 
 class FilesystemClassDiscovererTest extends \PHPUnit_Framework_TestCase
 {
     public function testListsAllClassesInAFolder()
     {
-        $discoverer = new FilesystemClassDiscoverer(__DIR__ . '/../Stubs/');
+        $discoverer = new FilesystemClassDiscoverer(__DIR__ . '/../../Stubs/');
         $services = $discoverer->getList();
         $this->assertContains('UserFactory', $services);
     }
 
     public function testAcceptsAPrefixForTheClasses()
     {
-        $discoverer = new FilesystemClassDiscoverer(__DIR__ . '/../Stubs/', 'NakedPhp\\Stubs\\');
+        $discoverer = new FilesystemClassDiscoverer(__DIR__ . '/../../Stubs/', 'NakedPhp\\Stubs\\');
         $services = $discoverer->getList();
         $this->assertContains('NakedPhp\\Stubs\\UserFactory', $services);
     }

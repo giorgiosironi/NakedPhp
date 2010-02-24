@@ -13,7 +13,7 @@
  * @package    NakedPhp_Reflect
  */
 
-namespace NakedPhp\Reflect;
+namespace NakedPhp\Reflect\SpecificationFactory;
 
 interface ClassDiscoverer
 {
