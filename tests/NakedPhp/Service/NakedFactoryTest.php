@@ -45,6 +45,18 @@ class NakedFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->_spec, $no->getSpecification());
     }
 
+    /**
+     * TODO: will wrap arrays when the type is provided
+     * A NakedObjectSpecification $suggestedType parameter may be useful?
+     */
+    public function testWrapsAnArrayOfEntities()
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * TODO: will wrap scalar values as well
+     */
     public function testDoesNotWrapScalarValues()
     {
         $result = $this->_factory->createBare('scalar result');
