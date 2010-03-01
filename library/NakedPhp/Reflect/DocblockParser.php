@@ -58,8 +58,10 @@ class DocblockParser
             $parameters = preg_split('/[ ,]/', $parametersMatches[1]);
             foreach ($parameters as $param) {
                 $valuesMatches = array();
-                if (preg_match('/([A-Za-z0-9]*)=([0-9]*)/', $param, $valuesMatches)) {
+                if (preg_match('/([A-Za-z0-9_]*)=([A-Za-z0-9_]*)/', $param, $valuesMatches)) {
                     $result[$valuesMatches[1]] = $valuesMatches[2];
+                } else if (preg_match('/([A-Za-z0-9_]*)/', $param, $valuesMatches)) {
+                    $result[] = $valuesMatches[1];
                 }
             }
         }

@@ -138,4 +138,19 @@ EOT;
                             $annotations);
     }
 
+    public function testFindsProperAnnotationsWhichAreNotMeantForPhpDocumentorAndSavesTheirUnnamedParameters()
+    {
+        $docblock = <<<EOT
+        /**
+         * @NakedDummyAnn(className)
+         */
+EOT;
+        $annotations = $this->_parser->getAnnotations($docblock);
+        $this->assertEquals(array(
+                                'NakedDummyAnn' => array(
+                                    'className'
+                                )
+                            ),
+                            $annotations);
+    }
 }
