@@ -84,6 +84,23 @@ class DoctrineTest extends AbstractDoctrineTest
         $this->assertFalse($container->contains($picard));
     }
 
+    public function testDoesNotChangeEntitiesStateIfTheyAreNotSaved()
+    {
+        $container = $this->_getContainer();
+        $container->add($user = new User(null));
+        $container->add($detachedUser = $this->_getDetachedUser('Picard'), EntityContainer::STATE_DETACHED);
+        $detachedUser->setName(null);
+        try {
+            $this->_storage->save($container);
+        } catch (\NakedPhp\Storage\Exception $e) {
+            $this->assertEquals(EntityContainer::STATE_NEW, $container->getState(1)); 
+            $this->assertEquals(EntityContainer::STATE_DETACHED, $container->getState(2)); 
+            // removed need to stay if not removed
+            $this->markTestIncomplete();
+        }
+        $this->fail('User is saved with null properties.');
+    }
+
     private function _getNewUser($name)
     {
         $user = new User();

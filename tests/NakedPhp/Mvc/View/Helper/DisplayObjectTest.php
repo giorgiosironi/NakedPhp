@@ -73,6 +73,13 @@ class DisplayObjectTest extends \PHPUnit_Framework_TestCase
         $this->assertQueryContentContains($result, 'table tr td', 'Isaac');
     }
 
+    public function testDisplaysFieldTypeWhenNotConvertibleToString()
+    {
+        $this->_object->setState(array('firstName' => new \stdClass));
+        $result = $this->_helper->displayObject($this->_object);
+        $this->assertQueryContentContains($result, 'table tr td', 'stdClass');
+    }
+
     /**
      * Assert against DOM selection
      * 

@@ -27,12 +27,13 @@ class Doctrine
 
     public function save(EntityContainer $container)
     {
+        $newStates = array();
         foreach ($container as $key => $entity) {
             $state = $container->getState($key);
             switch ($state) {
                 case EntityContainer::STATE_NEW:
                     $this->_em->persist($entity);
-                    $container->setState($key, EntityContainer::STATE_DETACHED);
+                    $newStates[$key] = EntityContainer::STATE_DETACHED;
                     break;
                 case EntityContainer::STATE_DETACHED:
                     $this->_em->merge($entity);
@@ -43,10 +44,17 @@ class Doctrine
                     $container->delete($key);
                     break;
                 default:
-                    throw new \Exception("State not recognized: $state.");
+                    throw new Exception("State not recognized: $state.");
             }
         }
-        $this->_em->flush();
+        try {
+            $this->_em->flush();
+        } catch (\Exception $e) {
+            throw new Exception('Problem detected during flushing ( ' . $e->getMessage() . ').', 0, $e);
+        }
+        foreach ($newStates as $key => $state) {
+            $container->setState($key, $state);
+        }
     }
 }
 

@@ -66,7 +66,12 @@ class DisplayObject extends \Zend_View_Helper_Abstract
                     continue;
                 }
             }
-            $array[$fieldName] = $value;
+
+            if (is_object($value) && !method_exists($value, '__toString')) {
+                $array[$fieldName] = get_class($value);
+            } else {
+                $array[$fieldName] = (string) $value;
+            }
         }
         return $array;
     }

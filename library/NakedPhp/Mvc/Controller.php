@@ -60,7 +60,7 @@ class Controller extends \Zend_Controller_Action
         $this->_nakedFactory = $this->_factory->getNakedFactory();
         $this->_unwrappedContainer = $this->_factory->getUnwrappedContainer();
         $this->_bareWrappingIterator = $this->_factory->getBareWrappingIterator();
-        $this->view->session = $this->_bareWrappingIterator;
+        $this->view->session = $this->_factory->getStateBareWrappingIterator();
         $this->view->context = $this->_contextContainer = $this->_factory->getContextContainer();
         $this->view->services = $this->_services = $this->_factory->getServiceIterator();
 

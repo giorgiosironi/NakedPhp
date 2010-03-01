@@ -14,9 +14,10 @@
  */
 
 namespace NakedPhp\Mvc\EntityContainer;
+use NakedPhp\Mvc\EntityContainer;
 use NakedPhp\MetaModel\NakedFactory;
 
-class BareWrappingIteratorTest extends \PHPUnit_Framework_TestCase
+class StateBareWrappingIteratorTest extends \PHPUnit_Framework_TestCase
 {
     private $_originalObject;
     private $_entityContainer;
@@ -28,16 +29,19 @@ class BareWrappingIteratorTest extends \PHPUnit_Framework_TestCase
         $expectedKey = $wrappedContainer->add($this->_originalObject);
 
         $factory = new DummyIncrementalNakedFactory();
-        $this->_entityContainer = new BareWrappingIterator($wrappedContainer, $factory);
+        $this->_entityContainer = new StateBareWrappingIterator($wrappedContainer, $factory);
     }
     
-    public function testWrapsElementOnIteration()
+    public function testWrapsElementOnIterationReturningStateAndObject()
     {
         $count = 0;
-        foreach ($this->_entityContainer as $key => $entity) {
+        foreach ($this->_entityContainer as $key => $tuple) {
+            $entity = $tuple['object'];
             $count++;
             $this->assertEquals(1, $key);
-            $this->assertEquals($count, $entity);
+            // tricky: @see NakedFactoryStub
+            $this->assertEquals($count, $tuple['object']);
+            $this->assertEquals(EntityContainer::STATE_NEW, $tuple['state']);
         }
         $this->assertEquals(1, $count);
     }

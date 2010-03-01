@@ -20,18 +20,18 @@ interface EntityContainer extends \IteratorAggregate
     /**
      * Entity which has been created but is not known to Doctrine.
      */
-    const STATE_NEW = 0;
+    const STATE_NEW = 'new';
 
     /**
      * Entity known to Doctrine but detached from any ORM service.
      * There are no entities known to Doctrine and not detached in this container.
      */
-    const STATE_DETACHED = 1;
+    const STATE_DETACHED = 'detached';
 
     /**
      * Entity which deletion is pending.
      */
-    const STATE_REMOVED = 2;
+    const STATE_REMOVED = 'removed';
 
     /**
      * @param object $object   object to be added idempotently

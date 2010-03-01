@@ -10,19 +10,12 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Mvc
+ * @package    NakedPhp_Storage
  */
 
-namespace NakedPhp\Mvc\Resource;
-use NakedPhp\Factory;
+namespace NakedPhp\Storage;
 
-class Nakedphp extends \Zend_Application_Resource_ResourceAbstract
+class Exception extends \Exception
 {
-    public function init()
-    {
-        $options = $this->getOptions();
-        $this->getBootstrap()->bootstrap('Entitymanagerfactory');
-        $options['em'] = $this->getBootstrap()->getResource('Entitymanagerfactory');
-        return new Factory($options);
-    }
 }
+

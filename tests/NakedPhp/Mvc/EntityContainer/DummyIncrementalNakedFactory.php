@@ -13,16 +13,15 @@
  * @package    NakedPhp_Mvc
  */
 
-namespace NakedPhp\Mvc\Resource;
-use NakedPhp\Factory;
+namespace NakedPhp\Mvc\EntityContainer;
+use NakedPhp\MetaModel\NakedFactory;
 
-class Nakedphp extends \Zend_Application_Resource_ResourceAbstract
+class DummyIncrementalNakedFactory implements NakedFactory
 {
-    public function init()
+    private $_counter = 0;
+
+    public function createBare($object)
     {
-        $options = $this->getOptions();
-        $this->getBootstrap()->bootstrap('Entitymanagerfactory');
-        $options['em'] = $this->getBootstrap()->getResource('Entitymanagerfactory');
-        return new Factory($options);
+        return ++$this->_counter;
     }
 }

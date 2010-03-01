@@ -21,6 +21,10 @@ class Factory
      */
     private $_sessionBridge;
 
+    private $_nakedFactory;
+    private $_em;
+    private $_reflectFactory;
+
     private $_folder;
     private $_prefix;
     private $_serviceClassNames;
@@ -40,6 +44,7 @@ class Factory
         $this->_folder            = $options['folder'];
         $this->_prefix            = $options['prefix'];
         $this->_serviceClassNames = $options['serviceClassNames'];
+        $this->_em                = $options['em'];
         $this->_reflectFactory    = new \NakedPhp\Reflect\ReflectFactory();
     }
 
@@ -62,6 +67,12 @@ class Factory
     public function getBareWrappingIterator()
     {
         return new Mvc\EntityContainer\BareWrappingIterator($this->getUnwrappedContainer(),
+                                                            $this->getNakedFactory());
+    }
+
+    public function getStateBareWrappingIterator()
+    {
+        return new Mvc\EntityContainer\StateBareWrappingIterator($this->getUnwrappedContainer(),
                                                             $this->getNakedFactory());
     }
 
@@ -100,7 +111,10 @@ class Factory
      */
     public function getNakedFactory()
     {
-        return new Service\NakedFactory($this->_getSpecificationLoader());
+        if (!isset($this->_nakedFactory)) {
+            $this->_nakedFactory = new Service\NakedFactory($this->_getSpecificationLoader());
+        }
+        return $this->_nakedFactory;
     }
 
     protected function _getSpecificationLoader()
@@ -144,7 +158,6 @@ class Factory
 
     public function getPersistenceStorage()
     {
-        require_once __DIR__ . '/../../example/bin/cli-config.php';
-        return new Storage\Doctrine($em);
+        return new Storage\Doctrine($this->_em);
     }
 }

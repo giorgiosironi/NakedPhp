@@ -1,12 +1,13 @@
 <?php
 $labels = array();
-foreach ($this->session as $index => $object) {
+foreach ($this->session as $index => $tuple) {
     $url = $this->url(array('action' => 'view', 'type' => 'entity', 'object' => $index));
     $editUrl = $this->url(array('action' => 'edit', 'type' => 'entity', 'object' => $index));
     $removeUrl = $this->url(array('action' => 'remove', 'type' => 'entity', 'object' => $index));
-    $class = $object->getClassName();
+    $class = $tuple['object']->getClassName();
+    $stateClass = $tuple['state'];
     $this->iconLoader($class);
-    $labels[] = "<dt class=\"icon $class\"><a href=\"$url\">$object</a></dt>
+    $labels[] = "<dt class=\"icon $class $stateClass\"><a href=\"$url\">{$tuple['object']}</a></dt>
     <dd>
         <!--<div class=\"button edit\"><a href=\"$editUrl\">(edit)</a>
         <div class=\"button remove\"><a href=\"$removeUrl\">(remove)</a>-->
