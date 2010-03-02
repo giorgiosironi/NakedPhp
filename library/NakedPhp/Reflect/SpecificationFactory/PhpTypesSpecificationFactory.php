@@ -33,7 +33,7 @@ class PhpTypesSpecificationFactory implements SpecificationFactory
     {
         $specifications = array();
         foreach ($this->_basicTypes as $type) {
-            $specifications[$type] = new PhpSpecification($type, array(), array());
+            $specifications[$type] = new PhpSpecification($type, null, null);
         }
         return $specifications;
     }

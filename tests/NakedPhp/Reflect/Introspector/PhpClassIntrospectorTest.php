@@ -13,20 +13,20 @@
  * @package    NakedPhp_Reflect
  */
 
-namespace NakedPhp\Reflect;
+namespace NakedPhp\Reflect\Introspector;
 use NakedPhp\MetaModel\NakedObjectFeatureType;
 use NakedPhp\ProgModel\OneToOneAssociation;
 use NakedPhp\ProgModel\PhpAction;
 use NakedPhp\ProgModel\PhpSpecification;
 
 /**
- * PhpIntrospector must accomplish:
+ * PhpClassIntrospector must accomplish:
  * - introspection of class
  * - introspection of associations
  * - introspection of action method
  * TODO: add indirection using a MetaModelFactory
  */
-class PhpIntrospectorTest extends \PHPUnit_Framework_TestCase
+class PhpClassIntrospectorTest extends \PHPUnit_Framework_TestCase
 {
     private $_specification;
     private $_facetProcessor;
@@ -37,7 +37,7 @@ class PhpIntrospectorTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_specification = new PhpSpecification('NakedPhp\Reflect\DummyClass', null, null);
+        $this->_specification = new PhpSpecification('NakedPhp\Reflect\Introspector\DummyClass', null, null);
         $this->_facetProcessor = $this->getMock('NakedPhp\Reflect\FacetProcessor');
         $this->_metaModelFactory = $this->getMock('NakedPhp\Reflect\MetaModelFactory');
         $this->_createdAssociation = new OneToOneAssociation('dummy');
@@ -48,9 +48,14 @@ class PhpIntrospectorTest extends \PHPUnit_Framework_TestCase
         $this->_metaModelFactory->expects($this->any())
                                 ->method('createAction')
                                 ->will($this->returnValue($this->_createdAction));
-        $this->_introspector = new PhpIntrospector($this->_specification,
+        $this->_introspector = new PhpClassIntrospector($this->_specification,
                                                    $this->_facetProcessor,
                                                    $this->_metaModelFactory);
+    }
+
+    public function testHoldsSpecification()
+    {
+        $this->assertSame($this->_specification, $this->_introspector->getSpecification());
     }
 
     public function testIntrospectsClass()
@@ -67,7 +72,7 @@ class PhpIntrospectorTest extends \PHPUnit_Framework_TestCase
 
     public function testIntrospectsAssociations()
     {
-        $rc = new \ReflectionClass('NakedPhp\Reflect\DummyClass');
+        $rc = new \ReflectionClass('NakedPhp\Reflect\Introspector\DummyClass');
         $methods = array($rc->getMethod('getFoo'), $rc->getMethod('getBar'));
         $this->_facetProcessor->expects($this->once())
                               ->method('removePropertyAccessors')

@@ -19,7 +19,7 @@ use NakedPhp\MetaModel\NakedObjectSpecification;
 interface IntrospectorFactory
 {
     /**
-     * @return PhpIntrospector
+     * @return array    Introspector instances
      */
-    public function getIntrospector(NakedObjectSpecification $specification);
+    public function getIntrospectors();
 }

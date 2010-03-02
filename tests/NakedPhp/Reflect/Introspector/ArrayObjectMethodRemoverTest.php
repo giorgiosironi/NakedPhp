@@ -13,7 +13,7 @@
  * @package    NakedPhp_Reflect
  */
 
-namespace NakedPhp\Reflect;
+namespace NakedPhp\Reflect\Introspector;
 
 class ArrayObjectMethodRemoverTest extends \PHPUnit_Framework_TestCase
 {
@@ -22,7 +22,7 @@ class ArrayObjectMethodRemoverTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $rc = new \ReflectionClass('NakedPhp\Reflect\ExampleClass');
+        $rc = new \ReflectionClass('NakedPhp\Reflect\Introspector\ExampleClass');
         $this->_methods = new \ArrayObject($rc->getMethods());
         $this->_remover = new ArrayObjectMethodRemover($this->_methods);
     }

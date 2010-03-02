@@ -23,14 +23,8 @@ class PhpSpecificationLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $specFactory = new DummySpecificationFactory();
-        $secondSpecFactory = new DummySecondSpecificationFactory();
-        $introspectorFactory = new
-        DummyIntrospectorFactory($this->_getIntrospector());
-        $this->_specLoader = new PhpSpecificationLoader(array(
-                $specFactory,
-                $secondSpecFactory
-            ), $introspectorFactory);
+        $introspectorFactory = new DummyIntrospectorFactory($this->_getIntrospector());
+        $this->_specLoader = new PhpSpecificationLoader($introspectorFactory);
         $this->_specLoader->init();
     }
 
@@ -38,17 +32,22 @@ class PhpSpecificationLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $specification = $this->_specLoader->loadSpecification('My_Model_EntityA');
         $this->assertTrue($specification instanceof NakedObjectSpecification);
-        $this->assertEquals('My_Model_EntityA', (string) $specification);
+        $this->assertEquals('DummyClass', (string) $specification);
+    }
 
-        $specification = $this->_specLoader->loadSpecification('string');
-        $this->assertTrue($specification instanceof NakedObjectSpecification);
-        $this->assertEquals('string', (string) $specification);
+    public function testDistinguishServices()
+    {
+        $serviceSpecs = $this->_specLoader->getServiceSpecifications();
+        $this->assertEquals(array(), $serviceSpecs);
     }
 
     private function _getIntrospector()
     {
         $classes = 4;
-        $introspector = $this->getMock('NakedPhp\Reflect\PhpIntrospector');
+        $introspector = $this->getMock('NakedPhp\Reflect\Introspector');
+        $introspector->expects($this->exactly($classes))
+                     ->method('getSpecification')
+                     ->will($this->returnValue(new PhpSpecification('DummyClass')));
         $introspector->expects($this->exactly($classes))
                      ->method('introspectClass');
         $introspector->expects($this->exactly($classes))
@@ -59,41 +58,22 @@ class PhpSpecificationLoaderTest extends \PHPUnit_Framework_TestCase
     }
 }
 
-class DummySpecificationFactory implements SpecificationFactory
-{
-    public function getSpecifications()
-    {
-        $serviceSpec = new PhpSpecification('My_Model_Service');
-        $serviceSpec->markAsService();
-        return array(
-            'My_Model_EntityA' => new PhpSpecification('My_Model_EntityA'),
-            'My_Model_EntityB' => new PhpSpecification('My_Model_EntityB'),
-            'My_Model_Service' => $serviceSpec
-        );
-    }
-}
-
-class DummySecondSpecificationFactory implements SpecificationFactory
-{
-    public function getSpecifications()
-    {
-        return array(
-            'string' => new PhpSpecification('string')
-        );
-    }
-}
-
 class DummyIntrospectorFactory implements IntrospectorFactory
 {
     protected $_introspector;
 
-    public function __construct(PhpIntrospector $introspector)
+    public function __construct(Introspector $introspector)
     {
         $this->_introspector = $introspector;
     }
 
-    public function getIntrospector(NakedObjectSpecification $spec)
+    public function getIntrospectors()
     {
-        return $this->_introspector;
+        return array(
+            'My_Model_EntityA' => $this->_introspector,
+            'My_Model_EntityB' => $this->_introspector,
+            'My_Model_Service' => $this->_introspector,
+            'string' => $this->_introspector,
+        );
     }
 }

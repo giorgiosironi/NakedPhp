@@ -13,7 +13,9 @@
  * @package    NakedPhp_Reflect
  */
 
-namespace NakedPhp\Reflect;
+namespace NakedPhp\Reflect\Introspector;
+use NakedPhp\Reflect\MethodRemover;
+use NakedPhp\Reflect\NameUtils;
 
 /**
  * Operates higher logic level removal operations on an ArrayObject of

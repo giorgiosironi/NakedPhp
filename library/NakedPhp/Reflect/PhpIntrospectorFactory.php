@@ -15,23 +15,44 @@
 
 namespace NakedPhp\Reflect;
 use NakedPhp\MetaModel\NakedObjectSpecification;
+use NakedPhp\Reflect\Introspector\PhpClassIntrospector;
+use NakedPhp\Reflect\Introspector\PhpTypeIntrospector;
 
 class PhpIntrospectorFactory implements IntrospectorFactory
 {
+    protected $_specificationFactories;
     protected $_facetProcessor;
     protected $_metaModelFactory;    
 
-    public function __construct(FacetProcessor $facetProcessor = null,
+    public function __construct(array $specificationFactories = null,
+                                FacetProcessor $facetProcessor = null,
                                 MetaModelFactory $metaModelFactory = null)
     {
-        $this->_facetProcessor = $facetProcessor;
-        $this->_metaModelFactory = $metaModelFactory;
+        $this->_specificationFactories = $specificationFactories;
+        $this->_facetProcessor         = $facetProcessor;
+        $this->_metaModelFactory       = $metaModelFactory;
     }
 
-    public function getIntrospector(NakedObjectSpecification $specification)
+    /**
+     * TODO: move here PhpClassIntrospector::__construct() code
+     */
+    public function getIntrospectors()
     {
-        return new PhpIntrospector($specification,
-                                   $this->_facetProcessor,
-                                   $this->_metaModelFactory);
+        $specifications = array();
+        foreach ($this->_specificationFactories as $specFactory) {
+            $specifications += $specFactory->getSpecifications();
+        }
+
+        $introspectors = array();
+        foreach ($specifications as $name => $specification) {
+            if (ctype_upper($name{0})) {
+                $introspectors[$name] = new PhpClassIntrospector($specification,
+                                                        $this->_facetProcessor,
+                                                        $this->_metaModelFactory);
+            } else {
+                $introspectors[$name] = new PhpTypeIntrospector($specification);
+            }
+        }
+        return $introspectors;
     }
 }

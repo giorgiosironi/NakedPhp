@@ -26,12 +26,13 @@ class ReflectFactory
     {
         if (!isset($this->_specLoader)) {
             $this->_specLoader = new PhpSpecificationLoader(
-                array(
-                    new SpecificationFactory\PhpClassesSpecificationFactory(
-                        new SpecificationFactory\FilesystemClassDiscoverer($folder, $prefix)
-                    ),
-                ),
                 new PhpIntrospectorFactory(
+                    array(
+                        new SpecificationFactory\PhpClassesSpecificationFactory(
+                            new SpecificationFactory\FilesystemClassDiscoverer($folder, $prefix)
+                        ),
+                        new SpecificationFactory\PhpTypesSpecificationFactory
+                    ),
                     new FactoriesFacetProcessor(array(
                         new FacetFactory\PropertyMethodsFacetFactory,
                         new FacetFactory\ActionMethodsFacetFactory

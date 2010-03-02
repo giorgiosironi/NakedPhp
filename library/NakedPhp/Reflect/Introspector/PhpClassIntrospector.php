@@ -13,19 +13,23 @@
  * @package    NakedPhp_Reflect
  */
 
-namespace NakedPhp\Reflect;
+namespace NakedPhp\Reflect\Introspector;
 use NakedPhp\MetaModel\FacetHolder;
 use NakedPhp\MetaModel\NakedObjectFeatureType;
 use NakedPhp\ProgModel\OneToOneAssociation;
 use NakedPhp\ProgModel\PhpAction;
 use NakedPhp\ProgModel\PhpActionParameter;
 use NakedPhp\ProgModel\PhpSpecification;
+use NakedPhp\Reflect\FacetProcessor;
+use NakedPhp\Reflect\Introspector;
+use NakedPhp\Reflect\MetaModelFactory;
+use NakedPhp\Reflect\NameUtils;
 
 /**
  * This class uses the work of the FacetProcessor to fill in the Specification
  * with objects created from the MetaModelFactory.
  */
-class PhpIntrospector
+class PhpClassIntrospector implements Introspector
 {
     protected $_specification;
     protected $_facetProcessor;
@@ -42,11 +46,19 @@ class PhpIntrospector
         $this->_metaModelFactory = $metaModelFactory;
         // FIX: real work; probably necessary since all methods need reflection objects to work
         // move in init() method
-        if ($this->_specification) {
+        if ($this->_specification and class_exists((string) $this->_specification)) {
             $this->_reflectionClass = new \ReflectionClass($this->_specification->getClassName());
             $this->_methods = new \ArrayObject($this->_reflectionClass->getMethods());
             $this->_methodRemover = new ArrayObjectMethodRemover($this->_methods);
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSpecification()
+    {
+        return $this->_specification;
     }
 
     /**

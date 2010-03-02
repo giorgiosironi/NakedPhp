@@ -36,19 +36,13 @@ class PhpTypesSpecificationFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('string', $spec->getClassName());
     }
 
-    /**
-     * @expectedException NakedPhp\ProgModel\Exception
-     */
-    public function testCreatesPhpSpecificationsWhoseAssociationsCannotBeSet()
+    public function testCreatesPhpSpecificationsWhoseAssociationsCanBeSet()
     {
         $spec = current($this->_specifications);
         $spec->initAssociations(array());
     }
 
-    /**
-     * @expectedException NakedPhp\ProgModel\Exception
-     */
-    public function testCreatesPhpSpecificationsWhoseActionsCannotBeSet()
+    public function testCreatesPhpSpecificationsWhoseActionsCanBeSet()
     {
         $spec = current($this->_specifications);
         $spec->initObjectActions(array());
