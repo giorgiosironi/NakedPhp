@@ -23,7 +23,7 @@ class PhpTypesSpecificationFactory implements SpecificationFactory
 
     public function __construct()
     {
-        $this->_basicTypes = array('bool', 'integer', 'float', 'string', 'array');
+        $this->_basicTypes = array('bool', 'integer', 'float', 'string', 'array', 'void');
     }
 
     /**

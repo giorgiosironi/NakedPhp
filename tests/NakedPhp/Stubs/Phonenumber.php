@@ -15,6 +15,9 @@
 
 namespace NakedPhp\Stubs;
 
+/**
+ * @Entity
+ */
 class Phonenumber
 {
     private $_value;

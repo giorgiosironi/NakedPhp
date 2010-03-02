@@ -31,7 +31,7 @@ interface NakedObjectSpecification extends FacetHolder, ActionContainer, Associa
     /**
      * Whether the object is a service with a single instance and should be 
      * "globally" available to the user in the interface.
-     * @return boolean
+     * @return bool
      */
     public function isService();
 }

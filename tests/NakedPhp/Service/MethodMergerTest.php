@@ -54,8 +54,8 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
              ->will($this->returnValue('dummy'));
 
         $method = new PhpAction('sendMessage', array(
-            'title' => new PhpActionParameter('string', 'title'),
-            'text' => new PhpActionParameter('string', 'text')
+            'title' => $this->_createParameter('string', 'title'),
+            'text' => $this->_createParameter('string', 'text')
         ));
         $entity = new NakedBareObject($mock, new NakedObjectSpecificationStub('', array('sendMessage' => $method)));
 
@@ -137,7 +137,7 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     {
         $this->_serviceClass = new NakedObjectSpecificationStub('', array(
             'process' => new PhpAction('process', array(
-                'objectToProcess' => new PhpActionParameter('NakedPhp\Stubs\User', 'objectToProcess')
+                'objectToProcess' => $this->_createParameter('NakedPhp\Stubs\User', 'objectToProcess')
             ))
         ));
         $this->_setAvailableServiceClasses(array(
@@ -176,8 +176,8 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     {
         return new NakedObjectSpecificationStub('NakedPhp\Stubs\User', array(
             'createNew' => new PhpAction('createNew', array(
-                'userFactory' => new PhpActionParameter('NakedPhp\Stubs\UserFactory', 'userFactory'),
-                'name' => $name = new PhpActionParameter('string', 'name')
+                'userFactory' => $this->_createParameter('NakedPhp\Stubs\UserFactory', 'userFactory'),
+                'name' => $name = $this->_createParameter('string', 'name')
             ))
         ));
     }
@@ -204,8 +204,8 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
     {
         $this->_serviceClass = new NakedObjectSpecificationStub('', array(
             'block' => new PhpAction('block', array(
-                'user' => new PhpActionParameter('NakedPhp\Stubs\User', 'user'),
-                'days' => $days = new PhpActionParameter('integer', 'days')
+                'user' => $this->_createParameter('NakedPhp\Stubs\User', 'user'),
+                'days' => $days = $this->_createParameter('integer', 'days')
             ))
         ));
         $this->_setAvailableServiceClasses(array(
@@ -228,11 +228,16 @@ class MethodMergerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->_methodMerger->hasObjectAction($class, 'createNew'));
         $method = $this->_methodMerger->getObjectAction($class, 'createNew');
-        $this->assertEquals(array('name' => new PhpActionParameter('string', 'name')), $method->getParameters());
+        $this->assertEquals(array('name' => $this->_createParameter('string', 'name')), $method->getParameters());
     }
 
     public function testSupportsMetaModelBuildingWhenMoreThanOneParameterIsAService()
     {
         $this->markTestIncomplete();
+    }
+
+    private function _createParameter($type, $name)
+    {
+        return new PhpActionParameter(new NakedObjectSpecificationStub($type), $name);
     }
 }

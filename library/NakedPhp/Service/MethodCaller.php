@@ -48,7 +48,7 @@ interface MethodCaller
      * Finds out if a method exists.
      * @param NakedObjectSpecification $class     class to search the method on
      * @param string $methodName
-     * @return boolean
+     * @return bool
      */
     public function hasObjectAction(NakedObjectSpecification $no, $methodName);
 }

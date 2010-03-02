@@ -36,7 +36,7 @@ class ValidateMethod implements Validate
     /**
      * @param NakedObject $no
      * @param mixed $proposedValue
-     * @return string   reason of non valid result, or a boolean to indicate
+     * @return string   reason of non valid result, or a bool to indicate
      *                  validation without messages
      */
     public function invalidReason(NakedObject $no, $proposedValue)

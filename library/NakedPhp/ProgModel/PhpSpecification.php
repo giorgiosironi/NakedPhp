@@ -37,7 +37,7 @@ class PhpSpecification extends AbstractFacetHolder implements NakedObjectSpecifi
     protected $_fields;
 
     /**
-     * @return boolean
+     * @return bool
      */
     protected $_isService = false;
 

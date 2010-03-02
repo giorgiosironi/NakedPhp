@@ -104,64 +104,6 @@ class MethodsReflectorTest extends \PHPUnit_Framework_TestCase
                             ),
                             $params);
     }
-
-
-    // TODO: from now on, the tests will be deleted; this Api is used by old Reflectors
-    public function testReturnsAnArrayOfMethods()
-    {
-        $this->setMockAnnotations();
-        $methods = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $this->assertTrue(is_array($methods));
-    }
-
-    public function testListsBusinessMethodsOfAnEntityObject()
-    {
-        $this->setMockAnnotations();
-        $methods = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $this->assertTrue(isset($methods['sendMessage']));
-        $this->assertEquals('sendMessage', (string) $methods['sendMessage']);
-    }
-
-    public function testDoesNotListMagicMethods()
-    {
-        $this->setMockAnnotations();
-        $methods = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $this->assertFalse(isset($methods['__toString']));
-    }
-
-    public function testExtractsReturnTypeAndParametersFromAnnotations()
-    {
-        $this->setMockAnnotations();
-        $methods = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $this->assertEquals('integer', $methods['getStatus']->getReturnType());
-    }
-
-    public function testAssumesTheDefaultParametersTypeAsStringIfNoAnnotationsAreDefined()
-    {
-        $this->setMockAnnotations(array());
-        $methods = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $params = $methods['validatePhonenumber']->getParameters();
-        $this->assertEquals('string', $params['phonenumber']->getType());
-    }
-
-    public function testAssumesTheDefaultReturnTypeAsStringIfNoAnnotationsAreDefined()
-    {
-        $this->setMockAnnotations(array());
-        $methods = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $return = $methods['validatePhonenumber']->getReturnType();
-        $this->assertEquals('string', $return);
-    }
-
-    public function testSkipsMethodsHiddenVoluntarily()
-    {
-        $this->setMockAnnotations();
-        $this->_parserMock->expects($this->any())
-                          ->method('contains')
-                          ->with('Hidden', $this->anything())
-                          ->will($this->returnValue(true));
-        $methods = $this->_reflector->analyze('NakedPhp\Stubs\User');
-        $this->assertFalse(isset($methods['mySkippedMethod']));
-    }
 }
 
 class DummyReflectedClass

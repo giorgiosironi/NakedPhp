@@ -76,7 +76,7 @@ class FactoriesFacetProcessorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param array   $featureTypes
-     * @param boolean $shouldBeCalled
+     * @param bool $shouldBeCalled
      */
     private function _getFacetFactoryMock(array $featureTypes, $shouldBeCalled)
     {

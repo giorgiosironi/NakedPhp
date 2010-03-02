@@ -28,7 +28,7 @@ interface FacetProcessor
     public function removePropertyAccessors(MethodRemover $remover);
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function recognizes(\ReflectionMethod $method);
 

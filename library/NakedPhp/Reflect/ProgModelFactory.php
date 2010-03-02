@@ -21,10 +21,16 @@ use NakedPhp\ProgModel\PhpActionParameter;
 class ProgModelFactory implements MetaModelFactory
 {
     protected $_reflector;
+    protected $_specificationLoader;
 
     public function __construct(MethodsReflector $reflector)
     {
         $this->_reflector = $reflector;
+    }
+
+    public function initSpecificationLoader(SpecificationLoader $loader)
+    {
+        $this->_specificationLoader = $loader;
     }
 
     /**
@@ -37,7 +43,8 @@ class ProgModelFactory implements MetaModelFactory
         if ($type === null) {
             $type = 'string';
         }
-        return new OneToOneAssociation($type, $identifier);
+        $spec = $this->_specificationLoader->loadSpecification($type);
+        return new OneToOneAssociation($spec, $identifier);
     }
 
     /**
@@ -49,9 +56,13 @@ class ProgModelFactory implements MetaModelFactory
         $oldParams = $this->_reflector->getParameters($method);
         $params = array();
         foreach ($oldParams as $idParam => $param) {
-            $params[$idParam] = new PhpActionParameter($param['type'], $idParam);
+            $type = $param['type'] === null ? 'string' : $param['type'];
+            $paramSpec = $this->_specificationLoader->loadSpecification($type);
+            $params[$idParam] = new PhpActionParameter($paramSpec, $idParam);
         };
         $returnType = $this->_reflector->getReturnType($method);
-        return new PhpAction($identifier, $params, $returnType);
+        $type = $returnType === null ? 'string' : $returnType;
+        $returnSpec = $this->_specificationLoader->loadSpecification($type);
+        return new PhpAction($identifier, $params, $returnSpec);
     }
 }

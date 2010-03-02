@@ -74,7 +74,7 @@ class NakedBareObject extends AbstractNakedObject implements \IteratorAggregate
 
     /**
      * @param object $object
-     * @return boolean  true if $object is the same domain object wrapped
+     * @return bool  true if $object is the same domain object wrapped
      */
     public function isWrapping($object)
     {

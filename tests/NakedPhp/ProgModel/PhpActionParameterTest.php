@@ -14,13 +14,15 @@
  */
 
 namespace NakedPhp\ProgModel;
+use NakedPhp\Stubs\NakedObjectSpecificationStub;
 
 class NakedObjectMethodParameterTest extends \PHPUnit_Framework_TestCase
 {
     public function testRetainsTypeAndName()
     {
-        $param = new PhpActionParameter('array', 'info');
-        $this->assertEquals('array', (string) $param->getType());
+        $dummySpec = new NakedObjectSpecificationStub();
+        $param = new PhpActionParameter($dummySpec, 'info');
+        $this->assertEquals($dummySpec, $param->getType());
         $this->assertEquals('info', $param->getId());
     }
 }

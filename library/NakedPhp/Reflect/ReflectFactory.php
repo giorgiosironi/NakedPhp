@@ -29,7 +29,10 @@ class ReflectFactory
                 new PhpIntrospectorFactory(
                     array(
                         new SpecificationFactory\PhpClassesSpecificationFactory(
-                            new SpecificationFactory\FilesystemClassDiscoverer($folder, $prefix)
+                            new SpecificationFactory\FilteredClassDiscoverer(
+                                new SpecificationFactory\FilesystemClassDiscoverer($folder, $prefix),
+                                $docblockParser = new DocblockParser
+                            )
                         ),
                         new SpecificationFactory\PhpTypesSpecificationFactory
                     ),
@@ -37,13 +40,14 @@ class ReflectFactory
                         new FacetFactory\PropertyMethodsFacetFactory,
                         new FacetFactory\ActionMethodsFacetFactory
                     )),
-                    new ProgModelFactory(
+                    $progModelFactory = new ProgModelFactory(
                         new MethodsReflector(
-                            new DocblockParser
+                            $docblockParser
                         )
                     )
                 )
             );
+            $progModelFactory->initSpecificationLoader($this->_specLoader);
         }
         return $this->_specLoader;
     }

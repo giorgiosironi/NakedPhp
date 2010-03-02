@@ -19,6 +19,7 @@ use NakedPhp\ProgModel\OneToOneAssociation;
 use NakedPhp\ProgModel\Facet\DisabledMethod;
 use NakedPhp\ProgModel\Facet\Property\ChoicesMethod;
 use NakedPhp\ProgModel\Facet\Property\ValidateMethod;
+use NakedPhp\Stubs\NakedObjectSpecificationStub;
 
 class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
 {
@@ -31,9 +32,9 @@ class FieldsFormBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $this->_formBuilder = new FieldsFormBuilder();
         $this->_fields = array(
-            'first' => new OneToOneAssociation('string', 'first'),
-            'second' => new OneToOneAssociation('integer', 'second'),
-            'oneRelation' => new OneToOneAssociation('NakedPhp\Stubs\User', 'oneRelation'),
+            'first' => new OneToOneAssociation(new NakedObjectSpecificationStub('string'), 'first'),
+            'second' => new OneToOneAssociation(new NakedObjectSpecificationStub('integer'), 'second'),
+            'oneRelation' => new OneToOneAssociation(new NakedObjectSpecificationStub('NakedPhp\Stubs\User'), 'oneRelation'),
         );
     }
 

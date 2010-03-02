@@ -16,6 +16,7 @@
 namespace NakedPhp\ProgModel;
 use NakedPhp\ProgModel\NakedBareObject;
 use NakedPhp\Stubs\DummyFacet;
+use NakedPhp\Stubs\NakedObjectSpecificationStub;
 use NakedPhp\Stubs\User;
 
 class OneToOneAssociationTest extends \PHPUnit_Framework_TestCase
@@ -24,8 +25,9 @@ class OneToOneAssociationTest extends \PHPUnit_Framework_TestCase
 
     public function testRetainsTypeAndId()
     {
-        $field = new OneToOneAssociation('string', 'name');
-        $this->assertEquals('string', (string) $field->getType());
+        $dummySpec = new NakedObjectSpecificationStub();
+        $field = new OneToOneAssociation($dummySpec, 'name');
+        $this->assertEquals($dummySpec, $field->getType());
         $this->assertEquals('name', $field->getId());
     }
 

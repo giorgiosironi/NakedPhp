@@ -47,7 +47,7 @@ class FactoriesFacetProcessor implements FacetProcessor
     }
 
     /**
-     * @return boolean  true if at least one @see MethodFilteringFacetFactory recognizes $method.
+     * @return bool  true if at least one @see MethodFilteringFacetFactory recognizes $method.
      */
     public function recognizes(\ReflectionMethod $method)
     {

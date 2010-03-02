@@ -15,6 +15,7 @@
 
 namespace NakedPhp\Form;
 use NakedPhp\MetaModel\NakedObject;
+use NakedPhp\MetaModel\NakedObjectSpecification;
 use NakedPhp\ProgModel\OneToOneAssociation;
 
 /**
@@ -104,8 +105,9 @@ class FieldsFormBuilder
         return ucfirst($field->getType()) == $field->getType();
     }
 
-    protected function _normalize($className)
+    protected function _normalize(NakedObjectSpecification $spec)
     {
+        $className = (string) $spec;
         return strtr($className, array('_' => '-', '\\' => '-'));
     }
 }

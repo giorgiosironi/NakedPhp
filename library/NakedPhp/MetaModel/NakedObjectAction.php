@@ -17,7 +17,13 @@ namespace NakedPhp\MetaModel;
 
 interface NakedObjectAction extends NakedObjectMember
 {
+    /**
+     * @return array    NakedObjectActionParameter instances
+     */
     public function getParameters();
 
+    /**
+     * @return NakedObjectSpecification
+     */
     public function getReturnType();
 }

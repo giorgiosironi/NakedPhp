@@ -20,5 +20,8 @@ namespace NakedPhp\MetaModel;
  */
 interface NakedObjectActionParameter extends NamedAndDescribed
 {
+    /**
+     * @return NakedObjectSpecification
+     */
     public function getType();
 }

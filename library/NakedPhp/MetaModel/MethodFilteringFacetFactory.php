@@ -21,7 +21,7 @@ interface MethodFilteringFacetFactory extends FacetFactory
      * When true, the method should be not listed in the actions
      * as it is recognized for special purposes by this FacetFactory.
      * @param ReflectionMethod $method
-     * @return boolean
+     * @return bool
      */
     public function recognizes(\ReflectionMethod $method);
 }

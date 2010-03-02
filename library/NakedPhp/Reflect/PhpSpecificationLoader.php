@@ -35,9 +35,14 @@ class PhpSpecificationLoader implements SpecificationLoader
 
     public function init()
     {
+        $introspectors = array();
         $this->_specifications = array();
         foreach ($this->_introspectorFactory->getIntrospectors() as $name => $introspector) {
+            $introspectors[$name] = $introspector;
             $this->_specifications[$name] = $introspector->getSpecification();
+        }
+
+        foreach ($introspectors as $name => $introspector) {
             $introspector->introspectClass();
             $introspector->introspectAssociations();
             $introspector->introspectActions();
@@ -49,11 +54,10 @@ class PhpSpecificationLoader implements SpecificationLoader
      */
     public function loadSpecification($className)
     {
-        foreach ($this->_specifications as $name => $spec) {
-            if ($name == $className) {
-                return $spec;
-            }
+        if (isset($this->_specifications[$className])) {
+            return $this->_specifications[$className];
         }
+        return new PhpSpecification('UnrecognizedClass');
     }
 
     /**

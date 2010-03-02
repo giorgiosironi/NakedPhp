@@ -15,6 +15,7 @@
 
 namespace NakedPhp\ProgModel;
 use NakedPhp\MetaModel\NakedObjectActionParameter;
+use NakedPhp\MetaModel\NakedObjectSpecification;
 
 /**
  * Wraps info about a method or constructor param.
@@ -22,7 +23,7 @@ use NakedPhp\MetaModel\NakedObjectActionParameter;
 final class PhpActionParameter implements NakedObjectActionParameter
 {
     /**
-     * @var string
+     * @var NakedObjectSpecification
      */
     private $_type;
 
@@ -31,23 +32,32 @@ final class PhpActionParameter implements NakedObjectActionParameter
      */
     private $_name;
 
-    public function __construct($type, $name, $default = false)
+    public function __construct(NakedObjectSpecification $type = null, $name = null, $default = false)
     {
         $this->_type = $type;
         $this->_name = $name;
         $this->_default = $default;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getType()
     {
         return $this->_type;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return $this->_name;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getName()
     {
         return $this->_name;

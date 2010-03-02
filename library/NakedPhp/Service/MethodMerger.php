@@ -69,7 +69,7 @@ class MethodMerger implements MethodCaller
         $completeParameters = array(); 
         $serviceClasses = $this->_serviceProvider->getServiceSpecifications();
         foreach ($method->getParameters() as $name => $param) {
-            $type = $param->getType();
+            $type = $param->getType()->getClassName();
             if (isset($serviceClasses[$type])) {
                 $completeParameters[$name] = $this->_serviceProvider->getService($type);
             } else {
@@ -91,7 +91,7 @@ class MethodMerger implements MethodCaller
     {
         $completeParameters = array();
         foreach ($method->getParameters() as $param) {
-            if ($param->getType() == $entity->getClassName()) {
+            if ($param->getType()->getClassName() == $entity->getClassName()) {
                 $completeParameters[] = $entity->getObject();
             } else {
                 $completeParameters[] = array_shift($parameters);
@@ -112,7 +112,7 @@ class MethodMerger implements MethodCaller
         $servicesMethods = array();
         foreach ($this->_getAllServicesMethods() as $methodName => $method) {
             foreach ($method->getParameters() as $param) {
-                if ($param->getType() == $class->getClassName()) {
+                if ($param->getType()->getClassName() == $class->getClassName()) {
                     $servicesMethods[$methodName] = $this->_buildFakeMethod($method, $class);
                     break;
                 }
@@ -123,7 +123,7 @@ class MethodMerger implements MethodCaller
         $serviceClasses = $this->_serviceProvider->getServiceSpecifications();
         foreach ($class->getObjectActions() as $methodName => $method) {
             foreach ($method->getParameters() as $param) {
-                $type = $param->getType();
+                $type = $param->getType()->getClassName();
                 if (isset($serviceClasses[$type])) {
                     $classMethods[$methodName] = $this->_buildFakeMethod($method, $serviceClasses[$type]);
                     break;
@@ -175,7 +175,7 @@ class MethodMerger implements MethodCaller
         $methodName = (string) $method;
         $newParams = array();
         foreach ($method->getParameters() as $key => $param) {
-            if ($param->getType() != $class->getClassName()) { 
+            if ($param->getType()->getClassName() != $class->getClassName()) { 
                 $newParams[$key] = $param;
             }
         }

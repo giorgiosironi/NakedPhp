@@ -16,6 +16,7 @@
 namespace NakedPhp\Form;
 use NakedPhp\ProgModel\PhpAction;
 use NakedPhp\ProgModel\PhpActionParameter;
+use NakedPhp\Stubs\NakedObjectSpecificationStub;
 
 class MethodFormBuilderTest extends \PHPUnit_Framework_TestCase
 {
@@ -28,10 +29,10 @@ class MethodFormBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $this->_formBuilder = new MethodFormBuilder();
         $this->_params = array(
-                      'first' => new PhpActionParameter('string', 'first'),
-                      'second' => new PhpActionParameter('integer', 'second')
+                      'first' => new PhpActionParameter(new NakedObjectSpecificationStub('string'), 'first'),
+                      'second' => new PhpActionParameter(new NakedObjectSpecificationStub('integer'), 'second')
         );
-        $this->_method = new PhpAction('doSomething', $this->_params, 'boolean');
+        $this->_method = new PhpAction('doSomething', $this->_params, new NakedObjectSpecificationStub('bool'));
         $this->_form = $this->_formBuilder->createForm($this->_method);
     }
 

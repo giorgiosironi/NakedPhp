@@ -15,7 +15,6 @@
 
 namespace NakedPhp\Reflect\Functional;
 use NakedPhp\Reflect\ReflectFactory;
-use NakedPhp\ProgModel\PhpActionParameter;
 
 class UserTest extends \PHPUnit_Framework_TestCase
 {
@@ -41,28 +40,28 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $actions = $this->_spec->getObjectActions();
 
         $sendMessage = $actions['sendMessage'];
-        $this->assertEquals(array('title' => new PhpActionParameter('string', 'title'),
-                                  'text' => new PhpActionParameter('string', 'text')),
-                            $sendMessage->getParameters());
+        $params = $sendMessage->getParameters();
+        $this->assertEquals('string', (string) $params['title']->getType());
+        $this->assertEquals('string', (string) $params['text']->getType());
         $this->assertNotNull($sendMessage->getFacet('Action\Invocation'));
-        $this->assertEquals('void', $sendMessage->getReturnType());
+        $this->assertEquals('void', (string) $sendMessage->getReturnType());
 
         $deactivate = $actions['deactivate'];
         $this->assertEquals(array(), $deactivate->getParameters());
-        $this->assertEquals('boolean', $deactivate->getReturnType());
+        $this->assertEquals('bool', (string) $deactivate->getReturnType());
     }
 
     public function testGeneratesFieldsFromGetters()
     {
         $fields = $this->_spec->getAssociations();
         $status = $fields['status'];
-        $this->assertEquals('string', $status->getType());
+        $this->assertEquals('string', (string) $status->getType());
     }
 
     public function testGeneratesStringFieldsFromGettersWithoutAnnotations()
     {
         $fields = $this->_spec->getAssociations();
         $password = $fields['password'];
-        $this->assertEquals('string', $password->getType());
+        $this->assertEquals('string', (string) $password->getType());
     }
 }

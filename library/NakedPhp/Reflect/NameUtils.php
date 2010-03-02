@@ -37,7 +37,7 @@ class NameUtils
     /**
      * @param string $methodName
      * @param string $prefix
-     * @return boolean              true if $methodName starts with the given $prefix
+     * @return bool              true if $methodName starts with the given $prefix
      */
     public static function startsWith($methodName, $prefix)
     {

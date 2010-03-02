@@ -15,6 +15,7 @@
 
 namespace NakedPhp\ProgModel;
 use NakedPhp\MetaModel\NakedObjectAction;
+use NakedPhp\MetaModel\NakedObjectSpecification;
 
 class PhpAction extends AbstractFacetHolder implements NakedObjectAction
 {
@@ -38,7 +39,7 @@ class PhpAction extends AbstractFacetHolder implements NakedObjectAction
      * @param array $params
      * @param string $returnType
      */
-    public function __construct($id = '', array $params = array(), $returnType = 'void')
+    public function __construct($id = '', array $params = array(), NakedObjectSpecification $returnType = null)
     {
         $this->_id = $id;
         $this->_params = $params;

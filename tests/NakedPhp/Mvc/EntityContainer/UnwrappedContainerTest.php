@@ -93,7 +93,7 @@ class UnwrappedContainerTest extends \PHPUnit_Framework_TestCase
     {
         $entity = new \stdClass;
         $key = $this->_container->add($entity);
-        $this->assertTrue((boolean) $this->_container->contains($entity));
+        $this->assertTrue((bool) $this->_container->contains($entity));
     }
 
     /**

@@ -14,16 +14,20 @@
  */
 
 namespace NakedPhp\Reflect;
+use NakedPhp\Stubs\NakedObjectSpecificationStub;
 
 class ProgModelFactoryTest extends \PHPUnit_Framework_TestCase
 {
     private $_reflectorMock;
     private $_factory;
+    private $_loaderMock;
 
     public function setUp()
     {
         $this->_reflectorMock = $this->getMock('NakedPhp\Reflect\MethodsReflector');
         $this->_factory = new ProgModelFactory($this->_reflectorMock);
+        $this->_loaderMock = $this->getMock('NakedPhp\Reflect\SpecificationLoader');
+        $this->_factory->initSpecificationLoader($this->_loaderMock);
     }
 
     public function testCreatesAssociation()
@@ -34,12 +38,17 @@ class ProgModelFactoryTest extends \PHPUnit_Framework_TestCase
         $this->_reflectorMock->expects($this->once())
                              ->method('getReturnType')
                              ->will($this->returnValue('integer'));
+        $dummySpec = new NakedObjectSpecificationStub();
+        $this->_loaderMock->expects($this->once())
+                          ->method('loadSpecification')
+                          ->with('integer')
+                          ->will($this->returnValue($dummySpec));
 
         $method = $this->_getDummyReflectionMethod();
         $association = $this->_factory->createAssociation($method);
 
         $this->assertEquals('myField', $association->getId());
-        $this->assertEquals('integer', $association->getType());
+        $this->assertSame($dummySpec, $association->getType());
     }
     
     public function testAssociationsTypeDefaultsToString()
@@ -48,10 +57,12 @@ class ProgModelFactoryTest extends \PHPUnit_Framework_TestCase
                              ->method('getReturnType')
                              ->will($this->returnValue(null));
 
+        $this->_loaderMock->expects($this->once())
+                          ->method('loadSpecification')
+                          ->with('string');
+
         $method = $this->_getDummyReflectionMethod();
         $association = $this->_factory->createAssociation($method);
-
-        $this->assertEquals('string', $association->getType());
     }
     
     public function testCreatesAction()
@@ -69,18 +80,46 @@ class ProgModelFactoryTest extends \PHPUnit_Framework_TestCase
                                     'type' => 'integer'
                                 )
                              )));
+        $dummySpec = new NakedObjectSpecificationStub();
+        $this->_loaderMock->expects($this->exactly(2))
+                          ->method('loadSpecification')
+                          ->will($this->returnValue($dummySpec));
 
         $method = $this->_getDummyReflectionMethod();
         $action = $this->_factory->createAction($method);
 
         $this->assertEquals('myMethod', $action->getId());
-        $this->assertEquals('string', $action->getReturnType());
+        $this->assertSame($dummySpec, $action->getReturnType());
         $params = $action->getParameters();
         $param = $params['myParam'];
         $this->assertEquals('myParam', $param->getId());
-        $this->assertEquals('integer', $param->getType());
+        $this->assertSame($dummySpec, $param->getType());
     }
     
+    public function testCreatesActionTypesDefaultToString()
+    {
+        $this->_reflectorMock->expects($this->once())
+                             ->method('getIdentifierForAction')
+                             ->will($this->returnValue('myMethod'));
+        $this->_reflectorMock->expects($this->once())
+                             ->method('getReturnType')
+                             ->will($this->returnValue(null));
+        $this->_reflectorMock->expects($this->once())
+                             ->method('getParameters')
+                             ->will($this->returnValue(array(
+                                'myParam' => array(
+                                    'type' => null
+                                )
+                             )));
+        $dummySpec = new NakedObjectSpecificationStub();
+        $this->_loaderMock->expects($this->exactly(2))
+                          ->method('loadSpecification')
+                          ->with('string');
+
+        $method = $this->_getDummyReflectionMethod();
+        $action = $this->_factory->createAction($method);
+    }
+ 
     private function _getDummyReflectionMethod()
     {
         return $this->getMock('ReflectionMethod', array(), array(), '', false);

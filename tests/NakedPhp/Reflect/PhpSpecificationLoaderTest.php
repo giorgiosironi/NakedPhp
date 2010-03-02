@@ -23,8 +23,7 @@ class PhpSpecificationLoaderTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $introspectorFactory = new DummyIntrospectorFactory($this->_getIntrospector());
-        $this->_specLoader = new PhpSpecificationLoader($introspectorFactory);
+        $this->_specLoader = new PhpSpecificationLoader($this->_getIntrospectorFactory());
         $this->_specLoader->init();
     }
 
@@ -39,6 +38,21 @@ class PhpSpecificationLoaderTest extends \PHPUnit_Framework_TestCase
     {
         $serviceSpecs = $this->_specLoader->getServiceSpecifications();
         $this->assertEquals(array(), $serviceSpecs);
+    }
+
+    public function _getIntrospectorFactory()
+    {
+        $introspector = $this->_getIntrospector();
+        $factoryMock = $this->getMock('NakedPhp\Reflect\IntrospectorFactory');
+        $factoryMock->expects($this->once())
+                    ->method('getIntrospectors')
+                    ->will($this->returnValue(array(
+                        'My_Model_EntityA' => $introspector,
+                        'My_Model_EntityB' => $introspector,
+                        'My_Model_Service' => $introspector,
+                        'string' => $introspector
+                    )));
+        return $factoryMock;
     }
 
     private function _getIntrospector()
@@ -56,6 +70,8 @@ class PhpSpecificationLoaderTest extends \PHPUnit_Framework_TestCase
                      ->method('introspectActions');
         return $introspector;
     }
+
+
 }
 
 class DummyIntrospectorFactory implements IntrospectorFactory
@@ -69,11 +85,5 @@ class DummyIntrospectorFactory implements IntrospectorFactory
 
     public function getIntrospectors()
     {
-        return array(
-            'My_Model_EntityA' => $this->_introspector,
-            'My_Model_EntityB' => $this->_introspector,
-            'My_Model_Service' => $this->_introspector,
-            'string' => $this->_introspector,
-        );
     }
 }

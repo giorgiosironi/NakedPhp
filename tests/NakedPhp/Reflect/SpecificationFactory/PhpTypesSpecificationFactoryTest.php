@@ -27,11 +27,11 @@ class PhpTypesSpecificationFactoryTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Should create boolean, integer, float, string and array
+     * Should create bool, integer, float, string, array, void
      */
     public function testCreatesPhpSpecificationObjectsGivenSomeClassNames()
     {
-        $this->assertEquals(5, count($this->_specifications));
+        $this->assertEquals(6, count($this->_specifications));
         $spec = $this->_specifications['string'];
         $this->assertEquals('string', $spec->getClassName());
     }

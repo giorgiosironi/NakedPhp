@@ -24,7 +24,7 @@ use NakedPhp\MetaModel\NakedObjectAssociation;
 class OneToOneAssociation extends AbstractFacetHolder implements NakedObjectAssociation
 {
     /**
-     * @var string
+     * @var NakedObjectSpecification
      */
     private $_type;
 
@@ -34,15 +34,18 @@ class OneToOneAssociation extends AbstractFacetHolder implements NakedObjectAsso
     private $_id;
 
     /**
-     * @param string $type
-     * @param string $id    unambiguos identifier
+     * @param NakedObjectSpecification $type
+     * @param string                   $id    unambiguos identifier
      */
-    public function __construct($type = '', $id = '')
+    public function __construct($type = null, $id = '')
     {
         $this->_type = $type;
         $this->_id = $id;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getType()
     {
         return $this->_type;

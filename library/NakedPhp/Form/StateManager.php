@@ -114,7 +114,7 @@ class StateManager
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     protected function _isObjectElement(\Zend_Form_Element $element)
     {
@@ -124,7 +124,7 @@ class StateManager
     /**
      * @param NakedObject
      * @param string
-     * @return boolean
+     * @return bool
      */
     protected function _isOfNormalizedClassName(NakedObject $object, $normalizedClassName)
     {

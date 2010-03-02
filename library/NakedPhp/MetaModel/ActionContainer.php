@@ -35,7 +35,7 @@ interface ActionContainer
     /**
      * Convenience method.
      * @param string $name
-     * @return boolean
+     * @return bool
      */
     public function hasObjectAction($name);
 }

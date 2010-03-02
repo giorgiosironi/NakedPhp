@@ -19,7 +19,7 @@ class DocblockParser
 {
     /**
      * Search for '@' . $annotation in $classDocblock
-     * @return boolean
+     * @return bool
      */
     public function contains($annotationName, $classDocblock)
     {

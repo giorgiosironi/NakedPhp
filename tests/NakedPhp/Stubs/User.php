@@ -120,7 +120,7 @@ class User
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function deactivate()
     {

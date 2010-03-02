@@ -46,7 +46,7 @@ class PhpClassIntrospector implements Introspector
         $this->_metaModelFactory = $metaModelFactory;
         // FIX: real work; probably necessary since all methods need reflection objects to work
         // move in init() method
-        if ($this->_specification and class_exists((string) $this->_specification)) {
+        if ($this->_specification and class_exists((string) $this->_specification, true)) {
             $this->_reflectionClass = new \ReflectionClass($this->_specification->getClassName());
             $this->_methods = new \ArrayObject($this->_reflectionClass->getMethods());
             $this->_methodRemover = new ArrayObjectMethodRemover($this->_methods);

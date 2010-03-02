@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\ProgModel;
+use NakedPhp\Stubs\NakedObjectSpecificationStub;
 
 class NakedObjectMethodTest extends \PHPUnit_Framework_TestCase
 {
@@ -31,8 +32,9 @@ class NakedObjectMethodTest extends \PHPUnit_Framework_TestCase
 
     public function testRetainsReturnType()
     {
-        $method = new PhpAction('doSomething', $params = array(), 'string');
-        $this->assertEquals('string', $method->getReturnType());
+        $dummySpec = new NakedObjectSpecificationStub;
+        $method = new PhpAction('doSomething', $params = array(), $dummySpec);
+        $this->assertSame($dummySpec, $method->getReturnType());
     }
 
     public function testImplementsFacetHolderInterface()

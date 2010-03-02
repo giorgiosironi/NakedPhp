@@ -14,7 +14,7 @@
  */
 
 /**
- * @NakedService
+ * @Service
  */
 class Example_Model_EventFactory
 {
