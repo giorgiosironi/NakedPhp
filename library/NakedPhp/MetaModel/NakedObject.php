@@ -60,4 +60,13 @@ interface NakedObject extends ActionContainer, AssociationContainer, FacetHolder
      * @return mixed    the original result
      */
     public function __call($methodName, array $arguments = array());
+
+    /**
+     * Wraps $object in another instance of the implementor class.
+     * Prototype pattern implementation.
+     * @param mixed $object
+     * @param NakedObjectSpecification $spec
+     * @return NakedObject
+     */
+    public function createNewInstance($object, NakedObjectSpecification $spec);
 }

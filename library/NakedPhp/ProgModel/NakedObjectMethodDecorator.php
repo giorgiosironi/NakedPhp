@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\ProgModel;
+use NakedPhp\MetaModel\NakedObjectSpecification;
 use NakedPhp\Service\MethodCaller;
 
 /**
@@ -47,5 +48,14 @@ class NakedObjectMethodDecorator extends AbstractNakedObjectDecorator
     public function __call($methodName, array $arguments = array())
     {
         return $this->_caller->call($this->_entity, $methodName, $arguments);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createNewInstance($object, NakedObjectSpecification $spec)
+    {
+        return new self($this->_entity->createNewInstance($object, $spec),
+                        $this->_caller);
     }
 }

@@ -28,7 +28,8 @@ class Doctrine
     public function save(EntityContainer $container)
     {
         $newStates = array();
-        foreach ($container as $key => $entity) {
+        foreach ($container as $key => $no) {
+            $entity = $no->getObject();
             $state = $container->getState($key);
             switch ($state) {
                 case EntityContainer::STATE_NEW:

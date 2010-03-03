@@ -27,7 +27,7 @@ class NakedObjectMethodDecoratorTest extends \NakedPhp\Test\TestCase
 
     public function setUp()
     {
-        $original = $this->_getBareEntityMock();
+        $original = $this->_getBareObjectMock();
         $this->_object = new NakedObjectMethodDecorator($original);
         $this->_delegation = new Delegation($this, $original);
     }
@@ -121,9 +121,6 @@ class NakedObjectMethodDecoratorTest extends \NakedPhp\Test\TestCase
         $this->assertFalse($no->hasObjectAction('notExistentMethodName'));
     }
 
-    /**
-     * @deprecated
-     */
     public function testDelegatesToTheMergerForCallingMethods()
     {
         $bareNo = new NakedBareObject();
@@ -137,7 +134,28 @@ class NakedObjectMethodDecoratorTest extends \NakedPhp\Test\TestCase
         $this->assertEquals('dummy', $no->__call('methodName', array('foo', 'bar')));
     }
 
-    private function _getBareEntityMock()
+    public function testCreatesNewInstance()
+    {
+        $spec = new NakedObjectSpecificationStub();
+        $bareNo = $this->_getBareObjectMock();
+        $newBareNo = $this->_getBareObjectMock();
+        $bareNo->expects($this->once())
+               ->method('createNewInstance')
+               ->with('dummy', $spec)
+               ->will($this->returnValue($newBareNo));
+        $newBareNo->expects($this->any())
+                  ->method('getObject')
+                  ->will($this->returnValue('newDummy'));
+        $merger = $this->_getMergerMock();
+        $no = new NakedObjectMethodDecorator($bareNo, $merger);
+
+        $new = $no->createNewInstance('dummy', $spec);
+
+        $this->assertTrue($new instanceof NakedObjectMethodDecorator);
+        $this->assertSame('newDummy', $new->getObject());
+    }
+
+    private function _getBareObjectMock()
     {
         return $this->getMock('NakedPhp\ProgModel\NakedBareObject');
     }

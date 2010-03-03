@@ -17,16 +17,13 @@ namespace NakedPhp\Mvc\EntityContainer;
 use NakedPhp\ProgModel\NakedBareObject;
 use NakedPhp\MetaModel\NakedFactory;
 
-class BareWrappingIterator implements \IteratorAggregate
+class StateBareIterator implements \IteratorAggregate
 {
-    protected $_objects = null;
     protected $_container;
-    protected $_factory;
 
-    public function __construct(UnwrappedContainer $container, NakedFactory $factory)
+    public function __construct(BareContainer $container)
     {
         $this->_container = $container;
-        $this->_factory = $factory;
     }
 
     /**
@@ -34,15 +31,18 @@ class BareWrappingIterator implements \IteratorAggregate
      */
     public function getIterator()
     {
-        $this->_lazyWrap();
-        return new \ArrayIterator($this->_objects);
+        return new \ArrayIterator($this->_load());
     }
 
-    protected function _lazyWrap()
+    protected function _load()
     {
-        $this->_objects = array();
+        $objects = array();
         foreach ($this->_container as $key => $entity) {
-            $this->_objects[$key] = $this->_factory->createBare($entity);
+            $objects[$key] = array(
+                'object' => $entity,
+                'state'  => $this->_container->getState($key)
+            );
         }
+        return $objects;
     }
 }

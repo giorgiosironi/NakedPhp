@@ -16,8 +16,9 @@
 namespace NakedPhp\Storage;
 use Doctrine\ORM\UnitOfWork;
 use NakedPhp\Mvc\EntityContainer;
-use NakedPhp\Mvc\EntityContainer\UnwrappedContainer;
+use NakedPhp\Mvc\EntityContainer\BareContainer;
 use NakedPhp\Stubs\User;
+use NakedPhp\Stubs\NakedObjectStub;
 
 /**
  * Exercise the Doctrine storage driver, which should reflect to the database
@@ -87,7 +88,7 @@ class DoctrineTest extends AbstractDoctrineTest
     public function testDoesNotChangeEntitiesStateIfTheyAreNotSaved()
     {
         $container = $this->_getContainer();
-        $container->add($user = new User(null));
+        $container->add($user = $this->_getNewUser(null));
         $container->add($detachedUser = $this->_getDetachedUser('Picard'), EntityContainer::STATE_DETACHED);
         $detachedUser->setName(null);
         try {
@@ -105,21 +106,21 @@ class DoctrineTest extends AbstractDoctrineTest
     {
         $user = new User();
         $user->setName($name);
-        return $user;
+        return new NakedObjectStub($user);
     }
 
     private function _getDetachedUser($name)
     {
         $user = $this->_getNewUser($name);
-        $this->_em->persist($user);
+        $this->_em->persist($user->getObject());
         $this->_em->flush();
-        $this->_em->detach($user);
+        $this->_em->detach($user->getObject());
         return $user;
     }
 
     private function _getContainer(array $fixture = array())
     {
-        $container = new UnwrappedContainer;
+        $container = new BareContainer;
         foreach ($fixture as $name => $state) {
             $user = $this->_getNewUser($name);
             $key = $container->add($user);

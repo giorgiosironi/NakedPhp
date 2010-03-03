@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\Mvc;
+use NakedPhp\MetaModel\NakedObject;
 
 interface EntityContainer extends \IteratorAggregate
 {
@@ -38,7 +39,7 @@ interface EntityContainer extends \IteratorAggregate
      * @param integer $state   one of the STATE_* constants
      * @return integer         the key of the object in this container
      */
-    public function add($object, $state = self::STATE_NEW);
+    public function add(NakedObject $object, $state = self::STATE_NEW);
 
     /**
      * @param integer $key      key returned during insertion
@@ -49,7 +50,7 @@ interface EntityContainer extends \IteratorAggregate
      * @param integer $key      key returned during insertion
      * @param object $object   object to be added idempotently
      */
-    public function replace($key, $object);
+    public function replace($key, NakedObject $object);
 
     /**
      * @param integer $key  key for the object
@@ -73,5 +74,5 @@ interface EntityContainer extends \IteratorAggregate
      * @param object        $object
      * @return integer      the object key; false if it's not contained
      */
-    public function contains($object);
+    public function contains(NakedObject $object);
 }

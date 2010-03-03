@@ -112,4 +112,12 @@ class NakedBareObject extends AbstractNakedObject implements \IteratorAggregate
         }
         throw new Exception("Method $name does not exist.");
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function createNewInstance($object, NakedObjectSpecification $spec)
+    {
+        return new self($object, $spec);
+    }
 }

@@ -15,19 +15,25 @@
 
 namespace NakedPhp\Mvc\EntityContainer;
 use NakedPhp\Mvc\EntityContainer;
+use NakedPhp\Stubs\NakedObjectStub;
 
-class UnwrappedContainerTest extends \PHPUnit_Framework_TestCase
+class BareContainerTest extends \PHPUnit_Framework_TestCase
 {
     private $_container;
 
     public function setUp()
     {
-        $this->_container = new UnwrappedContainer();
+        $this->_container = new BareContainer();
+    }
+
+    private function _getEntity()
+    {
+        return new NakedObjectStub(new \stdClass);
     }
 
     public function testAddsAnObjectAndReturnsKey()
     {
-        $entity = new \stdClass;
+        $entity = $this->_getEntity();
         $key = $this->_container->add($entity);
         $this->assertSame($entity, $this->_container->get($key));
         return $key;
@@ -44,9 +50,9 @@ class UnwrappedContainerTest extends \PHPUnit_Framework_TestCase
 
     public function testReplacesAnObject()
     {
-        $entity = new \stdClass;
+        $entity = $this->_getEntity();
         $key = $this->_container->add($entity);
-        $newEntity = new \stdClass;
+        $newEntity = $this->_getEntity();
         $this->_container->replace($key, $newEntity);
         $this->assertSame($newEntity, $this->_container->get($key));
 
@@ -54,14 +60,14 @@ class UnwrappedContainerTest extends \PHPUnit_Framework_TestCase
 
     public function testSetsStateOfAddedObjectsAsNew()
     {
-        $entity = new \stdClass;
+        $entity = $this->_getEntity();
         $key = $this->_container->add($entity);
         $this->assertEquals(EntityContainer::STATE_NEW, $this->_container->getState($key));
     }
 
     public function testAllowsManualStateSetting()
     {
-        $entity = new \stdClass;
+        $entity = $this->_getEntity();
         $key = $this->_container->add($entity);
         $this->_container->setState($key, EntityContainer::STATE_DETACHED);
         $this->assertEquals(EntityContainer::STATE_DETACHED, $this->_container->getState($key));
@@ -72,7 +78,7 @@ class UnwrappedContainerTest extends \PHPUnit_Framework_TestCase
 
     public function testAllowsManualStateSettingDuringAddition()
     {
-        $entity = new \stdClass;
+        $entity = $this->_getEntity();
         $key = $this->_container->add($entity, EntityContainer::STATE_DETACHED);
         $this->assertEquals(EntityContainer::STATE_DETACHED, $this->_container->getState($key));
     }
@@ -82,7 +88,7 @@ class UnwrappedContainerTest extends \PHPUnit_Framework_TestCase
      */
     public function testRecognizesNewObjects()
     {
-        $entity = new \stdClass;
+        $entity = $this->_getEntity();
         $this->assertFalse($this->_container->contains($entity));
     }
 
@@ -91,7 +97,7 @@ class UnwrappedContainerTest extends \PHPUnit_Framework_TestCase
      */
     public function testRecognizesAnAddedObject()
     {
-        $entity = new \stdClass;
+        $entity = $this->_getEntity();
         $key = $this->_container->add($entity);
         $this->assertTrue((bool) $this->_container->contains($entity));
     }
@@ -101,7 +107,7 @@ class UnwrappedContainerTest extends \PHPUnit_Framework_TestCase
      */
     public function testAddsAnObjectIdempotently()
     {
-        $entity = new \stdClass;
+        $entity = $this->_getEntity();
         $key = $this->_container->add($entity);
         $anotherKey = $this->_container->add($entity);
         $this->assertSame($key, $anotherKey);
@@ -112,7 +118,7 @@ class UnwrappedContainerTest extends \PHPUnit_Framework_TestCase
      */
     public function testSerializationMustNotAffectIdempotentAddition()
     {
-        $entity = new \stdClass;
+        $entity = $this->_getEntity();
         $key = $this->_container->add($entity);
         $serialized = serialize($this->_container);
         unset($this->_container);

@@ -17,17 +17,20 @@ namespace NakedPhp\Mvc;
 use NakedPhp\MetaModel\NakedObject;
 use NakedPhp\MetaModel\NakedService;
 
+/**
+ * FIX: should never wrap instances. $this->_nakedFactory has to go.
+ */
 class Controller extends \Zend_Controller_Action
 {
     /**
-     * @var NakedPhp\Factory    creates nakedphp object
+     * @var NakedPhp\Factory    creates NakedPhp internal service objects
      */
     private $_factory;
 
     /**
-     * @var EntityContainer   contains entity objects
+     * @var EntityContainer   contains entity as NakedObject instances
      */
-    private $_unwrappedContainer;
+    private $_bareContainer;
 
     /**
      * @var ContextContainer  remembers current workflow
@@ -58,9 +61,8 @@ class Controller extends \Zend_Controller_Action
     {
         $this->_factory = $this->getInvokeArg('bootstrap')->getResource('Nakedphp');
         $this->_nakedFactory = $this->_factory->getNakedFactory();
-        $this->_unwrappedContainer = $this->_factory->getUnwrappedContainer();
-        $this->_bareWrappingIterator = $this->_factory->getBareWrappingIterator();
-        $this->view->session = $this->_factory->getStateBareWrappingIterator();
+        $this->_bareContainer = $this->_factory->getBareContainer();
+        $this->view->session = $this->_factory->getStateBareIterator();
         $this->view->context = $this->_contextContainer = $this->_factory->getContextContainer();
         $this->view->services = $this->_services = $this->_factory->getServiceIterator();
 
@@ -71,8 +73,7 @@ class Controller extends \Zend_Controller_Action
                 $object = $provider->getService($objectKey);
                 $this->_completeObject = $this->_factory->createCompleteService($object); 
             } else {
-                $object = $this->_unwrappedContainer->get($objectKey);
-                $bareObject = $this->_nakedFactory->createBare($object);
+                $bareObject = $this->_bareContainer->get($objectKey);
                 $this->_completeObject = $this->_factory->createCompleteEntity($bareObject);
             }
             $this->_objectKey = $objectKey;
@@ -140,7 +141,7 @@ class Controller extends \Zend_Controller_Action
 
     public final function removeAction()
     {
-        $this->_unwrappedContainer->setState($this->_objectKey, EntityContainer::STATE_REMOVED);
+        $this->_bareContainer->setState($this->_objectKey, EntityContainer::STATE_REMOVED);
     }
 
     /**
@@ -177,7 +178,7 @@ class Controller extends \Zend_Controller_Action
     public function saveAction()
     {
         $storage = $this->_factory->getPersistenceStorage();
-        $storage->save($this->_unwrappedContainer);
+        $storage->save($this->_bareContainer);
         $this->view->entities = array(
             'new' => array(),
             'detached' => array(),
@@ -197,7 +198,7 @@ class Controller extends \Zend_Controller_Action
             $index = (string) $completeObject->getSpecification();
             $type = 'service';
         } else {
-            $index = $this->_unwrappedContainer->add($object);
+            $index = $this->_bareContainer->add($completeObject);
             $type = 'entity';
         }
 

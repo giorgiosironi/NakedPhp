@@ -159,4 +159,15 @@ class NakedBareObjectTest extends AbstractNakedObjectTest
     {
         return 'dummy';
     }
+
+    public function testCreatesNewInstance()
+    {
+        $no = new NakedBareObject($this, null);
+        $spec = new NakedObjectSpecificationStub();
+        $new = $no->createNewInstance('dummy', $spec);
+
+        $this->assertTrue($new instanceof NakedBareObject);
+        $this->assertSame('dummy', $new->getObject());
+        $this->assertSame($spec, $new->getSpecification());
+    }
 }

@@ -15,22 +15,27 @@
 
 namespace NakedPhp\Mvc\EntityContainer;
 use NakedPhp\Mvc\EntityContainer;
+use NakedPhp\MetaModel\NakedObject;
 
 /**
  * This class act as a small container for entity instances which the user is working on.
  * Its goal is to be kept in a php session for working on the objects contained.
  * Then the result can be saved by a DataMapper.
  */
-class UnwrappedContainer implements EntityContainer
+class BareContainer implements EntityContainer
 {
+    /**
+     * @var array   NakedObject instances
+     */
     private $_objects = array();
+
     private $_states = array();
     private $_counter = 0;
 
     /**
      * {inheritdoc}
      */
-    public function add($object, $state = self::STATE_NEW)
+    public function add(NakedObject $object, $state = self::STATE_NEW)
     {
         $index = $this->contains($object);
         if ($index) {
@@ -54,7 +59,7 @@ class UnwrappedContainer implements EntityContainer
     /**
      * {inheritdoc}
      */
-    public function replace($key, $object)
+    public function replace($key, NakedObject $object)
     {
         $this->_objects[$key] = $object;
     }
@@ -86,7 +91,7 @@ class UnwrappedContainer implements EntityContainer
     /**
      * {inheritdoc}
      */
-    public function contains($object)
+    public function contains(NakedObject $object)
     {
         foreach ($this->_objects as $index => $current) {
             if ($object === $current) {
