@@ -43,8 +43,10 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $params = $sendMessage->getParameters();
         $this->assertEquals('string', (string) $params['title']->getType());
         $this->assertEquals('string', (string) $params['text']->getType());
-        $this->assertNotNull($sendMessage->getFacet('Action\Invocation'));
         $this->assertEquals('void', (string) $sendMessage->getReturnType());
+        $this->assertNotNull($sendMessage->getFacet('Action\Invocation'));
+        $invocationFacets = $sendMessage->getFacets('Action\Invocation');
+        $this->assertEquals(1, count($invocationFacets));
 
         $deactivate = $actions['deactivate'];
         $this->assertEquals(array(), $deactivate->getParameters());

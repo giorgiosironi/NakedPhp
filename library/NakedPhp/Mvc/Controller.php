@@ -166,7 +166,8 @@ class Controller extends \Zend_Controller_Action
             $parameters = array();
         }
 
-        $result = $this->_completeObject->__call((string) $method, $parameters);
+        $invocationFacet = $method->getFacet('Action\Invocation');
+        $result = $invocationFacet->invoke($this->_completeObject, $parameters);
         $this->_contextContainer->completed();
         if (is_object($result)) {
             $this->_redirectToObject($result);

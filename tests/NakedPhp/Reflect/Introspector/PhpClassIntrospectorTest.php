@@ -96,22 +96,25 @@ class PhpClassIntrospectorTest extends \PHPUnit_Framework_TestCase
 
     public function testIntrospectsObjectActions()
     {
-        $this->_facetProcessor->expects($this->exactly(4))
+        $allMethods = 4;
+        $invocableMethods = 2;
+
+        $this->_facetProcessor->expects($this->exactly($allMethods))
                               ->method('recognizes')
                               ->will($this->returnCallback(array($this, 'recognizes')));
 
-        $this->_facetProcessor->expects($this->exactly(2))
+        $this->_facetProcessor->expects($this->exactly($invocableMethods))
                               ->method('processClass')
                               ->with($this->anything(), $this->anything(), $this->_createdAction, NakedObjectFeatureType::ACTION);
 
-        $this->_facetProcessor->expects($this->exactly(8))
+        $this->_facetProcessor->expects($this->exactly($invocableMethods))
                               ->method('processMethod')
                               ->with($this->anything(), $this->anything(), $this->anything(), $this->_createdAction, NakedObjectFeatureType::ACTION);
 
         $this->_introspector->introspectActions();
 
         $actions = $this->_specification->getObjectActions();
-        $this->assertEquals(2, count($actions));
+        $this->assertEquals($invocableMethods, count($actions));
         $this->assertTrue($actions['anotherMethod'] instanceof PhpAction);
         $this->assertTrue($actions['andStillAnotherMethod'] instanceof PhpAction);
     }

@@ -109,9 +109,7 @@ class PhpClassIntrospector implements Introspector
             }
             $action = $this->_metaModelFactory->createAction($method);
             $this->_processClass($action, NakedObjectFeatureType::ACTION);
-            foreach ($this->_methods as $collaboratorCandidate) {
-                $this->_processMethod($collaboratorCandidate, $action, NakedObjectFeatureType::ACTION);
-            }
+            $this->_processMethod($method, $action, NakedObjectFeatureType::ACTION);
             $name = $method->getName();
             $actions[$name] = $action;
         }
