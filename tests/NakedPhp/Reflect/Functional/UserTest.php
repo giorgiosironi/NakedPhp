@@ -28,7 +28,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
     {
         $factory = new ReflectFactory();
         $folder = realpath(__DIR__ . '/../../Stubs/');
-        $loader = $factory->createSpecificationLoader($folder, 'NakedPhp\\Stubs\\');
+        $loader = $factory->getSpecificationLoader($folder, 'NakedPhp\\Stubs\\');
         $loader->init();
         self::$_staticSpec = $loader->loadSpecification('NakedPhp\Stubs\User');
     }

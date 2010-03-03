@@ -20,8 +20,8 @@ class ReflectFactoryTest extends \PHPUnit_Framework_TestCase
     public function testCachesSpecificationLoaderInstance()
     {
         $factory = new ReflectFactory();
-        $specLoader = $factory->createSpecificationLoader('', '');
+        $specLoader = $factory->getSpecificationLoader('', '');
         $this->assertTrue($specLoader instanceof SpecificationLoader);
-        $this->assertSame($specLoader, $factory->createSpecificationLoader('', ''));
+        $this->assertSame($specLoader, $factory->getSpecificationLoader('', ''));
     }
 }

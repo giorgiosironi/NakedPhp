@@ -22,7 +22,7 @@ class ReflectFactory
     /**
      * @return SpecificationLoader
      */
-    public function createSpecificationLoader($folder, $prefix)
+    public function getSpecificationLoader($folder, $prefix)
     {
         if (!isset($this->_specLoader)) {
             $this->_specLoader = new PhpSpecificationLoader(

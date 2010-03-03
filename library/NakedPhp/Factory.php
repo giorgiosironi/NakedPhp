@@ -113,7 +113,7 @@ class Factory
 
     protected function _getSpecificationLoader()
     {
-        $specLoader = $this->_reflectFactory->createSpecificationLoader($this->_folder, $this->_prefix);
+        $specLoader = $this->_reflectFactory->getSpecificationLoader($this->_folder, $this->_prefix);
         $specLoader->init();
         return $specLoader;
     }
