@@ -16,6 +16,7 @@
 namespace NakedPhp\Mvc;
 use NakedPhp\MetaModel\NakedObject;
 use NakedPhp\MetaModel\NakedService;
+use NakedPhp\ProgModel\NakedObjectMethodDecorator;
 
 /**
  * FIX: should never wrap instances. $this->_nakedFactory has to go.
@@ -133,7 +134,7 @@ class Controller extends \Zend_Controller_Action
         if ($this->_request->isPost() && $form->isValidPartial($this->_request->getPost())) {
             $state = $stateManager->setEntityState($this->_completeObject, $form);
             $this->_contextContainer->completed();
-            $this->_redirectToObject($this->_completeObject->getObject());
+            $this->_redirectToObject($this->_completeObject);
         } else {
             $this->view->form = $form;
         }
@@ -169,11 +170,7 @@ class Controller extends \Zend_Controller_Action
         $invocationFacet = $method->getFacet('Action\Invocation');
         $result = $invocationFacet->invoke($this->_completeObject, $parameters);
         $this->_contextContainer->completed();
-        if (is_object($result)) {
-            $this->_redirectToObject($result);
-        } else {
-            $this->view->result = $result;
-        }
+        $this->_redirectToObject($result);
     }
 
     public function saveAction()
@@ -191,15 +188,15 @@ class Controller extends \Zend_Controller_Action
      * This method redirects to the view action of a NakedObject or NakedService object.
      * @param object    native object of the Domain Model
      */
-    protected function _redirectToObject($object)
+    protected function _redirectToObject(NakedObjectMethodDecorator $completeObject)
     {
-        $completeObject = $this->_nakedFactory->createBare($object);
-        $specification = $completeObject->getSpecification();
+        $bareObject = $completeObject->getDecoratedObject();
+        $specification = $bareObject->getSpecification();
         if ($specification->isService()) {
-            $index = (string) $completeObject->getSpecification();
+            $key = (string) $bareObject->getSpecification();
             $type = 'service';
         } else {
-            $index = $this->_bareContainer->add($completeObject);
+            $key = $this->_bareContainer->add($bareObject);
             $type = 'entity';
         }
 
@@ -209,7 +206,7 @@ class Controller extends \Zend_Controller_Action
 
         $params = array(
             'type' => $type,
-            'object' => $index
+            'object' => $key
         );
         return $this->_helper->Redirector('view', null, null, $params);
     }

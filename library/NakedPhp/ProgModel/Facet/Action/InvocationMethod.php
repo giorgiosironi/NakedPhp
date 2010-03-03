@@ -15,6 +15,7 @@
 
 namespace NakedPhp\ProgModel\Facet\Action;
 use NakedPhp\MetaModel\NakedObject;
+use NakedPhp\MetaModel\NakedObjectSpecification;
 use NakedPhp\MetaModel\Facet\Action\Invocation;
 
 class InvocationMethod implements Invocation
@@ -24,13 +25,19 @@ class InvocationMethod implements Invocation
      * @example 'doSomething'
      */
     private $_methodName;
+
+    /**
+     * @var NakedObjectSpecification
+     */
+    private $_returnType;
     
     /**
      * @param string
      */
-    public function __construct($methodName)
+    public function __construct($methodName = null, NakedObjectSpecification $returnType = null)
     {
         $this->_methodName = $methodName;
+        $this->_returnType = $returnType;
     }
 
     /**
@@ -39,7 +46,8 @@ class InvocationMethod implements Invocation
     public function invoke(NakedObject $no, array $arguments = array())
     {
         $callBack = array($no, $this->_methodName);
-        return call_user_func_array($callBack, $arguments);
+        $result = call_user_func_array($callBack, $arguments);
+        return $no->createNewInstance($result, $this->_returnType);
     }
 
     /**

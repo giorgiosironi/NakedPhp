@@ -18,6 +18,9 @@
  */
 class Example_Model_PlaceFactory
 {
+    /**
+     * @return Example_Model_Place
+     */
     public function createPlace()
     {
         return new Example_Model_Place();
@@ -25,6 +28,7 @@ class Example_Model_PlaceFactory
 
     /**
      * @param string $name  name of the category (disco, pub...)
+     * @return Example_Model_PlaceCategory
      */
     public function createPlaceCategory($name)
     {
@@ -33,6 +37,7 @@ class Example_Model_PlaceFactory
 
     /**
      * @param string $name  the city name
+     * @return Example_Model_City
      */
     public function createCity($name)
     {

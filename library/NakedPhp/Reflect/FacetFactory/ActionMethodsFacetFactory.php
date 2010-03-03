@@ -16,6 +16,7 @@
 namespace NakedPhp\Reflect\FacetFactory;
 use NakedPhp\MetaModel\FacetHolder;
 use NakedPhp\MetaModel\MethodFilteringFacetFactory;
+use NakedPhp\MetaModel\NakedObjectAction;
 use NakedPhp\MetaModel\NakedObjectFeatureType;
 use NakedPhp\ProgModel\Facet\Action\InvocationMethod;
 use NakedPhp\Reflect\MethodRemover;
@@ -47,8 +48,12 @@ class ActionMethodsFacetFactory extends AbstractFacetFactory
      */
     public function processMethod(\ReflectionClass $class, \ReflectionMethod $method, MethodRemover $remover, FacetHolder $facetHolder)
     {
-        $invocation = new InvocationMethod($method->getName());
-        $facetHolder->addFacet($invocation);
+        // FIX: HACK
+        if ($facetHolder instanceof NakedObjectAction) {
+            $returnType = $facetHolder->getReturnType();
+            $invocation = new InvocationMethod($method->getName(), $returnType);
+            $facetHolder->addFacet($invocation);
+        }
     }
 }
 

@@ -33,6 +33,14 @@ class NakedObjectMethodDecorator extends AbstractNakedObjectDecorator
     }
 
     /**
+     * @return NakedObject
+     */
+    public function getDecoratedObject()
+    {
+        return $this->_entity;
+    }
+
+    /**
      * {@inheritdoc}
      * Proxies to wrapped entity with the aid of the MethodCaller.
      */

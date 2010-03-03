@@ -15,6 +15,7 @@
 
 namespace NakedPhp\ProgModel\Facet\Action;
 use NakedPhp\ProgModel\NakedBareObject;
+use NakedPhp\Stubs\NakedObjectSpecificationStub;
 
 class InvocationMethodTest extends \PHPUnit_Framework_TestCase
 {
@@ -24,12 +25,16 @@ class InvocationMethodTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Action\Invocation', $facet->facetType());
     }
 
-    public function testInvokesTheHookMethod()
+    public function testInvokesTheHookMethodAndWrapsTheResult()
     {
         $no = new NakedBareObject($this);
-        $facet = new InvocationMethod('myAction');
+        $returnType = new NakedObjectSpecificationStub();
+        $facet = new InvocationMethod('myAction', $returnType);
+
         $result = $facet->invoke($no, array('foo', 'bar'));
-        $this->assertEquals('dummy', $result);
+
+        $this->assertEquals('dummy', $result->getObject());
+        $this->assertSame($returnType, $result->getSpecification());
     }
     
     public function myAction($param, $otherParam)

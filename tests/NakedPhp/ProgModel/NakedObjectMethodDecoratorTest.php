@@ -22,14 +22,21 @@ use NakedPhp\Test\Delegation;
  */
 class NakedObjectMethodDecoratorTest extends \NakedPhp\Test\TestCase
 {
-    protected $_object;
-    protected $_delegation;
+    private $_original;
+    private $_object;
+    private $_delegation;
 
     public function setUp()
     {
-        $original = $this->_getBareObjectMock();
-        $this->_object = new NakedObjectMethodDecorator($original);
-        $this->_delegation = new Delegation($this, $original);
+        $this->_original = $this->_getBareObjectMock();
+        $this->_object = new NakedObjectMethodDecorator($this->_original);
+        $this->_delegation = new Delegation($this, $this->_original);
+    }
+    
+    public function testGivesAccessToTheDecoratedInternalNakedObject()
+    {
+        $this->assertSame($this->_original,
+                          $this->_object->getDecoratedObject());
     }
 
     public function testDelegatesToTheInnerEntityForClassMetaModel()

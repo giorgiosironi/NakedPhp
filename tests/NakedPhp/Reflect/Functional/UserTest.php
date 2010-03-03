@@ -14,7 +14,10 @@
  */
 
 namespace NakedPhp\Reflect\Functional;
+use NakedPhp\MetaModel\NakedObject;
+use NakedPhp\ProgModel\NakedBareObject;
 use NakedPhp\Reflect\ReflectFactory;
+use NakedPhp\Stubs\User;
 
 class UserTest extends \PHPUnit_Framework_TestCase
 {
@@ -51,6 +54,10 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $deactivate = $actions['deactivate'];
         $this->assertEquals(array(), $deactivate->getParameters());
         $this->assertEquals('bool', (string) $deactivate->getReturnType());
+        $invocationFacet = $deactivate->getFacet('Action\Invocation');
+        $result = $invocationFacet->invoke(new NakedBareObject(new User));
+        $this->assertTrue($result instanceof NakedObject);
+        $this->assertEquals('bool', $result->getSpecification()->getClassName());
     }
 
     public function testGeneratesFieldsFromGetters()
