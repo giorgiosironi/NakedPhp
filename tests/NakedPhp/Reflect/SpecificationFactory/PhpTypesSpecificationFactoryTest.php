@@ -31,7 +31,7 @@ class PhpTypesSpecificationFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreatesPhpSpecificationObjectsGivenSomeClassNames()
     {
-        $this->assertEquals(6, count($this->_specifications));
+        $this->assertEquals(7, count($this->_specifications));
         $spec = $this->_specifications['string'];
         $this->assertEquals('string', $spec->getClassName());
     }

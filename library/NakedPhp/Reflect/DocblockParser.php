@@ -23,11 +23,11 @@ class DocblockParser
      */
     public function contains($annotationName, $classDocblock)
     {
-        $annotations = $this->getAnnotations($classDocblock);
+        $annotations = $this->getNakedPhpAnnotations($classDocblock);
         return isset($annotations[$annotationName]);
     }
 
-    public function getAnnotations($docblock)
+    public function getNakedPhpAnnotations($docblock)
     {
         $lines = explode("\n", $docblock);
         $result = array();
@@ -72,7 +72,7 @@ class DocblockParser
      * @param string $functionDocblock
      * @return array info on the @param and @return annotations contained
      */
-    public function parse($functionDocblock)
+    public function getPhpdocAnnotations($functionDocblock)
     {
         $lines = explode("\n", $functionDocblock);
         $result = array();

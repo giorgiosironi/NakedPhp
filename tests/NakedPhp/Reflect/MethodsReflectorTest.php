@@ -24,12 +24,12 @@ class MethodsReflectorTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_parserMock = $this->getMock('NakedPhp\Reflect\DocblockParser', array('parse', 'contains'));
+        $this->_parserMock = $this->getMock('NakedPhp\Reflect\DocblockParser');
         $this->_reflector = new MethodsReflector($this->_parserMock);
         $this->_reflectionClass = new \ReflectionClass('NakedPhp\Reflect\DummyReflectedClass');
     }
 
-    private function setMockAnnotations($annotations = null)
+    private function _setMockPhpdocAnnotations($annotations = null)
     {
         if (is_null($annotations)) {
             $annotations = array(
@@ -41,8 +41,15 @@ class MethodsReflectorTest extends \PHPUnit_Framework_TestCase
            );
         }
         $this->_parserMock->expects($this->any())
-                   ->method('parse')
+                   ->method('getPhpdocAnnotations')
                    ->will($this->returnValue($annotations));
+    }
+
+    private function _setMockNakedPhpAnnotations($annotations = array())
+    {
+        $this->_parserMock->expects($this->once())
+                          ->method('getNakedPhpAnnotations')
+                          ->will($this->returnValue($annotations));
     }
 
     public function testFindsIdentifierForAction()
@@ -61,31 +68,47 @@ class MethodsReflectorTest extends \PHPUnit_Framework_TestCase
 
     public function testFindsMethodReturnType()
     {
-        $this->setMockAnnotations(array(
+        $this->_setMockPhpdocAnnotations(array(
             array(
                 'annotation' => 'return',
                 'type' => 'integer',
                 'description' => 'The role of the user'
             )
         ));
+        $this->_setMockNakedPhpAnnotations(array());
 
         $method = $this->_reflectionClass->getMethod('getMyField');
         $type = $this->_reflector->getReturnType($method);
-        $this->assertEquals('integer', $type);
+        $this->assertEquals('integer', $type['specificationName']);
     }
 
     public function testSetsMethodReturnTypeAsNullIfNoAnnotationCanBeFound()
     {
-        $this->setMockAnnotations(array());
+        $this->_setMockPhpdocAnnotations(array());
+        $this->_setMockNakedPhpAnnotations(array());
 
         $method = $this->_reflectionClass->getMethod('getMyField');
         $type = $this->_reflector->getReturnType($method);
-        $this->assertNull($type);
+        $this->assertNull($type['specificationName']);
+    }
+
+    public function testRecognizesMethodTypeOfAnnotation()
+    {
+        $this->_setMockPhpdocAnnotations(array());
+        $this->_setMockNakedPhpAnnotations(array(
+            'TypeOf' => array(
+                'stdClass'
+            )
+        ));
+
+        $method = $this->_reflectionClass->getMethod('getMyField');
+        $type = $this->_reflector->getReturnType($method);
+        $this->assertEquals('stdClass', $type['typeOf']);
     }
 
     public function testFindsParametersTypeAndIdentifiers()
     {
-        $this->setMockAnnotations(array(
+        $this->_setMockPhpdocAnnotations(array(
             array(
                 'annotation' => 'param',
                 'type' => 'integer',
@@ -98,7 +121,7 @@ class MethodsReflectorTest extends \PHPUnit_Framework_TestCase
         $params = $this->_reflector->getParameters($method);
         $this->assertEquals(array(
                                 'myParameter' => array(
-                                    'type' => 'integer',
+                                    'specificationName' => 'integer',
                                     'description' => 'My useful parameter.'
                                 )
                             ),

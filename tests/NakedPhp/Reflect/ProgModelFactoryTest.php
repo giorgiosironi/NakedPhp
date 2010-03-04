@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\Reflect;
+use NakedPhp\MetaModel\NakedObjectSpecification;
 use NakedPhp\Stubs\NakedObjectSpecificationStub;
 
 class ProgModelFactoryTest extends \PHPUnit_Framework_TestCase
@@ -32,17 +33,9 @@ class ProgModelFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testCreatesAssociation()
     {
-        $this->_reflectorMock->expects($this->once())
-                             ->method('getIdentifierForAssociation')
-                             ->will($this->returnValue('myField'));
-        $this->_reflectorMock->expects($this->once())
-                             ->method('getReturnType')
-                             ->will($this->returnValue('integer'));
+        $this->_setReflectorMockExpectations('myField', 'integer');
         $dummySpec = new NakedObjectSpecificationStub();
-        $this->_loaderMock->expects($this->once())
-                          ->method('loadSpecification')
-                          ->with('integer')
-                          ->will($this->returnValue($dummySpec));
+        $this->_setLoaderMockExpectations('integer', $dummySpec, 1);
 
         $method = $this->_getDummyReflectionMethod();
         $association = $this->_factory->createAssociation($method);
@@ -53,13 +46,8 @@ class ProgModelFactoryTest extends \PHPUnit_Framework_TestCase
     
     public function testAssociationsTypeDefaultsToString()
     {
-        $this->_reflectorMock->expects($this->once())
-                             ->method('getReturnType')
-                             ->will($this->returnValue(null));
-
-        $this->_loaderMock->expects($this->once())
-                          ->method('loadSpecification')
-                          ->with('string');
+        $this->_setReflectorMockExpectations('myField', null);
+        $this->_setLoaderMockExpectations('string', null, 1);
 
         $method = $this->_getDummyReflectionMethod();
         $association = $this->_factory->createAssociation($method);
@@ -67,23 +55,10 @@ class ProgModelFactoryTest extends \PHPUnit_Framework_TestCase
     
     public function testCreatesAction()
     {
-        $this->_reflectorMock->expects($this->once())
-                             ->method('getIdentifierForAction')
-                             ->will($this->returnValue('myMethod'));
-        $this->_reflectorMock->expects($this->once())
-                             ->method('getReturnType')
-                             ->will($this->returnValue('string'));
-        $this->_reflectorMock->expects($this->once())
-                             ->method('getParameters')
-                             ->will($this->returnValue(array(
-                                'myParam' => array(
-                                    'type' => 'integer'
-                                )
-                             )));
+        $params = array('myParam' => array('specificationName' => 'integer'));
+        $this->_setReflectorMockExpectations('myMethod', 'string', $params);
         $dummySpec = new NakedObjectSpecificationStub();
-        $this->_loaderMock->expects($this->exactly(2))
-                          ->method('loadSpecification')
-                          ->will($this->returnValue($dummySpec));
+        $this->_setLoaderMockExpectations(null, $dummySpec, 2);
 
         $method = $this->_getDummyReflectionMethod();
         $action = $this->_factory->createAction($method);
@@ -98,28 +73,81 @@ class ProgModelFactoryTest extends \PHPUnit_Framework_TestCase
     
     public function testCreatesActionTypesDefaultToString()
     {
-        $this->_reflectorMock->expects($this->once())
-                             ->method('getIdentifierForAction')
-                             ->will($this->returnValue('myMethod'));
-        $this->_reflectorMock->expects($this->once())
-                             ->method('getReturnType')
-                             ->will($this->returnValue(null));
-        $this->_reflectorMock->expects($this->once())
-                             ->method('getParameters')
-                             ->will($this->returnValue(array(
-                                'myParam' => array(
-                                    'type' => null
-                                )
-                             )));
-        $dummySpec = new NakedObjectSpecificationStub();
-        $this->_loaderMock->expects($this->exactly(2))
-                          ->method('loadSpecification')
-                          ->with('string');
+        $params = array('myParam' => array('specificationName' => null));
+        $this->_setReflectorMockExpectations('myMethod', null, $params);
+        $this->_setLoaderMockExpectations('string', null, 2);
 
         $method = $this->_getDummyReflectionMethod();
         $action = $this->_factory->createAction($method);
     }
- 
+
+    /**
+     * FIX: InvocationFacet should be managed here
+     */
+    public function testAddsInvocationFacetToAllActions()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function testAddsCollectionFacetsToActionWithANonScalarReturnType()
+    {
+        $returnType = array('specificationName' => 'array', 'typeOf' => 'stdClass');
+        $this->_setReflectorMockExpectations('myMethod', $returnType);
+        $dummySpec = new NakedObjectSpecificationStub('Dummy');
+        $this->_setLoaderMockExpectations(null, $dummySpec);
+
+        $method = $this->_getDummyReflectionMethod();
+        $action = $this->_factory->createAction($method);
+
+        $returnSpec = $action->getReturnType();
+        // IMPORTANT: clones specifications before adding facets
+        $this->assertNotSame($dummySpec, $returnSpec);
+
+        $this->assertNotNull($returnSpec->getFacet('Collection'));
+        $typeOfFacet = $returnSpec->getFacet('Collection\TypeOf');
+        $this->assertEquals($dummySpec, $typeOfFacet->valueSpec());
+    }
+
+    /**
+     * @param string $identifier    name of the method or association
+     * @param string $returnType    null if not found
+     * @param array  $parameters    keys are names, 
+     *                              values are arrays('specificationName' => ...)
+     */
+    private function _setReflectorMockExpectations($identifier, $returnType, array $parameters = array())
+    {
+        $this->_reflectorMock->expects($this->any())
+                             ->method('getIdentifierForAssociation')
+                             ->will($this->returnValue($identifier));
+        $this->_reflectorMock->expects($this->any())
+                             ->method('getIdentifierForAction')
+                             ->will($this->returnValue($identifier));
+        if (!is_array($returnType)) {
+            $returnType = array('specificationName' => $returnType);
+        }
+        $this->_reflectorMock->expects($this->once())
+                             ->method('getReturnType')
+                             ->will($this->returnValue($returnType));
+        $this->_reflectorMock->expects($this->any())
+                             ->method('getParameters')
+                             ->will($this->returnValue($parameters));
+    }
+
+    private function _setLoaderMockExpectations($specName, NakedObjectSpecification $dummySpec = null, $times = null)
+    {
+        if ($times !== null) { 
+            $matcher = $this->exactly($times);
+        } else {
+            $matcher = $this->any();
+        }
+        $expectation = $this->_loaderMock->expects($matcher);
+        $expectation->method('loadSpecification')
+                    ->will($this->returnValue($dummySpec));
+        if ($specName !== null) {
+            $expectation->with($specName);
+        }
+    }
+
     private function _getDummyReflectionMethod()
     {
         return $this->getMock('ReflectionMethod', array(), array(), '', false);

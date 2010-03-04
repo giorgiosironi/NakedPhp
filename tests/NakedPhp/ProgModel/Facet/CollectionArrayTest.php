@@ -14,7 +14,10 @@
  */
 
 namespace NakedPhp\ProgModel\Facet;
+use NakedPhp\MetaModel\NakedObject;
+use NakedPhp\ProgModel\Facet\Collection\TypeOfHardcoded;
 use NakedPhp\ProgModel\NakedBareObject;
+use NakedPhp\Stubs\NakedObjectSpecificationStub;
 
 class CollectionArrayTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,8 +30,11 @@ class CollectionArrayTest extends \PHPUnit_Framework_TestCase
     public function testCreatesIteratorForAWrappedArray()
     {
         $array = new NakedBareObject(array('A', 'B', 'C'));
-        $facet = new CollectionArray();
+        $itemsSpec = new NakedObjectSpecificationStub('string');
+        $facet = new CollectionArray(new TypeOfHardcoded($itemsSpec));
         $iterator = $facet->iterator($array);
-        $this->assertEquals('A', $iterator->current());
+        $this->assertTrue($iterator->current() instanceof NakedObject);
+        $this->assertEquals('A', $iterator->current()->getObject());
+        $this->assertEquals($itemsSpec, $iterator->current()->getSpecification());
     }
 }

@@ -96,6 +96,9 @@ class NakedBareObject extends AbstractNakedObject implements \IteratorAggregate
     {
         if (method_exists($this->_wrapped, '__toString')) {
             $result = (string) $this->_wrapped;
+        } else if (($collFacet = $this->_class->getFacet('Collection')) !== null) {
+            $typeOfFacet = $this->_class->getFacet('Collection\TypeOf');
+            $result = count($this->_wrapped) . ' ' . (string) $typeOfFacet->valueSpec();
         } else {
             $result = 'OBJECT';
         }

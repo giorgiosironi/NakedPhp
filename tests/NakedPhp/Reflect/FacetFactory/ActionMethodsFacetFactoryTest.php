@@ -16,13 +16,16 @@
 namespace NakedPhp\Reflect\FacetFactory;
 use NakedPhp\Reflect\MethodRemover;
 use NakedPhp\MetaModel\Facet;
+use NakedPhp\MetaModel\NakedObjectAction;
 use NakedPhp\MetaModel\NakedObjectFeatureType;
 use NakedPhp\ProgModel\PhpAction;
 use NakedPhp\Stubs\DummyMethodRemover;
 use NakedPhp\Stubs\FacetHolderStub;
+use NakedPhp\Stubs\NakedObjectSpecificationStub;
 
 class ActionMethodsFacetFactoryTest extends \PHPUnit_Framework_TestCase
 {
+    private $_docblockParser;
     private $_facetFactory;
     private $_reflectionClass;
 
@@ -40,12 +43,22 @@ class ActionMethodsFacetFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testAddsInvocationFacetToOrdinaryMethods()
     {
-        $method = $this->_reflectionClass->getMethod('doSomething');
+        $facetHolder = $this->_processMethod('doSomething');
+
+        $this->assertNotNull($facetHolder->getFacet('Action\Invocation'));
+    }
+
+    /**
+     * @param string $name  method name on SomeRandomClass
+     * @return FacetHolder
+     */
+    private function _processMethod($name)
+    {
+        $method = $this->_reflectionClass->getMethod($name);
         $methodRemover = new DummyMethodRemover();
         $facetHolder = new PhpAction();
         $this->_facetFactory->processMethod($this->_reflectionClass, $method, $methodRemover, $facetHolder);
-
-        $this->assertNotNull($facetHolder->getFacet('Action\Invocation'));
+        return $facetHolder;
     }
 }
 

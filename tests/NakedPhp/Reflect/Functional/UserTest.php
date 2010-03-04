@@ -60,6 +60,17 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('bool', $result->getSpecification()->getClassName());
     }
 
+    public function testManagesActionsWhichReturnArrays()
+    {
+        $actions = $this->_spec->getObjectActions();
+        $returnSpec = $actions['createMyStandardClasses']->getReturnType();
+
+        $this->assertEquals('array', (string) $returnSpec);
+        $this->assertNotNull($returnSpec->getFacet('Collection'));
+        $typeOfFacet = $returnSpec->getFacet('Collection\TypeOf');
+        $this->assertEquals('stdClass', (string) $typeOfFacet->valueSpec());
+    }
+
     public function testGeneratesFieldsFromGetters()
     {
         $fields = $this->_spec->getAssociations();

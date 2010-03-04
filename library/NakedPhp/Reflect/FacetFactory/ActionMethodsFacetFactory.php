@@ -19,6 +19,7 @@ use NakedPhp\MetaModel\MethodFilteringFacetFactory;
 use NakedPhp\MetaModel\NakedObjectAction;
 use NakedPhp\MetaModel\NakedObjectFeatureType;
 use NakedPhp\ProgModel\Facet\Action\InvocationMethod;
+use NakedPhp\Reflect\Exception;
 use NakedPhp\Reflect\MethodRemover;
 
 /**
@@ -53,6 +54,8 @@ class ActionMethodsFacetFactory extends AbstractFacetFactory
             $returnType = $facetHolder->getReturnType();
             $invocation = new InvocationMethod($method->getName(), $returnType);
             $facetHolder->addFacet($invocation);
+        } else {
+            throw new Exception('A FacetHolder which is not an NakedObjectAction is being passed.');
         }
     }
 }

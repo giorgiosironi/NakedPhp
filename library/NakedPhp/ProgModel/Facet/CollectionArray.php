@@ -15,17 +15,29 @@
 
 namespace NakedPhp\ProgModel\Facet;
 use NakedPhp\MetaModel\Facet\Collection;
+use NakedPhp\MetaModel\Facet\Collection\TypeOf;
 use NakedPhp\MetaModel\NakedObject;
 
 class CollectionArray implements Collection
 {
+    protected $_typeOfFacet;
+
+    public function __construct(TypeOf $typeOfFacet = null)
+    {
+        $this->_typeOfFacet = $typeOfFacet;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function iterator(NakedObject $nakedObjectRepresentingCollection)
     {
         $array = $nakedObjectRepresentingCollection->getObject();
-        return new \ArrayIterator($array);
+        $wrappedItemsArray = array();
+        foreach ($array as $key => $value) {
+            $wrappedItemsArray[$key] = $nakedObjectRepresentingCollection->createNewInstance($value, $this->_typeOfFacet->valueSpec());
+        }
+        return new \ArrayIterator($wrappedItemsArray);
     }
 
     /**

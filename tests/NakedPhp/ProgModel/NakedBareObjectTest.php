@@ -15,6 +15,8 @@
 
 namespace NakedPhp\ProgModel;
 use NakedPhp\MetaModel\NakedObjectSpecification;
+use NakedPhp\ProgModel\Facet\CollectionArray;
+use NakedPhp\ProgModel\Facet\Collection\TypeOfHardcoded;
 use NakedPhp\Stubs\NakedObjectSpecificationStub;
 use NakedPhp\Stubs\Phonenumber;
 use NakedPhp\Test\Delegation;
@@ -54,7 +56,19 @@ class NakedBareObjectTest extends AbstractNakedObjectTest
 
     public function testReturnsACommonStringRepresentationForUnconvertibleObjects()
     {
-        $this->assertEquals('OBJECT', (string) new NakedBareObject());
+        $this->assertEquals('OBJECT', (string) new NakedBareObject(null, new NakedObjectSpecificationStub));
+    }
+    
+    public function testReturnsNumberAndTypeOfElementsAsAStringRepresentationOfCollectionObjects()
+    {
+        $typeOfSpec = new NakedObjectSpecificationStub('stdClass');
+        $typeOfFacet = new TypeOfHardcoded($typeOfSpec);
+        $collectionFacet = new CollectionArray($typeOfFacet);
+        $collectionSpec = new NakedObjectSpecificationStub('array');
+        $collectionSpec->addFacet($typeOfFacet);
+        $collectionSpec->addFacet($collectionFacet);
+        $collection = new NakedBareObject(array(1, 2, 3), $collectionSpec);
+        $this->assertEquals('3 stdClass', (string) $collection);
     }
 
     /**

@@ -15,8 +15,12 @@
 
 namespace NakedPhp\Mvc\View\Helper;
 use NakedPhp\Stubs\NakedObjectStub;
+use NakedPhp\Stubs\NakedObjectSpecificationStub;
+use NakedPhp\ProgModel\NakedBareObject;
 use NakedPhp\ProgModel\OneToOneAssociation;
 use NakedPhp\ProgModel\Facet\HiddenMethod;
+use NakedPhp\ProgModel\Facet\CollectionArray;
+use NakedPhp\ProgModel\Facet\Collection\TypeOfHardcoded;
 
 class DisplayObjectTest extends \PHPUnit_Framework_TestCase
 {
@@ -65,7 +69,11 @@ class DisplayObjectTest extends \PHPUnit_Framework_TestCase
     {
         $second = clone($this->_object);
         $second->setState(array('firstName' => 'Isaac', 'lastName' => 'Asimov'));
-        $collection = new \ArrayIterator(array($this->_object, $second));
+        $spec = new NakedObjectSpecificationStub('array');
+        $itemsSpec = new NakedObjectSpecificationStub('stdClass');
+        $spec->addFacet($typeOfFacet = new TypeOfHardcoded($itemsSpec));
+        $spec->addFacet(new CollectionArray($typeOfFacet));
+        $collection = new NakedBareObject(array($this->_object, $second), $spec);
 
         $result = $this->_helper->displayObject($collection);
 

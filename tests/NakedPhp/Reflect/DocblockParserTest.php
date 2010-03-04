@@ -45,7 +45,7 @@ EOT;
          *
          */
 EOT;
-        $result = $this->_parser->parse($comment);
+        $result = $this->_parser->getPhpdocAnnotations($comment);
         $this->assertEquals(array(
                                 'annotation' => 'param',
                                 'type' => 'string',
@@ -63,7 +63,7 @@ EOT;
          *
          */
 EOT;
-        $result = $this->_parser->parse($comment);
+        $result = $this->_parser->getPhpdocAnnotations($comment);
         $this->assertEquals(array(
                                 'annotation' => 'param',
                                 'type' => 'string',
@@ -81,7 +81,7 @@ EOT;
          *
          */
 EOT;
-        $result = $this->_parser->parse($comment);
+        $result = $this->_parser->getPhpdocAnnotations($comment);
         $this->assertEquals(array(
                                 'annotation' => 'return',
                                 'type' => 'string',
@@ -98,7 +98,7 @@ EOT;
          *
          */
 EOT;
-        $result = $this->_parser->parse($comment);
+        $result = $this->_parser->getPhpdocAnnotations($comment);
         $this->assertEquals(array(
                                 'annotation' => 'return',
                                 'type' => 'string',
@@ -115,7 +115,7 @@ EOT;
          * @OtherAnn
          */
 EOT;
-        $annotations = $this->_parser->getAnnotations($docblock);
+        $annotations = $this->_parser->getNakedPhpAnnotations($docblock);
         $this->assertEquals(array('NakedDummyAnn' => true, 'OtherAnn' => true),
                             $annotations);
     }
@@ -128,7 +128,7 @@ EOT;
          * @OtherAnn
          */
 EOT;
-        $annotations = $this->_parser->getAnnotations($docblock);
+        $annotations = $this->_parser->getNakedPhpAnnotations($docblock);
         $this->assertEquals(array(
                                 'NakedDummyAnn' => array(
                                     'paramOne' => 20
@@ -145,7 +145,7 @@ EOT;
          * @NakedDummyAnn(className)
          */
 EOT;
-        $annotations = $this->_parser->getAnnotations($docblock);
+        $annotations = $this->_parser->getNakedPhpAnnotations($docblock);
         $this->assertEquals(array(
                                 'NakedDummyAnn' => array(
                                     'className'

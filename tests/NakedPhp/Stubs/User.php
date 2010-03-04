@@ -143,4 +143,19 @@ class User
     {
         return 'User: ' . $this->getName();
     }
+
+    /**
+     * Creates a bunch of stdClass instances, just to test
+     * array management.
+     * @return array
+     * @TypeOf(stdClass)
+     */
+    public function createMyStandardClasses()
+    {
+        return array(
+            new \stdClass,
+            new \stdClass,
+            new \stdClass
+        );
+    }
 }

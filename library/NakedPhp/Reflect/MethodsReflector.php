@@ -45,16 +45,26 @@ class MethodsReflector
     }
 
     /**
-     * @return string    class name or data type
-     *                   null if cannot be found
+     * @return array    key 'specificationName' is class name or data type,
+     *                      or null if cannot be found
      */
     public function getReturnType(\ReflectionMethod $method)
     {
-        $annotations = $this->_parser->parse($method->getDocComment());
+        $phpdocAnnotations = $this->_parser->getPhpdocAnnotations($method->getDocComment());
         $returnType = null;
-        foreach ($annotations as $ann) {
+        foreach ($phpdocAnnotations as $ann) {
             if ($ann['annotation'] == 'return') {
                 $returnType = $ann['type'];
+            }
+        }
+        $returnType = array(
+            'specificationName' => $returnType
+        );
+
+        $nakedPhpAnnotations = $this->_parser->getNakedPhpAnnotations($method->getDocComment());
+        foreach ($nakedPhpAnnotations as $ann => $value) {
+            if ($ann == 'TypeOf') {
+                $returnType['typeOf'] = $value[0];
             }
         }
         return $returnType;
@@ -66,12 +76,12 @@ class MethodsReflector
      */
     public function getParameters(\ReflectionMethod $method)
     {
-        $annotations = $this->_parser->parse($method->getDocComment());
+        $annotations = $this->_parser->getPhpdocAnnotations($method->getDocComment());
         $params = array();
         foreach ($annotations as $ann) {
             if ($ann['annotation'] == 'param') {
                 $params[$ann['name']] = array(
-                    'type' => $ann['type'],
+                    'specificationName' => $ann['type'],
                     'description' => $ann['description']
                 );
             }
@@ -96,7 +106,7 @@ class MethodsReflector
             }
 
             $methodName = $method->getName();
-            $annotations = $this->_parser->parse($method->getDocComment());
+            $annotations = $this->_parser->getPhpdocAnnotations($method->getDocComment());
 
             if ($this->_isMagic($methodName)) {
                 continue;

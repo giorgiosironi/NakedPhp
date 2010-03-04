@@ -156,5 +156,14 @@ class PhpSpecification extends AbstractFacetHolder implements NakedObjectSpecifi
     {
         return $this->_isService;
     }
+
+    /**
+     * FIX: a different class is needed for types such as array|Collection
+     *      so that they can be cloned
+     */
+    public function __clone()
+    {
+        //throw new Exception('You are cloning a Specification which is not a Collection.');
+    }
 }
 

@@ -27,7 +27,19 @@ class DisplayObject extends \Zend_View_Helper_Abstract
     public function __call($name, $args)
     {
         list ($no, ) = $args;
-        if ($no instanceof NakedObject) {
+        if ($collFacet = $no->getFacet('Collection')) {
+            $html = "<table class=\"nakedphp_collection TODO_ENTITY_NAME\">";
+            foreach ($collFacet->iterator($no) as $entity) {
+                $html .= '<tr>';
+                foreach ($this->_toArray($entity) as $fieldName => $value) {
+                    $html .= "
+                    <td class=\"value\">$value</td>
+                    ";
+                }
+                $html .= '</tr>';
+            }
+            $html .= '</table>';
+        } else if ($no instanceof \Traversable) {
             $className = $no->getClassName();
             $html = "<table class=\"nakedphp_entity $className\">";
             foreach ($this->_toArray($no) as $fieldName => $value) {
@@ -36,18 +48,6 @@ class DisplayObject extends \Zend_View_Helper_Abstract
                 <td class=\"value\">$value</td>
                 </tr>
                 ";
-            }
-            $html .= '</table>';
-        } else if ($no instanceof \Traversable) {
-            $html = "<table class=\"nakedphp_collection TODO_ENTITY_NAME\">";
-            foreach ($no as $entity) {
-                $html .= '<tr>';
-                foreach ($this->_toArray($entity) as $fieldName => $value) {
-                    $html .= "
-                    <td class=\"value\">$value</td>
-                    ";
-                }
-                $html .= '</tr>';
             }
             $html .= '</table>';
         } else {
