@@ -22,7 +22,7 @@ use NakedPhp\ProgModel\Facet\HiddenMethod;
 use NakedPhp\ProgModel\Facet\CollectionArray;
 use NakedPhp\ProgModel\Facet\Collection\TypeOfHardcoded;
 
-class DisplayObjectTest extends \PHPUnit_Framework_TestCase
+class DisplayObjectTest extends \NakedPhp\Test\TestCase
 {
     private $_helper;
     private $_object;
@@ -39,7 +39,7 @@ class DisplayObjectTest extends \PHPUnit_Framework_TestCase
         $this->_helper = new DisplayObject();
     }
 
-    public function testProducesHtmlTable()
+    public function testProducesHtmlTableWhereRowsAreAssociationOfTheObject()
     {
         $this->_object->setClassName('DummyClass');
         $result = $this->_helper->displayObject($this->_object);
@@ -54,31 +54,36 @@ class DisplayObjectTest extends \PHPUnit_Framework_TestCase
 
     public function testHidesFieldsProgrammatically()
     {
-        $this->_object->getAssociation('firstName')->addFacet(new HiddenMethod('hideFirstName'));
+        $hiddenFacet = $this->getFacetMock('Hidden');
+        $hiddenFacet->expects($this->any())
+                    ->method('hiddenReason')
+                    ->will($this->returnValue(true));
+        $this->_object->getAssociation('firstName')->addFacet($hiddenFacet);
         $result = $this->_helper->displayObject($this->_object);
 
         $this->assertQueryContentNotContains($result, 'table tr td', 'firstName');
     }
 
-    public function hideFirstName()
+    public function testDisplaysACollectionAsATableWhereRowsAreElements()
     {
-        return true;
-    }
-
-    public function testDisplaysACollectionAsATable()
-    {
-        $second = clone($this->_object);
-        $second->setState(array('firstName' => 'Isaac', 'lastName' => 'Asimov'));
-        $spec = new NakedObjectSpecificationStub('array');
-        $itemsSpec = new NakedObjectSpecificationStub('stdClass');
-        $spec->addFacet($typeOfFacet = new TypeOfHardcoded($itemsSpec));
-        $spec->addFacet(new CollectionArray($typeOfFacet));
-        $collection = new NakedBareObject(array($this->_object, $second), $spec);
+        $collectionFacet = $this->getFacetMock('Collection');
+        $collectionFacet->expects($this->once())
+                        ->method('iterator')
+                        ->will($this->returnValue(new \ArrayIterator(array(
+                            $this->_object
+                        ))));
+        $typeOfFacet = $this->getFacetMock('Collection\TypeOf');
+        $typeOfFacet->expects($this->once())
+                    ->method('valueSpec')
+                    ->will($this->returnValue(new NakedObjectSpecificationStub('My_Item_Class')));
+        $collection = new NakedObjectStub();
+        $collection->addFacet($collectionFacet);
+        $collection->addFacet($typeOfFacet);
 
         $result = $this->_helper->displayObject($collection);
 
-        $this->assertQuery($result, 'table');
-        $this->assertQueryContentContains($result, 'table tr td', 'Isaac');
+        $this->assertQuery($result, 'table.nakedphp_collection.My_Item_Class');
+        $this->assertQueryContentContains($result, 'table.nakedphp_collection.My_Item_Class tr td', 'Giorgio');
     }
 
     public function testDisplaysFieldTypeWhenNotConvertibleToString()
@@ -86,38 +91,5 @@ class DisplayObjectTest extends \PHPUnit_Framework_TestCase
         $this->_object->setState(array('firstName' => new \stdClass));
         $result = $this->_helper->displayObject($this->_object);
         $this->assertQueryContentContains($result, 'table tr td', 'stdClass');
-    }
-
-    /**
-     * Assert against DOM selection
-     * 
-     * @param  string $path CSS selector path
-     * @param  string $message
-     * @return void
-     */
-    public function assertQuery($content, $path, $message = '')
-    {
-        $constraint = new \Zend_Test_PHPUnit_Constraint_DomQuery($path);
-        $this->assertTrue($constraint->evaluate($content, __FUNCTION__));
-    }
-
-    /**
-     * Assert against DOM selection; node should contain content
-     * 
-     * @param  string $path CSS selector path
-     * @param  string $match content that should be contained in matched nodes
-     * @param  string $message
-     * @return void
-     */
-    public function assertQueryContentContains($content, $path, $match, $message = '')
-    {
-        $constraint = new \Zend_Test_PHPUnit_Constraint_DomQuery($path);
-        $this->assertTrue($constraint->evaluate($content, __FUNCTION__, $match));
-    }
-
-    public function assertQueryContentNotContains($content, $path, $match, $message = '')
-    {
-        $constraint = new \Zend_Test_PHPUnit_Constraint_DomQuery($path);
-        $this->assertTrue($constraint->evaluate($content, __FUNCTION__, $match));
     }
 }

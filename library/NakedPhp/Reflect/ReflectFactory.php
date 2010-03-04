@@ -28,13 +28,15 @@ class ReflectFactory
             $this->_specLoader = new PhpSpecificationLoader(
                 new PhpIntrospectorFactory(
                     array(
+                        // FIX HACK: the types are created and introspected before anything else
+                        // because 'array' may be cloned during introspection of classes (@return array @TypeOf(EntityClass))
+                        new SpecificationFactory\PhpTypesSpecificationFactory,
                         new SpecificationFactory\PhpClassesSpecificationFactory(
                             new SpecificationFactory\FilteredClassDiscoverer(
                                 new SpecificationFactory\FilesystemClassDiscoverer($folder, $prefix),
                                 $docblockParser = new DocblockParser
                             )
-                        ),
-                        new SpecificationFactory\PhpTypesSpecificationFactory
+                        )
                     ),
                     new FactoriesFacetProcessor(array(
                         new FacetFactory\PropertyMethodsFacetFactory,

@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\Stubs;
+use NakedPhp\MetaModel\NakedObjectSpecification;
 use NakedPhp\ProgModel\NakedBareObject;
 use NakedPhp\ProgModel\PhpAction;
 use NakedPhp\ProgModel\OneToOneAssociation;
@@ -77,5 +78,10 @@ class NakedObjectStub extends NakedBareObject
             return $this->_facets[$type];
         }
         return null;
+    }
+
+    public function createNewInstance($object, NakedObjectSpecification $spec)
+    {
+        return new self($object, $spec);
     }
 }

@@ -25,4 +25,52 @@ class TestCase extends \PHPUnit_Framework_TestCase
      */
     public function once() { return parent::once(); }
     public function returnValue($value) { return parent::returnValue($value); }
+
+    /**
+     * <code>
+     * $facet = $this->getFacetMock('Collection');
+     * </code>
+     * @return Facet
+     */
+    public function getFacetMock($facetBaseName)
+    {
+        $facet = $this->getMock('NakedPhp\MetaModel\Facet\\' . $facetBaseName);
+        $facet->expects($this->any())
+              ->method('facetType')
+              ->will($this->returnValue($facetBaseName));
+        return $facet;
+    }
+
+    /**
+     * Assert against DOM selection
+     * 
+     * @param  string $path CSS selector path
+     * @param  string $message
+     * @return void
+     */
+    public function assertQuery($content, $path, $message = '')
+    {
+        $constraint = new \Zend_Test_PHPUnit_Constraint_DomQuery($path);
+        $this->assertTrue($constraint->evaluate($content, __FUNCTION__));
+    }
+
+    /**
+     * Assert against DOM selection; node should contain content
+     * 
+     * @param  string $path CSS selector path
+     * @param  string $match content that should be contained in matched nodes
+     * @param  string $message
+     * @return void
+     */
+    public function assertQueryContentContains($content, $path, $match, $message = '')
+    {
+        $constraint = new \Zend_Test_PHPUnit_Constraint_DomQuery($path);
+        $this->assertTrue($constraint->evaluate($content, __FUNCTION__, $match));
+    }
+
+    public function assertQueryContentNotContains($content, $path, $match, $message = '')
+    {
+        $constraint = new \Zend_Test_PHPUnit_Constraint_DomQuery($path);
+        $this->assertTrue($constraint->evaluate($content, __FUNCTION__, $match));
+    }
 }
