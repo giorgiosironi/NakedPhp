@@ -18,6 +18,10 @@
  */
 abstract class Example_AbstractTest extends Zend_Test_PHPUnit_ControllerTestCase
 {
+    /**
+     * Zend_Session is reset automatically.
+     * TODO: Doctrine 2 database
+     */
     public function setUp()
     {
         $application = new Zend_Application(

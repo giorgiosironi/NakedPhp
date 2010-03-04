@@ -44,7 +44,7 @@ class Example_CrudTest extends Example_AbstractTest
         $this->getRequest()
              ->setMethod('POST')
              ->setPost(array(
-                 'name' => 'New York'
+                 'name' => 'Sidney'
              ));
         $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createCity');
         $this->assertRedirectTo('/naked-php/view/type/entity/object/1');
@@ -52,11 +52,32 @@ class Example_CrudTest extends Example_AbstractTest
         $this->resetRequest()
              ->resetResponse();
         $this->dispatch('/naked-php/view/type/entity/object/1');
-        $this->assertQueryContentContains('#nakedphp_session', 'New York');
+        $this->assertQueryContentContains('#nakedphp_session', 'Sidney');
         $this->assertQueryContentContains('.nakedphp_entity.Example_Model_City .name',
-                                          'New York');
+                                          'Sidney');
         $this->assertQuery('#object .button.edit');
         $this->assertQuery('#object .button.remove');
+    }
+
+    /**
+     * @depends testCityFactoryMethodRequiresName
+     */
+    public function testMultipleCitiesFactoryMethodCreatesAnArray()
+    {
+        $this->getRequest()
+             ->setMethod('POST')
+             ->setPost(array());
+        $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createSomeCities');
+        $this->assertRedirectTo('/naked-php/view/type/entity/object/1');
+
+        $this->resetRequest()
+             ->resetResponse();
+        $this->dispatch('/naked-php/view/type/entity/object/1');
+        $this->assertQueryContentContains('#nakedphp_session', '4 Example_Model_City');
+        $this->assertQueryContentContains('.nakedphp_collection.Example_Model_City tr td',
+                                          'New York');
+        $this->assertQueryContentContains('.nakedphp_collection.Example_Model_City tr td',
+                                          'Madrid');
     }
 
     /**
@@ -101,14 +122,14 @@ class Example_CrudTest extends Example_AbstractTest
         $this->getRequest()
              ->setMethod('POST')
              ->setPost(array(
-                 'name' => 'New York'
+                 'name' => 'Sidney'
              ));
         $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createCity');
 
         $this->resetRequest()
              ->resetResponse();
         $this->dispatch('/naked-php/edit/type/entity/object/1');
-        $this->assertQueryContentContains('.nakedphp_entity.Example_Model_Place select[name="city"] option', 'New York');
+        $this->assertQueryContentContains('.nakedphp_entity.Example_Model_Place select[name="city"] option', 'Sidney');
     }
 
     /**
@@ -129,7 +150,7 @@ class Example_CrudTest extends Example_AbstractTest
         $this->getRequest()
              ->setMethod('POST')
              ->setPost(array(
-                 'name' => 'New York'
+                 'name' => 'Sidney'
              ));
         $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createCity');
         $this->assertRedirectTo('/naked-php/edit/type/entity/object/1');

@@ -44,6 +44,20 @@ class Example_Model_PlaceFactory
         return new Example_Model_City($name);
     }
 
+    /**
+     * @return array
+     * @TypeOf(Example_Model_City)
+     */
+    public function createSomeCities()
+    {
+        return array(
+            new Example_Model_City('New York'),
+            new Example_Model_City('Moscow'),
+            new Example_Model_City('Madrid'),
+            new Example_Model_City('London')
+        );
+    }
+
     public function __toString()
     {
         return 'PlaceFactory';
