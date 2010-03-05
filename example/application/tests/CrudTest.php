@@ -155,4 +155,38 @@ class Example_CrudTest extends Example_AbstractTest
         $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createCity');
         $this->assertRedirectTo('/naked-php/edit/type/entity/object/1');
     }
+
+    public function testCitiesAreSavedAndRetrievedFromStorage()
+    {
+        $this->_createCity('Lisbona');
+        $this->_createCity('Barcellona');
+        $this->_newDispatch('/naked-php/save');
+        $this->assertQueryContentContains('body', 'saved!');
+         
+        $this->_newDispatch('/naked-php/clear');
+        $this->assertRedirectTo('/naked-php');
+    }
+
+    private function _createCity($name)
+    {
+        $this->_resetAll();
+        $this->getRequest()
+             ->setMethod('POST')
+             ->setPost(array(
+                 'name' => $name
+             ));
+        $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createCity');
+    }
+    
+    private function _newDispatch($url)
+    {
+        $this->_resetAll();
+        $this->dispatch($url);
+    }
+
+    private function _resetAll()
+    {
+        $this->resetRequest()
+             ->resetResponse();
+    }
 }

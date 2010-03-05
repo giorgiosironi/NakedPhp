@@ -32,5 +32,19 @@ abstract class Example_AbstractTest extends Zend_Test_PHPUnit_ControllerTestCase
         parent::setUp();
         $this->frontController->setParam('bootstrap', $application->getBootstrap());
         $this->frontController->throwExceptions(true);
+        $this->resetStorage();
+    }
+
+    public function resetStorage()
+    {
+        $em = $this->frontController->getParam('bootstrap')->getResource('Entitymanagerfactory');
+        $classes = $em->getMetadataFactory()->getAllMetadata();
+        foreach ($classes as $class) {
+            $entities = $em->getRepository($class->name)->findAll();
+            foreach ($entities as $entity) {
+                $em->remove($entity);
+            }
+        }
+        $em->flush();
     }
 }

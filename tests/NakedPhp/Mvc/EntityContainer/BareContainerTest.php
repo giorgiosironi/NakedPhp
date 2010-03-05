@@ -48,6 +48,17 @@ class BareContainerTest extends \PHPUnit_Framework_TestCase
         $this->_assertContainerIsEmpty();
     }
 
+    /**
+     * @depends testAddsAnObjectAndReturnsKey
+     */
+    public function testClearsItselfFromAllEntities()
+    {
+        $entity = $this->_getEntity();
+        $this->_container->add($entity);
+        $this->_container->clear(); 
+        $this->_assertContainerIsEmpty();
+    }
+
     public function testReplacesAnObject()
     {
         $entity = $this->_getEntity();

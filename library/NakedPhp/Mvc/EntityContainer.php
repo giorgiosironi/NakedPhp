@@ -47,6 +47,11 @@ interface EntityContainer extends \IteratorAggregate
     public function delete($key);
 
     /**
+     * Deletes all references to entities and leaves the container empty.
+     */
+    public function clear();
+
+    /**
      * @param integer $key      key returned during insertion
      * @param object $object   object to be added idempotently
      */

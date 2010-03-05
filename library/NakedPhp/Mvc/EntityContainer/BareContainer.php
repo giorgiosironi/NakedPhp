@@ -57,6 +57,16 @@ class BareContainer implements EntityContainer
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function clear()
+    {
+        $this->_objects = array();
+        $this->_states  = array();
+        $this->_counter = 0;
+    }
+
+    /**
      * {inheritdoc}
      */
     public function replace($key, NakedObject $object)
