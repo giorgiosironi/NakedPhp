@@ -73,7 +73,6 @@ class Example_CrudTest extends Example_AbstractTest
         $this->resetRequest()
              ->resetResponse();
         $this->dispatch('/naked-php/view/type/entity/object/1');
-        echo $this->response->getBody();
         $this->assertQueryContentContains('#nakedphp_session', '4 Example_Model_City');
         $this->assertQueryContentContains('.nakedphp_collection.Example_Model_City tr td',
                                           'New York');
