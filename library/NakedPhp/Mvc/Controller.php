@@ -184,6 +184,13 @@ class Controller extends \Zend_Controller_Action
         );
     }
 
+    public function clearAction()
+    {
+        $this->_bareContainer->clear();
+        $this->_helper->ViewRenderer->setNoRender();
+        return $this->_helper->Redirector('index');
+    }
+
     /**
      * This method redirects to the view action of a NakedObject or NakedService object.
      * @param object    native object of the Domain Model

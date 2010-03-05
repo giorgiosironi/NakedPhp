@@ -165,6 +165,12 @@ class Example_CrudTest extends Example_AbstractTest
          
         $this->_newDispatch('/naked-php/clear');
         $this->assertRedirectTo('/naked-php');
+
+        $this->_newDispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/findAllCities');
+        $this->assertRedirectTo('/naked-php/view/type/entity/object/1');
+
+        $this->_newDispatch('/naked-php/view/type/entity/object/1');
+        $this->assertQueryContentContains('#nakedphp_session', '2 Example_Model_City');
     }
 
     private function _createCity($name)
