@@ -16,7 +16,7 @@
 /**
  * @Service
  */
-class Example_Model_PlaceFactory
+class Example_Model_PlaceFactory extends NakedPhp\Storage\AbstractFactoryAndRepository
 {
     /**
      * @return Example_Model_Place
@@ -56,6 +56,15 @@ class Example_Model_PlaceFactory
             new Example_Model_City('Madrid'),
             new Example_Model_City('London')
         );
+    }
+
+    /**
+     * @return array
+     * @TypeOf(Example_Model_City)
+     */
+    public function findAllCities()
+    {
+        return $this->_em->getRepository('Example_Model_City')->findAll();
     }
 
     public function __toString()

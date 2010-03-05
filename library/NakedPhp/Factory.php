@@ -96,7 +96,9 @@ class Factory
     {
         $loader = $this->_getSpecificationLoader();
         $discoverer = new Service\ConfiguredServiceDiscoverer($loader, $this->_serviceClassNames);
-        return new Service\Provider\EmptyConstructorsProvider($discoverer);
+        $baseProvider = new Service\Provider\EmptyConstructorsProvider($discoverer);
+        return new Service\Provider\DefaultProvider($baseProvider,
+                                                    $this->_em);
     }
 
     /**
