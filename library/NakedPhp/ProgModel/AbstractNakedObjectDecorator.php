@@ -27,6 +27,14 @@ abstract class AbstractNakedObjectDecorator implements NakedObject, \IteratorAgg
     protected $_entity;
 
     /**
+     * @return NakedObject
+     */
+    public function getDecoratedObject()
+    {
+        return $this->_entity;
+    }
+
+    /**
      * {@inheritdoc}
      * Proxies to wrapped entity.
      */
@@ -60,6 +68,16 @@ abstract class AbstractNakedObjectDecorator implements NakedObject, \IteratorAgg
     public function getObject()
     {
         return $this->_entity->getObject();
+    }
+
+    /**
+     * {@inheritdoc}
+     * Proxies to wrapped entity, unwrapping the argument.
+     */
+    public function equals(NakedObject $no)
+    {
+        return ($no instanceof self)
+            && $this->_entity->equals($no->_entity);
     }
 
     public function __toString()

@@ -41,6 +41,12 @@ interface NakedObject extends ActionContainer, AssociationContainer, FacetHolder
     public function getObject();
 
     /**
+     * @return bool     true if the class is the same and the wrapped object
+     *                  is the same (===)
+     */
+    public function equals(NakedObject $another);
+
+    /**
      * FIX: does not belong to all objects.
      * @return array    field names are keys
      */

@@ -18,6 +18,7 @@ require_once 'AbstractTest.php';
 class Example_CrudTest extends Example_AbstractTest
 {
     const CSS_SESSION_BAR = '#nakedphp_session';
+    const CSS_SESSION_BAR_ENTITY = '#nakedphp_session dt a';
     const CSS_METHOD = '#methods a';
     const CSS_EDIT_BUTTON = '#object .button.edit';
     const CSS_REMOVE_BUTTON = '#object .button.remove';
@@ -88,6 +89,9 @@ class Example_CrudTest extends Example_AbstractTest
                                           'http://example.com');
     }
 
+    /**
+     * @depends testMultiplePlacesFactoryMethodCreatesAnArrayWhoseItemsFieldsAreDisplayed
+     */
     public function testCollectionItemsAreReachableAsStandaloneObjects()
     {
         $this->_newDispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createSomePlaces');
@@ -99,6 +103,22 @@ class Example_CrudTest extends Example_AbstractTest
 
         $this->_newDispatch('/naked-php/view/type/entity/object/2');
         $this->assertQueryContentContains(self::CSS_SESSION_BAR, 'MacLaren\'s Pub');
+    }
+
+    public function testObjectsAreNeverDuplicatedInTheSession()
+    {
+        $this->_createPlace();
+        $this->_resetAll();
+        $this->getRequest()
+             ->setMethod('POST')
+             ->setPost(array(
+                'name' => 'Test'
+             ));
+        $this->dispatch('/naked-php/call/type/entity/object/1/method/giveMeAName');
+        $this->assertRedirectTo('/naked-php/view/type/entity/object/1');
+
+        $this->_newDispatch('/naked-php/view/type/entity/object/1');
+        $this->assertQueryCount(self::CSS_SESSION_BAR_ENTITY, 1);
     }
 
     /**

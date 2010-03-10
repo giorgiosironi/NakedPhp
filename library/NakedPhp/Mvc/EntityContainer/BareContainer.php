@@ -104,7 +104,7 @@ class BareContainer implements EntityContainer
     public function contains(NakedObject $object)
     {
         foreach ($this->_objects as $index => $current) {
-            if ($object === $current) {
+            if ($object->equals($current)) {
                 return $index;
             }
         }

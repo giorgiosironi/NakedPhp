@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\ProgModel;
+use NakedPhp\Stubs\NakedObjectStub;
 use NakedPhp\Stubs\NakedObjectSpecificationStub;
 use NakedPhp\Test\Delegation;
 
@@ -37,6 +38,14 @@ class NakedObjectMethodDecoratorTest extends \NakedPhp\Test\TestCase
     {
         $this->assertSame($this->_original,
                           $this->_object->getDecoratedObject());
+    }
+
+    public function testDelegatesToTheInnerEntityForTestingEquality()
+    {
+        $this->_delegation->getterIs('equals', true);
+        $another = new NakedObjectMethodDecorator(new NakedObjectStub);
+
+        $this->assertTrue($this->_object->equals($another));
     }
 
     public function testDelegatesToTheInnerEntityForClassMetaModel()

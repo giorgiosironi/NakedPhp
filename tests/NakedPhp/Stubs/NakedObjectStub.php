@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\Stubs;
+use NakedPhp\MetaModel\NakedObject;
 use NakedPhp\MetaModel\NakedObjectSpecification;
 use NakedPhp\ProgModel\NakedBareObject;
 use NakedPhp\ProgModel\PhpAction;
@@ -25,6 +26,12 @@ class NakedObjectStub extends NakedBareObject
     protected $_className;
     protected $_state;
     protected $_fields = array();
+
+    public function equals(NakedObject $no)
+    {
+        return get_class($no) == 'NakedPhp\Stubs\NakedObjectStub'
+            && $this->_wrapped === $no->_wrapped;
+    }
 
     public function getClassName()
     {

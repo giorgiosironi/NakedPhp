@@ -86,6 +86,15 @@ class NakedBareObjectTest extends AbstractNakedObjectTest
         $this->assertSame($this, $no->getObject());
     }
 
+    public function testIsEqualToAnotherInstanceThatWrapsTheSameEntity()
+    {
+        $no = new NakedBareObject($this);
+        $equal = new NakedBareObject($this);
+        $notEqual = new NakedBareObject(null);
+        $this->assertTrue($no->equals($equal));
+        $this->assertFalse($no->equals($notEqual));
+    }
+
     public function testReturnsTheStateOfTheObject()
     {
         $no = new NakedBareObject($this, $class = new NakedObjectSpecificationStub('', array()));

@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\ProgModel;
+use NakedPhp\MetaModel\NakedObject;
 use NakedPhp\MetaModel\NakedObjectSpecification;
 
 /**
@@ -87,6 +88,12 @@ class NakedBareObject extends AbstractNakedObject implements \IteratorAggregate
     public function getObject()
     {
         return $this->_wrapped;
+    }
+
+    public function equals(NakedObject $no)
+    {
+        return get_class($no) == 'NakedPhp\ProgModel\NakedBareObject'
+            && $this->_wrapped === $no->_wrapped;
     }
 
     /**

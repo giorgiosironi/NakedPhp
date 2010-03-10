@@ -127,6 +127,20 @@ class BareContainerTest extends \PHPUnit_Framework_TestCase
     /**
      * @depends testAddsAnObjectAndReturnsKey
      */
+    public function testAddsAnEqualObjectIdempotently()
+    {
+        $wrapped = new \stdClass;
+        $entity = new NakedObjectStub($wrapped);
+        $equalEntity = new NakedObjectStub($wrapped);
+        $key = $this->_container->add($entity);
+        $anotherKey = $this->_container->add($equalEntity);
+        $this->assertSame($key, $anotherKey);
+    }
+
+
+    /**
+     * @depends testAddsAnObjectAndReturnsKey
+     */
     public function testSerializationMustNotAffectIdempotentAddition()
     {
         $entity = $this->_getEntity();
