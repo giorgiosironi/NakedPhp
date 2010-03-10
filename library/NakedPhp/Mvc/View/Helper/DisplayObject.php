@@ -28,8 +28,8 @@ class DisplayObject extends \Zend_View_Helper_Abstract
     {
         list ($no, ) = $args;
         if ($collFacet = $no->getFacet('Collection')) {
-            $specName = (string) $no->getFacet('Collection\TypeOf')->valueSpec();
-            $html = "<table class=\"nakedphp_collection $specName\">";
+            $itemSpecName = (string) $no->getFacet('Collection\TypeOf')->valueSpec();
+            $html = "<table class=\"nakedphp_collection $itemSpecName\">";
             foreach ($collFacet->iterator($no) as $entity) {
                 $html .= '<tr>';
                 foreach ($this->_toArray($entity) as $fieldName => $value) {

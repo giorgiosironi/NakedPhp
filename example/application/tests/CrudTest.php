@@ -17,14 +17,19 @@ require_once 'AbstractTest.php';
 
 class Example_CrudTest extends Example_AbstractTest
 {
+    const CSS_SESSION_BAR = '#nakedphp_session';
+    const CSS_METHOD = '#methods a';
+    const CSS_EDIT_BUTTON = '#object .button.edit';
+    const CSS_REMOVE_BUTTON = '#object .button.remove';
+
     public function testFactoryIsLoaded()
     {
         $this->dispatch('/naked-php/view/type/service/object/Example_Model_PlaceFactory');
-        $this->assertQueryContentContains('#methods a', 'createCity');
-        $this->assertQueryContentContains('#methods a', 'createPlaceCategory');
-        $this->assertQueryContentContains('#methods a', 'createPlace');
-        $this->assertNotQuery('#object .button.edit');
-        $this->assertNotQuery('#object .button.remove');
+        $this->assertQueryContentContains(self::CSS_METHOD, 'createCity');
+        $this->assertQueryContentContains(self::CSS_METHOD, 'createPlaceCategory');
+        $this->assertQueryContentContains(self::CSS_METHOD, 'createPlace');
+        $this->assertNotQuery(self::CSS_EDIT_BUTTON);
+        $this->assertNotQuery(self::CSS_REMOVE_BUTTON);
     }
 
     /**
@@ -41,22 +46,15 @@ class Example_CrudTest extends Example_AbstractTest
      */
     public function testCityFactoryMethodCreatesCityInstance()
     {
-        $this->getRequest()
-             ->setMethod('POST')
-             ->setPost(array(
-                 'name' => 'Sidney'
-             ));
-        $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createCity');
+        $this->_createCity('Sidney');
         $this->assertRedirectTo('/naked-php/view/type/entity/object/1');
 
-        $this->resetRequest()
-             ->resetResponse();
-        $this->dispatch('/naked-php/view/type/entity/object/1');
-        $this->assertQueryContentContains('#nakedphp_session', 'Sidney');
+        $this->_newDispatch('/naked-php/view/type/entity/object/1');
+        $this->assertQueryContentContains(self::CSS_SESSION_BAR, 'Sidney');
         $this->assertQueryContentContains('.nakedphp_entity.Example_Model_City .name',
                                           'Sidney');
-        $this->assertQuery('#object .button.edit');
-        $this->assertQuery('#object .button.remove');
+        $this->assertQuery(self::CSS_EDIT_BUTTON);
+        $this->assertQuery(self::CSS_REMOVE_BUTTON);
     }
 
     /**
@@ -64,16 +62,11 @@ class Example_CrudTest extends Example_AbstractTest
      */
     public function testMultipleCitiesFactoryMethodCreatesAnArray()
     {
-        $this->getRequest()
-             ->setMethod('POST')
-             ->setPost(array());
-        $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createSomeCities');
+        $this->_newDispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createSomeCities');
         $this->assertRedirectTo('/naked-php/view/type/entity/object/1');
 
-        $this->resetRequest()
-             ->resetResponse();
-        $this->dispatch('/naked-php/view/type/entity/object/1');
-        $this->assertQueryContentContains('#nakedphp_session', '4 Example_Model_City');
+        $this->_newDispatch('/naked-php/view/type/entity/object/1');
+        $this->assertQueryContentContains(self::CSS_SESSION_BAR, '4 Example_Model_City');
         $this->assertQueryContentContains('.nakedphp_collection.Example_Model_City tr td',
                                           'New York');
         $this->assertQueryContentContains('.nakedphp_collection.Example_Model_City tr td',
@@ -94,18 +87,11 @@ class Example_CrudTest extends Example_AbstractTest
      */
     public function testCategoryFactoryMethodCreatesCategoryInstance()
     {
-        $this->getRequest()
-             ->setMethod('POST')
-             ->setPost(array(
-                 'name' => 'Disco'
-             ));
-        $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createPlaceCategory');
+        $this->_createPlaceCategory('Disco');
         $this->assertRedirectTo('/naked-php/view/type/entity/object/1');
 
-        $this->resetRequest()
-             ->resetResponse();
-        $this->dispatch('/naked-php/view/type/entity/object/1');
-        $this->assertQueryContentContains('#nakedphp_session', 'Disco');
+        $this->_newDispatch('/naked-php/view/type/entity/object/1');
+        $this->assertQueryContentContains(self::CSS_SESSION_BAR, 'Disco');
         $this->assertQueryContentContains('.nakedphp_entity.Example_Model_PlaceCategory .name',
                                           'Disco');
     }
@@ -115,20 +101,10 @@ class Example_CrudTest extends Example_AbstractTest
      */
     public function testPlaceEditingDisplaysOtherEntitiesAsSelectable()
     {
-        $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createPlace');
+        $this->_createPlace();
+        $this->_createCity('Sidney');
 
-        $this->resetRequest()
-             ->resetResponse();
-        $this->getRequest()
-             ->setMethod('POST')
-             ->setPost(array(
-                 'name' => 'Sidney'
-             ));
-        $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createCity');
-
-        $this->resetRequest()
-             ->resetResponse();
-        $this->dispatch('/naked-php/edit/type/entity/object/1');
+        $this->_newDispatch('/naked-php/edit/type/entity/object/1');
         $this->assertQueryContentContains('.nakedphp_entity.Example_Model_Place select[name="city"] option', 'Sidney');
     }
 
@@ -137,22 +113,13 @@ class Example_CrudTest extends Example_AbstractTest
      */
     public function testPlaceEditingConservesContext()
     {
-        $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createPlace');
+        $this->_createPlace();
 
-        $this->resetRequest()
-             ->resetResponse();
-        $this->dispatch('/naked-php/edit/type/entity/object/1');
+        $this->_newDispatch('/naked-php/edit/type/entity/object/1');
         $this->assertQuery('#nakedphp_context li a');//[href="**"]');
         $this->assertQuery('.nakedphp_entity.Example_Model_Place select[name="city"]');
 
-        $this->resetRequest()
-             ->resetResponse();
-        $this->getRequest()
-             ->setMethod('POST')
-             ->setPost(array(
-                 'name' => 'Sidney'
-             ));
-        $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createCity');
+        $this->_createCity('Sidney');
         $this->assertRedirectTo('/naked-php/edit/type/entity/object/1');
     }
 
@@ -170,7 +137,9 @@ class Example_CrudTest extends Example_AbstractTest
         $this->assertRedirectTo('/naked-php/view/type/entity/object/1');
 
         $this->_newDispatch('/naked-php/view/type/entity/object/1');
-        $this->assertQueryContentContains('#nakedphp_session', '2 Example_Model_City');
+        $this->assertQueryContentContains(self::CSS_SESSION_BAR, '2 Example_Model_City');
+        $this->assertQueryContentContains('.nakedphp_collection.Example_Model_City td', 'Lisbona');
+        $this->assertQueryContentContains('.nakedphp_collection.Example_Model_City td', 'Barcellona');
     }
 
     private function _createCity($name)
@@ -182,6 +151,22 @@ class Example_CrudTest extends Example_AbstractTest
                  'name' => $name
              ));
         $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createCity');
+    }
+
+    private function _createPlaceCategory($name)
+    {
+        $this->_resetAll();
+        $this->getRequest()
+             ->setMethod('POST')
+             ->setPost(array(
+                 'name' => $name
+             ));
+        $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createPlaceCategory');
+    }
+
+    private function _createPlace()
+    {
+        $this->_newDispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createPlace');
     }
     
     private function _newDispatch($url)
