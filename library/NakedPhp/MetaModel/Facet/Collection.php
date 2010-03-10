@@ -23,6 +23,11 @@ use NakedPhp\MetaModel\NakedObject;
 interface Collection extends Facet
 {
     /**
+     * @return array
+     */
+    public function toArray(NakedObject $nakedObjectRepresentingCollection);
+
+    /**
      * @return Traversable
      */
     public function iterator(NakedObject $nakedObjectRepresentingCollection);

@@ -30,8 +30,10 @@ class DisplayObject extends \Zend_View_Helper_Abstract
         if ($collFacet = $no->getFacet('Collection')) {
             $itemSpecName = (string) $no->getFacet('Collection\TypeOf')->valueSpec();
             $html = "<table class=\"nakedphp_collection $itemSpecName\">";
-            foreach ($collFacet->iterator($no) as $entity) {
+            foreach ($collFacet->iterator($no) as $index => $entity) {
                 $html .= '<tr>';
+                $url = $this->view->url(array('field' => $index));
+                $html .= "<td><a href=\"$url\">Go</a></td>";
                 foreach ($this->_toArray($entity) as $fieldName => $value) {
                     $html .= "
                     <td class=\"value\">$value</td>

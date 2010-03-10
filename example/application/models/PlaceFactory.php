@@ -27,6 +27,19 @@ class Example_Model_PlaceFactory extends NakedPhp\Storage\AbstractFactoryAndRepo
     }
 
     /**
+     * @return array
+     * @TypeOf(Example_Model_Place)
+     */
+    public function createSomePlaces()
+    {
+        $firstPlace = new Example_Model_Place();
+        $firstPlace->setName('Amnesia');
+        $secondPlace = new Example_Model_Place();
+        $secondPlace->setName('MacLaren\'s Pub');
+        return array($firstPlace, $secondPlace);
+    }
+
+    /**
      * @param string $name  name of the category (disco, pub...)
      * @return Example_Model_PlaceCategory
      */

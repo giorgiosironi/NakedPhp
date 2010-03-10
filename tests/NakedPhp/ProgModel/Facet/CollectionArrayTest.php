@@ -21,20 +21,37 @@ use NakedPhp\Stubs\NakedObjectSpecificationStub;
 
 class CollectionArrayTest extends \PHPUnit_Framework_TestCase
 {
+    private $_array;
+    private $_facet;
+    private $_itemsSpec;
+
+    public function setUp()
+    {
+        $this->_arrayNo = new NakedBareObject(array('A', 'B', 'C'));
+        $this->_itemsSpec = new NakedObjectSpecificationStub('string');
+        $this->_facet = new CollectionArray(new TypeOfHardcoded($this->_itemsSpec));
+    }
+
     public function testReturnsRightFacetType()
     {
-        $facet = new CollectionArray();
-        $this->assertEquals('Collection', $facet->facetType());
+        $this->assertEquals('Collection', $this->_facet->facetType());
     }
 
     public function testCreatesIteratorForAWrappedArray()
     {
-        $array = new NakedBareObject(array('A', 'B', 'C'));
-        $itemsSpec = new NakedObjectSpecificationStub('string');
-        $facet = new CollectionArray(new TypeOfHardcoded($itemsSpec));
-        $iterator = $facet->iterator($array);
+        $iterator = $this->_facet->iterator($this->_arrayNo);
         $this->assertTrue($iterator->current() instanceof NakedObject);
         $this->assertEquals('A', $iterator->current()->getObject());
-        $this->assertEquals($itemsSpec, $iterator->current()->getSpecification());
+        $this->assertEquals($this->_itemsSpec, $iterator->current()->getSpecification());
+    }
+
+    public function testReturnsWrappedArray()
+    {
+        $array = $this->_facet->toArray($this->_arrayNo);
+        $this->assertEquals(3, count($array));
+        $firstElement = $array[0];
+        $this->assertTrue($firstElement instanceof NakedObject);
+        $this->assertEquals('A', $firstElement->getObject());
+        $this->assertEquals($this->_itemsSpec, $firstElement->getSpecification());
     }
 }

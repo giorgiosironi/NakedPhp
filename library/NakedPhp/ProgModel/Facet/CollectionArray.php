@@ -30,14 +30,22 @@ class CollectionArray implements Collection
     /**
      * {@inheritdoc}
      */
-    public function iterator(NakedObject $nakedObjectRepresentingCollection)
+    public function toArray(NakedObject $nakedObjectRepresentingCollection)
     {
         $array = $nakedObjectRepresentingCollection->getObject();
         $wrappedItemsArray = array();
         foreach ($array as $key => $value) {
             $wrappedItemsArray[$key] = $nakedObjectRepresentingCollection->createNewInstance($value, $this->_typeOfFacet->valueSpec());
         }
-        return new \ArrayIterator($wrappedItemsArray);
+        return $wrappedItemsArray;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function iterator(NakedObject $nakedObjectRepresentingCollection)
+    {
+        return new \ArrayIterator($this->toArray($nakedObjectRepresentingCollection));
     }
 
     /**

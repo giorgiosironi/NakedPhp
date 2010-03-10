@@ -110,18 +110,24 @@ class Controller extends \Zend_Controller_Action
     }
 
     /**
-     * This action shows a NakedObject or NakedService object.
+     * This action shows a NakedObject, with its associations (if any). 
      */
     public final function viewAction()
     {
-        if ($field = $this->_request->getParam('field')) {
-            $state = $this->_completeObject->getState();
-            $this->view->object = $state[$field];
+        if (($field = $this->_request->getParam('field')) !== null) {
+            $collFacet = $this->_completeObject->getFacet('Collection');
+            if ($collFacet) {
+                $array = $collFacet->toArray($this->_completeObject);
+                return $this->_redirectToObject($array[$field]);
+            } else {
+                $state = $this->_completeObject->getState();
+                $this->view->object = $state[$field];
+            }
         }
     }
 
     /**
-     * This action allows editing of a NakedObject object.
+     * This action allows editing of a NakedObject.
      */
     public final function editAction()
     {

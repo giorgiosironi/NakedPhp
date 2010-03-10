@@ -16,6 +16,7 @@
 namespace NakedPhp\Mvc\View\Helper;
 use NakedPhp\Stubs\NakedObjectStub;
 use NakedPhp\Stubs\NakedObjectSpecificationStub;
+use NakedPhp\Stubs\View;
 use NakedPhp\ProgModel\NakedBareObject;
 use NakedPhp\ProgModel\OneToOneAssociation;
 use NakedPhp\ProgModel\Facet\HiddenMethod;
@@ -80,10 +81,12 @@ class DisplayObjectTest extends \NakedPhp\Test\TestCase
         $collection->addFacet($collectionFacet);
         $collection->addFacet($typeOfFacet);
 
+        $this->_injectFakeUrlHelper();
         $result = $this->_helper->displayObject($collection);
 
         $this->assertQuery($result, 'table.nakedphp_collection.My_Item_Class');
         $this->assertQueryContentContains($result, 'table.nakedphp_collection.My_Item_Class tr td', 'Giorgio');
+        $this->assertQueryContentContains($result, 'table.nakedphp_collection.My_Item_Class tr td a', 'Go');
     }
 
     public function testDisplaysFieldTypeWhenNotConvertibleToString()
@@ -91,5 +94,16 @@ class DisplayObjectTest extends \NakedPhp\Test\TestCase
         $this->_object->setState(array('firstName' => new \stdClass));
         $result = $this->_helper->displayObject($this->_object);
         $this->assertQueryContentContains($result, 'table tr td', 'stdClass');
+    }
+
+    private function _injectFakeUrlHelper()
+    {
+        $stubView = new View;
+        $this->_helper->setView($stubView);
+        $urlHelperMock = $this->getMock('Zend_View_Helper_Url');
+        $stubView->setHelper('url', $urlHelperMock);
+        $urlHelperMock->expects($this->any())
+                      ->method('url')
+                      ->will($this->returnValue('/stub'));
     }
 }

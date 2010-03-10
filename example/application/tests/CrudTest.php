@@ -74,6 +74,34 @@ class Example_CrudTest extends Example_AbstractTest
     }
 
     /**
+     * @depends testMultipleCitiesFactoryMethodCreatesAnArray
+     */
+    public function testMultiplePlacesFactoryMethodCreatesAnArrayWhoseItemsFieldsAreDisplayed()
+    {
+        $this->_newDispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createSomePlaces');
+        $this->assertRedirectTo('/naked-php/view/type/entity/object/1');
+
+        $this->_newDispatch('/naked-php/view/type/entity/object/1');
+        $this->assertQueryContentContains('.nakedphp_collection.Example_Model_Place tr td',
+                                          'MacLaren\'s Pub');
+        $this->assertQueryContentContains('.nakedphp_collection.Example_Model_Place tr td',
+                                          'http://example.com');
+    }
+
+    public function testCollectionItemsAreReachableAsStandaloneObjects()
+    {
+        $this->_newDispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createSomePlaces');
+        $this->_newDispatch('/naked-php/view/type/entity/object/1');
+        $this->assertQueryContentContains('.nakedphp_collection.Example_Model_Place tr td a', 'Go');
+
+        $this->_newDispatch('/naked-php/view/type/entity/object/1/field/1');
+        $this->assertRedirectTo('/naked-php/view/type/entity/object/2');
+
+        $this->_newDispatch('/naked-php/view/type/entity/object/2');
+        $this->assertQueryContentContains(self::CSS_SESSION_BAR, 'MacLaren\'s Pub');
+    }
+
+    /**
      * @depends testCityFactoryMethodCreatesCityInstance
      */
     public function testCategoryFactoryMethodRequiresName()

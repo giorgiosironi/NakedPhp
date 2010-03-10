@@ -40,7 +40,7 @@ class Example_Model_Place
     private $_category;
 
     /** @Column(type="string") */
-    private $_website;
+    private $_website = 'http://example.com';
     /** @Column(type="string") */
     private $_address;
     /** @Column(type="string") */
