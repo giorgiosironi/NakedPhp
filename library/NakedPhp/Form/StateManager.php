@@ -15,9 +15,11 @@
 
 namespace NakedPhp\Form;
 use NakedPhp\MetaModel\NakedObject;
+use NakedPhp\MetaModel\NakedFactory;
 
 class StateManager
 {
+    private $_nakedFactory;
     private $_container;
     private $_normalization = array(
         '_' => '-',
@@ -27,8 +29,10 @@ class StateManager
     /**
      * @param Traversable $entityContainer  a container of NakedObject instances
      */
-    public function __construct(\Traversable $entityContainer)
+    public function __construct(NakedFactory $nakedFactory = null,
+                                \Traversable $entityContainer = null)
     {
+        $this->_nakedFactory = $nakedFactory;
         $this->_container = $entityContainer;    
     }
 
@@ -52,38 +56,12 @@ class StateManager
     }
 
     /**
-     * @param NakedObject $entity
-     * @param Zend_Form $form   form to get values from
-     * @return StateManager     provides a fluent interface
-     */
-    public function setEntityState(NakedObject $entity, \Zend_Form $form)
-    {
-        $state = array();
-        foreach ($form->getValues() as $name => $value) {
-            $element = $form->$name;
-            if ($this->_isObjectElement($element)) {
-                foreach ($this->_container as $key => $object) {
-                    if ($key == $value) {
-                        $state[$name] = $object;
-                    }
-                }
-            } else {
-                $state[$name] = $value;
-            }
-        }
-        $entity->setState($state);
-
-        return $this;
-    }
-
-    /**
      * @param Zend_Form $form
-     * @param NakedObject $entity
+     * @param array $state      NakedObject instances
      * @return StateManager     provides a fluent interface
      */
-    public function setFormState(\Zend_Form $form, NakedObject $entity)
+    public function setFormState(\Zend_Form $form, array $state)
     {
-        $state = $entity->getState();
         foreach ($form as $name => $element) {
             if ($this->_isObjectElement($element)) {
                 foreach ($this->_container as $key => $object) {
@@ -97,6 +75,28 @@ class StateManager
         $form->populate($state);
 
         return $this;
+    }
+
+    /**
+     * @param Zend_Form $form
+     * @return array            NakedObject instances
+     */
+    public function getFormState(\Zend_Form $form)
+    {
+        $state = array();
+        foreach ($form->getValues() as $name => $value) {
+            $element = $form->$name;
+            if ($this->_isObjectElement($element)) {
+                foreach ($this->_container as $key => $object) {
+                    if ($key == $value) {
+                        $state[$name] = $object;
+                    }
+                }
+            } else {
+                $state[$name] = $this->_nakedFactory->createBare($value);
+            }
+        }
+        return $state;
     }
 
     /**

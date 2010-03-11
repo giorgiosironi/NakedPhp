@@ -46,7 +46,15 @@ class InvocationMethod implements Invocation
     public function invoke(NakedObject $no, array $arguments = array())
     {
         $callBack = array($no, $this->_methodName);
-        $result = call_user_func_array($callBack, $arguments);
+        $parameters = array();
+        foreach ($arguments as $key => $wrapped) {
+            if (!($wrapped instanceof NakedObject)) {
+                var_dump($wrapped);
+                exit;
+            }
+            $parameters[$key] = $wrapped->getObject();
+        }
+        $result = call_user_func_array($callBack, $parameters);
         return $no->createNewInstance($result, $this->_returnType);
     }
 

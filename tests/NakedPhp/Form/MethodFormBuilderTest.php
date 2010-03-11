@@ -30,7 +30,8 @@ class MethodFormBuilderTest extends \PHPUnit_Framework_TestCase
         $this->_formBuilder = new MethodFormBuilder();
         $this->_params = array(
                       'first' => new PhpActionParameter(new NakedObjectSpecificationStub('string'), 'first'),
-                      'second' => new PhpActionParameter(new NakedObjectSpecificationStub('integer'), 'second')
+                      'second' => new PhpActionParameter(new NakedObjectSpecificationStub('integer'), 'second'),
+                      'third' => new PhpActionParameter(new NakedObjectSpecificationStub('NakedPhp\Stubs\User'), 'third')
         );
         $this->_method = new PhpAction('doSomething', $this->_params, new NakedObjectSpecificationStub('bool'));
         $this->_form = $this->_formBuilder->createForm($this->_method);
@@ -49,6 +50,17 @@ class MethodFormBuilderTest extends \PHPUnit_Framework_TestCase
     public function testCreatesALabelForEveryInput()
     {
         $this->assertEquals('first', $this->_form->first->getLabel());
+    }
+
+    public function testCreatesSelectForObjectParameters()
+    {
+        $this->assertTrue($this->_form->third instanceof \NakedPhp\Form\ObjectSelect);
+    }
+
+    public function testNormalizesClassNameForObjectParameters()
+    {
+        $classAttribute = $this->_form->third->getAttrib('class');
+        $this->assertEquals('NakedPhp-Stubs-User', $classAttribute);
     }
 }
 

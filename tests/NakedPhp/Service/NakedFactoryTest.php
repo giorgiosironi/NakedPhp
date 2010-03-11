@@ -36,6 +36,9 @@ class NakedFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($no instanceof NakedObject);
     }
 
+    /**
+     * @depends testWrapsAnEntityInANakedObjectInstance
+     */
     public function testInsertsSpecification()
     {
         $this->_specificationLoaderMock->expects($this->once())
@@ -48,19 +51,32 @@ class NakedFactoryTest extends \PHPUnit_Framework_TestCase
     /**
      * TODO: will wrap arrays when the type is provided
      * A NakedObjectSpecification $suggestedType parameter may be useful?
+     * This should not be necessary: arrays are wrapped via prototyping.
      */
     public function testWrapsAnArrayOfEntities()
     {
         $this->markTestIncomplete();
     }
 
-    /**
-     * TODO: will wrap scalar values as well
-     */
-    public function testDoesNotWrapScalarValues()
+    public function testWrapsAlsoScalarValues()
     {
         $result = $this->_factory->createBare('scalar result');
-        $this->assertEquals('scalar result', $result);
+        $this->assertTrue($result instanceof NakedObject);
+        $this->assertEquals('scalar result', $result->getObject());
+    }
+
+    /**
+     * @depends testWrapsAlsoScalarValues
+     */
+    public function testInsertsSpecificationUsingTypeName()
+    {
+        $this->_specificationLoaderMock->expects($this->once())
+                                       ->method('loadSpecification')
+                                       ->with('string')
+                                       ->will($this->returnValue($this->_spec));
+
+        $result = $this->_factory->createBare('scalar result');
+        $this->assertSame($this->_spec, $result->getSpecification());
     }
 }
 

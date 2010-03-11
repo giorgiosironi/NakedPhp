@@ -16,13 +16,19 @@
 namespace NakedPhp\Form;
 use NakedPhp\ProgModel\PhpAction;
 
-class MethodFormBuilder
+class MethodFormBuilder extends AbstractFormBuilder
 {
     public function createForm(PhpAction $method)
     {
         $form = new \Zend_Form();
         foreach ($method->getParameters() as $name => $param) {
-            $input = new \Zend_Form_Element_Text($param->getName());
+            $spec = $param->getType();
+            if (class_exists((string) $spec, true)) {
+                $input = new ObjectSelect($param->getName());
+            } else {
+                $input = new \Zend_Form_Element_Text($param->getName());
+            }
+            $input->setAttrib('class', $this->_normalize($spec));
             $input->setLabel($name);
             $form->addElement($input);
         }

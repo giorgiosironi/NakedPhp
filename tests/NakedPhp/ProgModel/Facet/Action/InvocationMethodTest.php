@@ -31,7 +31,9 @@ class InvocationMethodTest extends \PHPUnit_Framework_TestCase
         $returnType = new NakedObjectSpecificationStub();
         $facet = new InvocationMethod('myAction', $returnType);
 
-        $result = $facet->invoke($no, array('foo', 'bar'));
+        $foo = new NakedBareObject('foo');
+        $bar = new NakedBareObject('bar');
+        $result = $facet->invoke($no, array($foo, $bar));
 
         $this->assertEquals('dummy', $result->getObject());
         $this->assertSame($returnType, $result->getSpecification());

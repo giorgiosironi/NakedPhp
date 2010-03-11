@@ -27,6 +27,17 @@ class Example_Model_PlaceFactory extends NakedPhp\Storage\AbstractFactoryAndRepo
     }
 
     /**
+     * @param Example_Model_City $city
+     * @return Example_Model_Place
+     */
+    public function createPlaceFromCity(Example_Model_City $city)
+    {
+        $place = new Example_Model_Place();
+        $place->setCity($city);
+        return $place;
+    }
+
+    /**
      * @return array
      * @TypeOf(Example_Model_Place)
      */

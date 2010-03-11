@@ -132,7 +132,7 @@ class Factory
 
     public function getStateManager()
     {
-        return new Form\StateManager($this->getBareContainer());
+        return new Form\StateManager($this->getNakedFactory(), $this->getBareContainer());
     }
 
     /**

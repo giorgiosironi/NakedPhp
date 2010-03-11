@@ -10,15 +10,17 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * @category   NakedPhp
- * @package    NakedPhp_Stubs
+ * @package    NakedPhp_Form
  */
 
-namespace NakedPhp\Stubs;
+namespace NakedPhp\Form;
+use NakedPhp\MetaModel\NakedObjectSpecification;
 
-class NakedFactoryStub implements \NakedPhp\MetaModel\NakedFactory
+abstract class AbstractFormBuilder
 {
-    public function createBare($object)
+    protected function _normalize(NakedObjectSpecification $spec)
     {
-        return new NakedObjectStub($object);
+        $className = (string) $spec;
+        return strtr($className, array('_' => '-', '\\' => '-'));
     }
 }

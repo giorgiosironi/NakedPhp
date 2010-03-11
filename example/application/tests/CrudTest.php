@@ -15,6 +15,9 @@
 
 require_once 'AbstractTest.php';
 
+/**
+ * TODO: split this class in multiple test cases
+ */
 class Example_CrudTest extends Example_AbstractTest
 {
     const CSS_SESSION_BAR = '#nakedphp_session';
@@ -87,6 +90,29 @@ class Example_CrudTest extends Example_AbstractTest
                                           'MacLaren\'s Pub');
         $this->assertQueryContentContains('.nakedphp_collection.Example_Model_Place tr td',
                                           'http://example.com');
+    }
+    
+    /**
+     * @depends testCityFactoryMethodCreatesCityInstance
+     */
+    public function testPlaceFactoryMethodWhichRequiresACityShowsASelect()
+    {
+        $this->_createCity('Milan');
+        $this->_createCity('Turin');
+
+        $this->_newDispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createPlaceFromCity');
+        $this->assertQueryContentContains('form select[name="city"] option', 'Milan');
+    }
+
+    /**
+     * @depends testCityFactoryMethodCreatesCityInstance
+     */
+    public function testPlaceFactoryMethodWhichRequiresACityConservesContext()
+    {
+        $this->_newDispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createPlaceFromCity');
+
+        $this->_createCity('Milan');
+        $this->assertRedirectTo('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createPlaceFromCity');
     }
 
     /**
@@ -165,7 +191,6 @@ class Example_CrudTest extends Example_AbstractTest
 
         $this->_newDispatch('/naked-php/edit/type/entity/object/1');
         $this->assertQuery('#nakedphp_context li a');//[href="**"]');
-        $this->assertQuery('.nakedphp_entity.Example_Model_Place select[name="city"]');
 
         $this->_createCity('Sidney');
         $this->assertRedirectTo('/naked-php/edit/type/entity/object/1');

@@ -15,30 +15,39 @@
 
 namespace NakedPhp\Form;
 use NakedPhp\ProgModel\NakedBareObject;
+use NakedPhp\Stubs\NakedFactoryStub;
 use NakedPhp\Stubs\NakedObjectSpecificationStub;
 use NakedPhp\Stubs\NakedObjectStub;
 use NakedPhp\Stubs\User;
 use NakedPhp\Stubs\Phonenumber;
 
+/**
+ * TODO: split class. Current responsibilities:
+ * 1) translating objects in EntityManager keys and such keys in object
+ * 2) setting the state of a NakedObject where applicable
+ */
 class StateManagerTest extends \PHPUnit_Framework_TestCase
 {
     private $_manager;
     private $_anotherUser;
-    private $_anotherUserEntity;
+    private $_anotherUserWrapped;
     private $_factory;
 
     public function setUp()
     {
+        $nakedFactory = new NakedFactoryStub();
+
         $userClass = new NakedObjectSpecificationStub('NakedPhp\Stubs\User');
         $userEntity = new NakedBareObject(new User('Snoopy'), $userClass);
-        $this->_anotherUserEntity = new NakedBareObject($this->_anotherUser = new User('PetitPrince'), $userClass);
+        $this->_anotherUserWrapped = new NakedBareObject($this->_anotherUser = new User('PetitPrince'), $userClass);
         $phonenumberEntity = new NakedObjectStub(new Phonenumber());
         $iterator = new \ArrayIterator(array(
             10 => $userEntity,
-            20 => $this->_anotherUserEntity,
+            20 => $this->_anotherUserWrapped,
             30 => $phonenumberEntity
         ));
-        $this->_manager = new StateManager($iterator);
+
+        $this->_manager = new StateManager($nakedFactory, $iterator);
     }
 
     public function testPopulatesSelectAccordingToEntitiesAvailable()
@@ -57,51 +66,43 @@ class StateManagerTest extends \PHPUnit_Framework_TestCase
     /**
      * @depends testPopulatesSelectAccordingToEntitiesAvailable
      */
-    public function testSetsAFormStateFromAnEntity(\Zend_Form $form)
+    public function testSetsAFormStateTranslatingObjectsToKeys(\Zend_Form $form)
     {
-        $entity = $this->_getMockEntity();
-        $entity->expects($this->once())
-               ->method('getState')
-               ->will($this->returnValue(array('testingField' => $this->_anotherUser)));
-        $this->_manager->setFormState($form, $entity);
+        $values = array('testingField' => $this->_anotherUser);
+        $this->_manager->setFormState($form, $values);
+        $this->assertEquals(20, $form->testingField->getValue());
+        // TODO: also with equals() (another object which wrap the same)
     }
 
     /**
      * @depends testPopulatesSelectAccordingToEntitiesAvailable
      */
-    public function testSetsAnObjectStateFromRequest(\Zend_Form $form)
+    public function testGetsAFormStateTranslatingKeysToObjects(\Zend_Form $form)
     {
-        $entity = $this->_getMockEntity(array('testingField' => $this->_anotherUserEntity));
-        $form->populate(array('testingField' => 20));
-        $this->_manager->setEntityState($entity, $form);
+        $form->isValid(array('testingField' => 20));
+
+        $values = $this->_manager->getFormState($form);
+
+        $this->assertEquals($values['testingField'], $this->_anotherUserWrapped);
     }
 
-    public function testIsTransparentToScalarFieldElements()
+    public function testWhileReturningStateWrapsValuesWhichAreNotRecognizedObjects()
     {
-        $entity = $this->_getMockEntity(array('email' => 'piccoloprincipeazzurro@...'));
         $form = new \Zend_Form();
         $form->addElement('text', 'email');
         $form->populate(array('email' => 'piccoloprincipeazzurro@...'));
-        $this->_manager->setEntityState($entity, $form);
-    }
 
-    public function testIsTransparentToScalarSelectElements()
-    {
-        $entity = $this->_getMockEntity(array('type' => 'thisType'));
-        $form = new \Zend_Form();
-        $form->addElement('Select', 'type');
-        $form->type->setMultiOptions(array('thisType' => 'A', 'otherType' => 'B'));
-        $form->type->setValue('thisType');
-        $this->_manager->setEntityState($entity, $form);
+        $values = $this->_manager->getFormState($form);
+
+        $this->assertEquals($values['email'], new NakedObjectStub('piccoloprincipeazzurro@...'));
     }
 
     public function testExcludesIgnoredFields()
     {
-        $entity = $this->_getMockEntity(array());
         $form = new \Zend_Form();
         $form->addElement('text', 'email', array('ignore' => true));
         $form->populate(array('email' => 'piccoloprincipeazzurro@...'));
-        $this->_manager->setEntityState($entity, $form);
+        $this->assertEquals(array(), $this->_manager->getFormState($form));
     }
 
     private function _getMockEntity($expectedState = null)

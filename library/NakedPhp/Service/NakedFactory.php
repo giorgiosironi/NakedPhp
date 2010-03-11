@@ -33,10 +33,11 @@ class NakedFactory implements \NakedPhp\MetaModel\NakedFactory
      */
     public function createBare($object)
     {
-        if (!is_object($object)) {
-            return $object;
+        if (is_object($object)) {
+            $className = get_class($object);
+        } else {
+            $className = gettype($object);
         }
-        $className = get_class($object);
         $spec = $this->_specificationLoader->loadSpecification($className);
         return new NakedBareObject($object, $spec);
     }

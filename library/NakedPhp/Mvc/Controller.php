@@ -18,9 +18,6 @@ use NakedPhp\MetaModel\NakedObject;
 use NakedPhp\MetaModel\NakedService;
 use NakedPhp\ProgModel\NakedObjectMethodDecorator;
 
-/**
- * FIX: should never wrap instances. $this->_nakedFactory has to go.
- */
 class Controller extends \Zend_Controller_Action
 {
     /**
@@ -61,7 +58,6 @@ class Controller extends \Zend_Controller_Action
     public final function preDispatch()
     {
         $this->_factory = $this->getInvokeArg('bootstrap')->getResource('Nakedphp');
-        $this->_nakedFactory = $this->_factory->getNakedFactory();
         $this->_bareContainer = $this->_factory->getBareContainer();
         $this->view->session = $this->_factory->getStateBareIterator();
         $this->view->context = $this->_contextContainer = $this->_factory->getContextContainer();
@@ -136,9 +132,10 @@ class Controller extends \Zend_Controller_Action
         $form = $formBuilder->createForm($this->_completeObject, $this->_class->getAssociations());
         $stateManager = $this->_factory->getStateManager()
                                        ->populateOptions($form)
-                                       ->setFormState($form, $this->_completeObject);
+                                       ->setFormState($form, $this->_completeObject->getState());
         if ($this->_request->isPost() && $form->isValidPartial($this->_request->getPost())) {
-            $state = $stateManager->setEntityState($this->_completeObject, $form);
+            $state = $stateManager->getFormState($form);
+            $this->_completeObject->setState($state);
             $this->_contextContainer->completed();
             $this->_redirectToObject($this->_completeObject);
         } else {
@@ -163,8 +160,10 @@ class Controller extends \Zend_Controller_Action
         if (count($method->getParameters())) {
             $formBuilder = $this->_factory->getMethodFormBuilder();
             $form = $formBuilder->createForm($method);
+            $stateManager = $this->_factory->getStateManager()
+                                           ->populateOptions($form);
             if ($this->_request->isPost() && $form->isValid($this->_request->getPost())) {
-                $parameters = $this->_request->getPost();
+                $parameters = $stateManager->getFormState($form);
             } else {
                 $this->view->form = $form;
                 return; 
@@ -175,6 +174,8 @@ class Controller extends \Zend_Controller_Action
 
         $invocationFacet = $method->getFacet('Action\Invocation');
         $result = $invocationFacet->invoke($this->_completeObject, $parameters);
+        // TODO: add acceptance test that verifies you can call a method
+        // directly via POST without interfering with contexts
         $this->_contextContainer->completed();
         $this->_redirectToObject($result);
     }

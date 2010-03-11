@@ -21,7 +21,7 @@ use NakedPhp\ProgModel\OneToOneAssociation;
 /**
  * FIX: Only OneToOneAssociation are supported.
  */
-class FieldsFormBuilder
+class FieldsFormBuilder extends AbstractFormBuilder
 {
     /**
      * @param NakedObject $entity
@@ -100,14 +100,11 @@ class FieldsFormBuilder
         return $element;
     }
 
+    /**
+     * HACK: should ask the Specification
+     */
     protected function _isObjectField(OneToOneAssociation $field)
     {
         return ucfirst($field->getType()) == $field->getType();
-    }
-
-    protected function _normalize(NakedObjectSpecification $spec)
-    {
-        $className = (string) $spec;
-        return strtr($className, array('_' => '-', '\\' => '-'));
     }
 }
