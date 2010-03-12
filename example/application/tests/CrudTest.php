@@ -115,6 +115,19 @@ class Example_CrudTest extends Example_AbstractTest
         $this->assertRedirectTo('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createPlaceFromCity');
     }
 
+    public function testPlaceFactoryMethodWhichRequiresACityCreatesObject()
+    {
+        $this->_createCity('London');
+        $this->_resetAll();
+        $this->getRequest()
+             ->setMethod('POST')
+             ->setPost(array(
+                'city' => 1
+             ));
+        $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createPlaceFromCity');
+        $this->assertRedirectTo('/naked-php/view/type/entity/object/2');
+    }
+
     /**
      * @depends testMultiplePlacesFactoryMethodCreatesAnArrayWhoseItemsFieldsAreDisplayed
      */
