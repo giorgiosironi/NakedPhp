@@ -17,8 +17,10 @@ namespace NakedPhp\Storage;
 use Doctrine\ORM\UnitOfWork;
 use NakedPhp\Mvc\EntityContainer;
 use NakedPhp\Mvc\EntityContainer\BareContainer;
-use NakedPhp\Stubs\User;
+use NakedPhp\ProgModel\Facet;
+use NakedPhp\Stubs\DummyCollectionFacet;
 use NakedPhp\Stubs\NakedObjectStub;
+use NakedPhp\Stubs\User;
 
 /**
  * Exercise the Doctrine storage driver, which should reflect to the database
@@ -43,6 +45,27 @@ class DoctrineTest extends AbstractDoctrineTest
         $this->_storage->save($container);
 
         $this->_assertExistsOne('Picard');
+    }
+
+    /**
+     * It is assumed the entities have the same state, which is
+     * the state of the Collection.
+     */
+    public function testAcceptsCollectionsAndSavesTheSingleEntities()
+    {
+        $array = array(
+            $this->_getNewUser('Picard'),
+            $this->_getNewUser('Riker')
+        );
+        $collection = new NakedObjectStub();
+        $collection->addFacet(new DummyCollectionFacet($array));
+        $container = $this->_getContainer();
+        $key = $container->add($collection);
+        $container->setState($key, EntityContainer::STATE_NEW);
+        $this->_storage->save($container);
+
+        $this->_assertExistsOne('Picard');
+        $this->_assertExistsOne('Riker');
     }
 
     /**
@@ -102,6 +125,9 @@ class DoctrineTest extends AbstractDoctrineTest
         $this->fail('User is saved with null properties.');
     }
 
+    /**
+     * @return NakedObject
+     */
     private function _getNewUser($name)
     {
         $user = new User();
@@ -118,6 +144,10 @@ class DoctrineTest extends AbstractDoctrineTest
         return $user;
     }
 
+    /**
+     * @param array $fixtures   names (strings) that points to EntityContainer::STATE_*
+     * @return EntityContainer
+     */
     private function _getContainer(array $fixture = array())
     {
         $container = new BareContainer;
