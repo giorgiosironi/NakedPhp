@@ -24,6 +24,9 @@ class Example_CrudTest extends Example_AbstractTest
 
     const CSS_SESSION_BAR = '#nakedphp_session';
     const CSS_SESSION_BAR_ENTITY = '#nakedphp_session dt a';
+    const CSS_SESSION_SAVE_BUTTON = '#nakedphp_session .button.save';
+    const CSS_SESSION_CLEAR_BUTTON = '#nakedphp_session .button.clear';
+
     const CSS_METHOD = '#methods a';
     const CSS_EDIT_BUTTON = '#object .button.edit';
     const CSS_REMOVE_BUTTON = '#object .button.remove';
@@ -36,6 +39,8 @@ class Example_CrudTest extends Example_AbstractTest
         $this->assertQueryContentContains(self::CSS_METHOD, 'createPlace');
         $this->assertNotQuery(self::CSS_EDIT_BUTTON);
         $this->assertNotQuery(self::CSS_REMOVE_BUTTON);
+        $this->assertNotQuery(self::CSS_SESSION_SAVE_BUTTON);
+        $this->assertNotQuery(self::CSS_SESSION_CLEAR_BUTTON);
     }
 
     /**
@@ -61,6 +66,8 @@ class Example_CrudTest extends Example_AbstractTest
                                           'Sidney');
         $this->assertQuery(self::CSS_EDIT_BUTTON);
         $this->assertQuery(self::CSS_REMOVE_BUTTON);
+        $this->assertQuery(self::CSS_SESSION_SAVE_BUTTON);
+        $this->assertQuery(self::CSS_SESSION_CLEAR_BUTTON);
     }
 
     /**

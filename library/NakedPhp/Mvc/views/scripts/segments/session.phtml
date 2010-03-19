@@ -16,6 +16,9 @@ foreach ($this->session as $index => $tuple) {
 }
 if ($labels) {
     $saveUrl = $this->url(array('action' => 'save', 'controller' => 'naked-php'), 'default', true);
+    $clearUrl = $this->url(array('action' => 'clear', 'controller' => 'naked-php'), 'default', true);
     echo "<div class=\"button save\"><a href=\"{$saveUrl}\">Save</a></div>
-    <dl>\n" . implode('', $labels) . "</dl>\n";
+          <div class=\"button clear\"><a href=\"{$clearUrl}\">Clear</a></div>
+          <dl>\n" . implode('', $labels) . "</dl>
+    ";
 }
