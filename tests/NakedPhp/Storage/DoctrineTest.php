@@ -42,9 +42,10 @@ class DoctrineTest extends AbstractDoctrineTest
         $container = $this->_getContainer(array(
             'Picard' => EntityContainer::STATE_NEW
         ));
-        $this->_storage->save($container);
+        $result = $this->_storage->save($container);
 
         $this->_assertExistsOne('Picard');
+        $this->assertEquals(1, $result[Doctrine::ACTION_NEW]);
     }
 
     /**
@@ -62,8 +63,9 @@ class DoctrineTest extends AbstractDoctrineTest
         $container = $this->_getContainer();
         $key = $container->add($collection);
         $container->setState($key, EntityContainer::STATE_NEW);
-        $this->_storage->save($container);
+        $result = $this->_storage->save($container);
 
+        $this->assertEquals(2, $result[Doctrine::ACTION_NEW]);
         $this->_assertExistsOne('Picard');
         $this->_assertExistsOne('Riker');
     }
@@ -90,8 +92,9 @@ class DoctrineTest extends AbstractDoctrineTest
         $picard->setName('Locutus');
         $container = $this->_getContainer();
         $key = $container->add($picard, EntityContainer::STATE_DETACHED);
-        $this->_storage->save($container);
+        $result = $this->_storage->save($container);
 
+        $this->assertEquals(1, $result[Doctrine::ACTION_UPDATED]);
         $this->_assertExistsOne('Locutus');
         $this->_assertNotExists('Picard');
     }
@@ -102,8 +105,9 @@ class DoctrineTest extends AbstractDoctrineTest
         $container = $this->_getContainer();
 
         $key = $container->add($picard, EntityContainer::STATE_REMOVED);
-        $this->_storage->save($container);
+        $result = $this->_storage->save($container);
 
+        $this->assertEquals(1, $result[Doctrine::ACTION_REMOVED]);
         $this->_assertNotExists('Picard');
         $this->assertFalse($container->contains($picard));
     }

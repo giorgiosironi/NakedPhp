@@ -1,4 +1,15 @@
 <p>Session (and entities) saved!</p>
-<p>New entities saved: <? echo implode(', ', $this->entities['new']); ?></p>
-<p>Updated entities: <? echo implode(', ', $this->entities['detached']); ?></p>
-<p>Removed entities: <? echo implode(', ', $this->entities['removed']); ?></p>
+<table>
+<tr class="new">
+    <td>New entities saved</td>
+    <td class="number"><? echo $this->result[NakedPhp\Storage\Doctrine::ACTION_NEW]; ?></td>
+</tr>
+<tr class="updated">
+    <td>Updated entities</td>
+    <td class="number"><? echo $this->result[NakedPhp\Storage\Doctrine::ACTION_UPDATED]; ?></td>
+</tr>
+<tr class="removed">
+    <td>Removed entities</td>
+    <td class="number"><? echo $this->result[NakedPhp\Storage\Doctrine::ACTION_REMOVED]; ?></td>
+</tr>
+</table>

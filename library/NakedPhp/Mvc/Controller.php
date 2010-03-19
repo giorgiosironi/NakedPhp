@@ -183,12 +183,7 @@ class Controller extends \Zend_Controller_Action
     public function saveAction()
     {
         $storage = $this->_factory->getPersistenceStorage();
-        $storage->save($this->_bareContainer);
-        $this->view->entities = array(
-            'new' => array(),
-            'detached' => array(),
-            'removed' => array()
-        );
+        $this->view->result = $storage->save($this->_bareContainer);
     }
 
     public function clearAction()

@@ -14,10 +14,16 @@
  */
 
 namespace NakedPhp\Storage;
+use NakedPhp\MetaModel\NakedObject;
 use NakedPhp\Mvc\EntityContainer;
 
 class Doctrine
 {
+    // TODO: move on an extracted interface
+    const ACTION_NEW = 'new';
+    const ACTION_UPDATED = 'updated';
+    const ACTION_REMOVED = 'removed';
+
     private $_em;
 
     public function __construct(\Doctrine\ORM\EntityManager $em = null)
@@ -25,23 +31,26 @@ class Doctrine
         $this->_em = $em;
     }
 
+    /**
+     * @return array    ACTION_* constants are keys, number of objects
+     *                  are values
+     */
     public function save(EntityContainer $container)
     {
         $newStates = array();
+        $actions = array(self::ACTION_NEW => 0, self::ACTION_UPDATED => 0, self::ACTION_REMOVED => 0);
         foreach ($container as $key => $no) {
-            $entity = $no->getObject();
             $state = $container->getState($key);
             switch ($state) {
                 case EntityContainer::STATE_NEW:
-                    $this->_em->persist($entity);
                     $newStates[$key] = EntityContainer::STATE_DETACHED;
+                    $actions[self::ACTION_NEW] += $this->_persist($no);
                     break;
                 case EntityContainer::STATE_DETACHED:
-                    $this->_em->merge($entity);
+                    $actions[self::ACTION_UPDATED] += $this->_merge($no);
                     break;
                 case EntityContainer::STATE_REMOVED:
-                    $entity = $this->_em->merge($entity);
-                    $this->_em->remove($entity);
+                    $actions[self::ACTION_REMOVED] += $this->_remove($no);
                     $container->delete($key);
                     break;
                 default:
@@ -56,6 +65,61 @@ class Doctrine
         foreach ($newStates as $key => $state) {
             $container->setState($key, $state);
         }
+        return $actions;
+    }
+
+    /**
+     * @return integer  number of objects affected
+     */
+    protected function _persist(NakedObject $no)
+    {
+        $em = $this->_em;
+        $callback = function($object) use ($em) {
+            $entity = $object->getObject();
+            $em->persist($entity);
+        };
+        return $this->_foreachIfCollection($no, $callback);
+    }
+
+    /**
+     * @return integer  number of objects affected
+     */
+    protected function _merge(NakedObject $no)
+    {
+        $em = $this->_em;
+        $callback = function($object) use ($em) {
+            $entity = $object->getObject();
+            $em->merge($entity);
+        };
+        return $this->_foreachIfCollection($no, $callback);
+    }
+
+    /**
+     * @return integer  number of objects affected
+     */
+    protected function _remove(NakedObject $no)
+    {
+        $em = $this->_em;
+        $callback = function($object) use ($em) {
+            $entity = $object->getObject();
+            $entity = $em->merge($entity);
+            $em->remove($entity);
+        };
+        return $this->_foreachIfCollection($no, $callback);
+    }
+
+    protected function _foreachIfCollection(NakedObject $no, $callback) {
+        if (($collectionFacet = $no->getFacet('Collection')) !== null) {
+            $number = 0;
+            foreach ($collectionFacet->iterator($no) as $item) {
+                $callback($item);
+                $number++;
+            }
+        } else {
+            $callback($no);
+            $number = 1;
+        }
+        return $number;
     }
 }
 

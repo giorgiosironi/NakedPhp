@@ -224,6 +224,7 @@ class Example_CrudTest extends Example_AbstractTest
         $this->_createCity('Barcellona');
         $this->_newDispatch('/naked-php/save');
         $this->assertQueryContentContains('body', 'saved!');
+        $this->assertQueryContentContains('#object table tr.new td.number', '2');
          
         $this->_newDispatch('/naked-php/clear');
         $this->assertRedirectTo('/naked-php');
@@ -251,6 +252,19 @@ class Example_CrudTest extends Example_AbstractTest
         $this->resetStorage();
         $this->_newDispatch(self::URL_PLACEFACTORY);
         $this->assertNotQueryContentContains(self::CSS_METHOD, 'findAllCities');
+    }
+
+    /**
+     * @depends testCitiesAreSavedAndRetrievedFromStorage
+     */
+    public function testSingleElementsAreSavedWhenCollectionAreSaved()
+    {
+        $this->_storeCities(array('Lisbona', 'Barcellona'));
+        $this->_newDispatch('/naked-php/clear');
+        $this->_newDispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/findAllCities');
+        $this->_newDispatch('/naked-php/save');
+        echo $this->response->getBody();
+        $this->assertQueryContentContains('#object table tr.updated td.number', 2);
     }
     
     private function _storeCities(array $cities)
