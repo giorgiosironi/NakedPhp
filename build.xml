@@ -16,6 +16,14 @@
         <exec command="phpdoc -d library/NakedPhp/ -t ${docRoot} #TODO phpdoc phing task" dir="${srcRoot}" passthru="true" />
     </target>
 
+    <target name="export">
+        <delete dir="${destinationRoot}" />
+        <mkdir dir="${destinationRoot}" />
+        <exec command="git checkout-index -a -f --prefix={$destinationRoot}" dir="${srcRoot}" passthru="true" />
+        <chmod file="${destinationRoot}example/database/" mode="0666" />
+        <chmod file="${destinationRoot}example/database/database.sqlite" mode="0666" />
+    </target>
+
     <target name="build-example">
         <exec command="php example/bin/doctrine schema-tool --re-create --config=example/bin/cli-config.php" dir="${srcRoot}" passthru="true" />
     </target>
