@@ -120,6 +120,15 @@ class User
     }
 
     /**
+     * It never hides the method, but at least we can test for
+     * the Hidden Facet to be present.
+     */
+    public function hideSendMessage()
+    {
+        return false;
+    }
+
+    /**
      * @return bool
      */
     public function deactivate()

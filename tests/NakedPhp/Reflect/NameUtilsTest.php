@@ -21,7 +21,7 @@ class NameUtilsTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             array('getEntity', 'entity'),
-            array('setEntity', 'entity'),
+            array('setEntity', 'entity')
         );
     }
 
@@ -37,7 +37,7 @@ class NameUtilsTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             array('getEntity', 'get'),
-            array('setEntity', 'set'),
+            array('setEntity', 'set')
         );
     }
 
@@ -47,6 +47,22 @@ class NameUtilsTest extends \PHPUnit_Framework_TestCase
     public function testStartsWith($methodName, $prefix)
     {
         $this->assertTrue(NameUtils::startsWith($methodName, $prefix));
+    }
+
+    public static function namesToInflect()
+    {
+        return array(
+            array('entity', 'get', 'getEntity'),
+            array('firstName', 'hide', 'hideFirstName')
+        );
+    }
+
+    /**
+     * @dataProvider namesToInflect
+     */
+    public function testInflectsNamesPrependingAPrefix($name, $prefix, $expected)
+    {
+        $this->assertEquals($expected, NameUtils::inflectWithPrefix($name, $prefix));
     }
 }
 

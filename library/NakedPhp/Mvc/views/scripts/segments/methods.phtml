@@ -2,6 +2,12 @@
 $methods = array();
 foreach ($this->methods as $name => $method) {
     if ($method->getFacet('Action\Invocation')) {
+        $hiddenFacet = $method->getFacet('Hidden');
+        if ($hiddenFacet !== null) {
+            if ($hiddenFacet->hiddenReason($this->object)) {
+                continue;
+            }
+        }
         $url = $this->url(array('action' => 'call', 'method' => $name));
         $methods[] = "<li><a href=\"$url\">$name</a></li>\n";
     }

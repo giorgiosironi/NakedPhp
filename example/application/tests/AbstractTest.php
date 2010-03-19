@@ -19,6 +19,11 @@
 abstract class Example_AbstractTest extends Zend_Test_PHPUnit_ControllerTestCase
 {
     /**
+     * @var Doctrine\ORM\EntityManager
+     */
+    protected $_em;
+
+    /**
      * Zend_Session is reset automatically.
      * TODO: Doctrine 2 database
      */
@@ -32,19 +37,67 @@ abstract class Example_AbstractTest extends Zend_Test_PHPUnit_ControllerTestCase
         parent::setUp();
         $this->frontController->setParam('bootstrap', $application->getBootstrap());
         $this->frontController->throwExceptions(true);
+        $this->_em = $this->frontController->getParam('bootstrap')->getResource('Entitymanagerfactory');
         $this->resetStorage();
     }
 
     public function resetStorage()
     {
-        $em = $this->frontController->getParam('bootstrap')->getResource('Entitymanagerfactory');
-        $classes = $em->getMetadataFactory()->getAllMetadata();
+        echo "Reset storage\n";
+        $classes = $this->_em->getMetadataFactory()->getAllMetadata();
+        echo "Processing: ";
         foreach ($classes as $class) {
-            $entities = $em->getRepository($class->name)->findAll();
+            echo $class->name, " ";
+            $entities = $this->_em->getRepository($class->name)->findAll();
+            $n = count($entities);
             foreach ($entities as $entity) {
-                $em->remove($entity);
+                $this->_em->remove($entity);
+                echo "Removed $entity\n";
             }
         }
-        $em->flush();
+        echo "\n";
+        $this->_em->flush();
+        $this->_em->clear();
+
+        var_dump(count($this->_em->getRepository('Example_Model_City')->findAll()));
+    }
+
+    protected function _createCity($name)
+    {
+        $this->_resetAll();
+        $this->getRequest()
+             ->setMethod('POST')
+             ->setPost(array(
+                 'name' => $name
+             ));
+        $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createCity');
+    }
+
+    protected function _createPlaceCategory($name)
+    {
+        $this->_resetAll();
+        $this->getRequest()
+             ->setMethod('POST')
+             ->setPost(array(
+                 'name' => $name
+             ));
+        $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createPlaceCategory');
+    }
+
+    protected function _createPlace()
+    {
+        $this->_newDispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createPlace');
+    }
+    
+    protected function _newDispatch($url)
+    {
+        $this->_resetAll();
+        $this->dispatch($url);
+    }
+
+    protected function _resetAll()
+    {
+        $this->resetRequest()
+             ->resetResponse();
     }
 }

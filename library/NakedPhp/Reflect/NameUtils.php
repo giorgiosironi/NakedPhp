@@ -46,4 +46,14 @@ class NameUtils
         }
         return false;
     }
+
+    /**
+     * @param string $name
+     * @param string $prefix
+     * @return string           prefix prepended to the normalized $name
+     */
+    public static function inflectWithPrefix($name, $prefix)
+    {
+        return $prefix . ucfirst($name);
+    }
 }

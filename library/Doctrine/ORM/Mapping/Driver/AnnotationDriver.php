@@ -46,6 +46,8 @@ class AnnotationDriver implements Driver
     private $_reader;
     private $_classDirectory;
 
+    private $_classes;
+
     /**
      * Initializes a new AnnotationDriver that uses the given AnnotationReader for reading
      * docblock annotations.
@@ -350,6 +352,9 @@ class AnnotationDriver implements Driver
     public function getAllClassNames()
     {
         if ($this->_classDirectory) {
+            if ($this->_classes !== null) {
+                return $this->_classes;
+            }
             $iter = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->_classDirectory),
                     \RecursiveIteratorIterator::LEAVES_ONLY);
         
@@ -369,8 +374,10 @@ class AnnotationDriver implements Driver
                     $classes[] = $className;
                 }
             }
+            $this->_classes = $classes;
             return $classes;
         } else {
+            echo "No class dir!\n";
             return array();
         }
     }

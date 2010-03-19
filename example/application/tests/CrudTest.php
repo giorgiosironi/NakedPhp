@@ -20,6 +20,8 @@ require_once 'AbstractTest.php';
  */
 class Example_CrudTest extends Example_AbstractTest
 {
+    const URL_PLACEFACTORY = '/naked-php/view/type/service/object/Example_Model_PlaceFactory';
+
     const CSS_SESSION_BAR = '#nakedphp_session';
     const CSS_SESSION_BAR_ENTITY = '#nakedphp_session dt a';
     const CSS_METHOD = '#methods a';
@@ -28,7 +30,7 @@ class Example_CrudTest extends Example_AbstractTest
 
     public function testFactoryIsLoaded()
     {
-        $this->dispatch('/naked-php/view/type/service/object/Example_Model_PlaceFactory');
+        $this->dispatch(self::URL_PLACEFACTORY);
         $this->assertQueryContentContains(self::CSS_METHOD, 'createCity');
         $this->assertQueryContentContains(self::CSS_METHOD, 'createPlaceCategory');
         $this->assertQueryContentContains(self::CSS_METHOD, 'createPlace');
@@ -228,42 +230,18 @@ class Example_CrudTest extends Example_AbstractTest
         $this->assertQueryContentContains('.nakedphp_collection.Example_Model_City td', 'Barcellona');
     }
 
-    private function _createCity($name)
+    /**
+     * Depends on the other also because some cities must be in the storage.
+     * @depends testCitiesAreSavedAndRetrievedFromStorage
+     */
+    public function testFindAllCitiesActionIsHiddenProgrammaticallyWhenThereAreNoCitiesSaved()
     {
-        $this->_resetAll();
-        $this->getRequest()
-             ->setMethod('POST')
-             ->setPost(array(
-                 'name' => $name
-             ));
-        $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createCity');
+        $this->_newDispatch(self::URL_PLACEFACTORY);
+        $this->assertQueryContentContains(self::CSS_METHOD, 'findAllCities');
+
+        $this->resetStorage();
+        $this->_newDispatch(self::URL_PLACEFACTORY);
+        $this->assertNotQueryContentContains(self::CSS_METHOD, 'findAllCities');
     }
 
-    private function _createPlaceCategory($name)
-    {
-        $this->_resetAll();
-        $this->getRequest()
-             ->setMethod('POST')
-             ->setPost(array(
-                 'name' => $name
-             ));
-        $this->dispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createPlaceCategory');
-    }
-
-    private function _createPlace()
-    {
-        $this->_newDispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/createPlace');
-    }
-    
-    private function _newDispatch($url)
-    {
-        $this->_resetAll();
-        $this->dispatch($url);
-    }
-
-    private function _resetAll()
-    {
-        $this->resetRequest()
-             ->resetResponse();
-    }
 }

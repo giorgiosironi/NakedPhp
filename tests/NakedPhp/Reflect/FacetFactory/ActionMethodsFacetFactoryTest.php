@@ -48,6 +48,13 @@ class ActionMethodsFacetFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertNotNull($facetHolder->getFacet('Action\Invocation'));
     }
 
+    public function testAddsHiddenFacetIfHideMethodIsPresent()
+    {
+        $facetHolder = $this->_processMethod('doSomething');
+
+        $this->assertNotNull($facetHolder->getFacet('Hidden'));
+    }
+
     /**
      * @param string $name  method name on SomeRandomClass
      * @return FacetHolder
@@ -65,4 +72,5 @@ class ActionMethodsFacetFactoryTest extends \PHPUnit_Framework_TestCase
 class SomeRandomClass
 {
     public function doSomething() {}
+    public function hideDoSomething() {}
 }

@@ -50,6 +50,7 @@ class UserTest extends \PHPUnit_Framework_TestCase
         $this->assertNotNull($sendMessage->getFacet('Action\Invocation'));
         $invocationFacets = $sendMessage->getFacets('Action\Invocation');
         $this->assertEquals(1, count($invocationFacets));
+        $this->assertNotNull($sendMessage->getFacet('Hidden'));
 
         $deactivate = $actions['deactivate'];
         $this->assertEquals(array(), $deactivate->getParameters());

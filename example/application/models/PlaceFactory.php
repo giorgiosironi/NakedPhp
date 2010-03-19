@@ -91,6 +91,11 @@ class Example_Model_PlaceFactory extends NakedPhp\Storage\AbstractFactoryAndRepo
         return $this->_em->getRepository('Example_Model_City')->findAll();
     }
 
+    public function hideFindAllCities()
+    {
+        return !((bool) count($this->_em->getRepository('Example_Model_City')->findAll()));
+    }
+
     public function __toString()
     {
         return 'PlaceFactory';

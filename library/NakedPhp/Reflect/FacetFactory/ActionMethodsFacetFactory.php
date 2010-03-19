@@ -19,8 +19,10 @@ use NakedPhp\MetaModel\MethodFilteringFacetFactory;
 use NakedPhp\MetaModel\NakedObjectAction;
 use NakedPhp\MetaModel\NakedObjectFeatureType;
 use NakedPhp\ProgModel\Facet\Action\InvocationMethod;
+use NakedPhp\ProgModel\Facet\HiddenMethod;
 use NakedPhp\Reflect\Exception;
 use NakedPhp\Reflect\MethodRemover;
+use NakedPhp\Reflect\NameUtils;
 
 /**
  * Used to generate the associations list and their Facets.
@@ -54,8 +56,18 @@ class ActionMethodsFacetFactory extends AbstractFacetFactory
             $returnType = $facetHolder->getReturnType();
             $invocation = new InvocationMethod($method->getName(), $returnType);
             $facetHolder->addFacet($invocation);
+            $this->_applyHiddenFacet($class, $method->getName(), $remover, $facetHolder);
         } else {
             throw new Exception('A FacetHolder which is not an NakedObjectAction is being passed.');
+        }
+    }
+
+    protected function _applyHiddenFacet(\ReflectionClass $class, $methodName, $remover, $facetHolder)
+    {
+        $hideMethodName = NameUtils::inflectWithPrefix($methodName, 'hide');
+        if ($class->hasMethod($hideMethodName)) {
+            $hiddenFacet = new HiddenMethod($hideMethodName);
+            $facetHolder->addFacet($hiddenFacet);
         }
     }
 }
