@@ -236,6 +236,8 @@ class Example_CrudTest extends Example_AbstractTest
      */
     public function testFindAllCitiesActionIsHiddenProgrammaticallyWhenThereAreNoCitiesSaved()
     {
+        $this->_storeCities(array('Lisbona', 'Barcellona'));
+
         $this->_newDispatch(self::URL_PLACEFACTORY);
         $this->assertQueryContentContains(self::CSS_METHOD, 'findAllCities');
 
@@ -243,5 +245,12 @@ class Example_CrudTest extends Example_AbstractTest
         $this->_newDispatch(self::URL_PLACEFACTORY);
         $this->assertNotQueryContentContains(self::CSS_METHOD, 'findAllCities');
     }
-
+    
+    private function _storeCities(array $cities)
+    {
+        foreach ($cities as $cityName) {
+            $this->_createCity($cityName);
+        }
+        $this->_newDispatch('/naked-php/save');
+    }
 }

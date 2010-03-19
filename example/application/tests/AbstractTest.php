@@ -43,23 +43,15 @@ abstract class Example_AbstractTest extends Zend_Test_PHPUnit_ControllerTestCase
 
     public function resetStorage()
     {
-        echo "Reset storage\n";
         $classes = $this->_em->getMetadataFactory()->getAllMetadata();
-        echo "Processing: ";
         foreach ($classes as $class) {
-            echo $class->name, " ";
             $entities = $this->_em->getRepository($class->name)->findAll();
-            $n = count($entities);
             foreach ($entities as $entity) {
                 $this->_em->remove($entity);
-                echo "Removed $entity\n";
             }
         }
-        echo "\n";
         $this->_em->flush();
         $this->_em->clear();
-
-        var_dump(count($this->_em->getRepository('Example_Model_City')->findAll()));
     }
 
     protected function _createCity($name)
