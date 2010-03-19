@@ -60,18 +60,20 @@ class CliController extends AbstractNamespace
     /**
      * The CLI processor of tasks
      *
+     * @param Configuration $config
      * @param AbstractPrinter $printer CLI Output printer
      */
-    public function __construct(Configuration $config, AbstractPrinter $printer = null)
+    public function __construct(Configuration $config, Printers\AbstractPrinter $printer = null)
     {
         $this->setPrinter($printer);
         $this->setConfiguration($config);
-        
+
         // Include core namespaces of tasks
         $ns = 'Doctrine\Common\Cli\Tasks';
         $this->addNamespace('Core')
-             ->addTask('help', $ns . '\HelpTask');
-        
+             ->addTask('help', $ns . '\HelpTask')
+             ->addTask('version', $ns . '\VersionTask');
+
         $ns = 'Doctrine\ORM\Tools\Cli\Tasks';
         $this->addNamespace('Orm')
              ->addTask('clear-cache', $ns . '\ClearCacheTask')
@@ -80,13 +82,17 @@ class CliController extends AbstractNamespace
              ->addTask('generate-proxies', $ns . '\GenerateProxiesTask')
              ->addTask('run-dql', $ns . '\RunDqlTask')
              ->addTask('schema-tool', $ns . '\SchemaToolTask')
-             ->addTask('version', $ns . '\VersionTask');
-        
+             ->addTask('version', $ns . '\VersionTask')
+             ->addTask('convert-d1-schema', $ns . '\ConvertDoctrine1SchemaTask')
+             ->addTask('generate-entities', $ns . '\GenerateEntitiesTask')
+             ->addTask('generate-repositories', $ns . '\GenerateRepositoriesTask');
+
         $ns = 'Doctrine\DBAL\Tools\Cli\Tasks';
         $this->addNamespace('Dbal')
-             ->addTask('run-sql', $ns . '\RunSqlTask');
+             ->addTask('run-sql', $ns . '\RunSqlTask')
+             ->addTask('version', $ns . '\VersionTask');
     }
-    
+
     /**
      * Add a single task to CLI Core Namespace. This method acts as a delegate.
      * Example of inclusion support to a single task:
@@ -102,10 +108,10 @@ class CliController extends AbstractNamespace
     public function addTask($name, $class)
     {
         $this->getNamespace('Core')->addTask($name, $class);
-        
+
         return $this;
     }
-    
+
     /**
      * Processor of CLI Tasks. Handles multiple task calls, instantiate
      * respective classes and run them.
@@ -116,37 +122,40 @@ class CliController extends AbstractNamespace
     {
         // Remove script file argument
         $scriptFile = array_shift($args);
-        
+
         // If not arguments are defined, include "help"
         if (empty($args)) {
             array_unshift($args, 'Core:Help');
         }
-        
+
         // Process all sent arguments
         $args = $this->_processArguments($args);
 
         try {
             $this->getPrinter()->writeln('Doctrine Command Line Interface' . PHP_EOL, 'HEADER');
-            
+
             // Handle possible multiple tasks on a single command
             foreach($args as $taskData) {
                 $taskName = $taskData['name'];
                 $taskArguments = $taskData['args'];
-                
+
                 $this->runTask($taskName, $taskArguments);
             }
+
+            return true;
         } catch (\Exception $e) {
             $message = $taskName . ' => ' . $e->getMessage();
-            
+
             if (isset($taskArguments['trace']) && $taskArguments['trace']) {
                 $message .= PHP_EOL . PHP_EOL . $e->getTraceAsString();
             }
-                     
+
             $this->getPrinter()->writeln($message, 'ERROR');
+
+            return false;
         }
-        
     }
-    
+
     /**
      * Executes a given CLI Task
      *
@@ -157,14 +166,14 @@ class CliController extends AbstractNamespace
     {
         // Retrieve namespace name, task name and arguments
         $taskPath = explode(':', $name);
-                
+
         // Find the correct namespace where the task is defined
         $taskName = array_pop($taskPath);
         $taskNamespace = $this->_retrieveTaskNamespace($taskPath);
-        
+
         $taskNamespace->runTask($taskName, $args);
     }
-    
+
     /**
      * Processes arguments and returns a structured hierachy.
      * Example:
@@ -208,12 +217,12 @@ class CliController extends AbstractNamespace
         $regex = '/\s*[,]?\s*"([^"]*)"|\s*[,]?\s*([^,]*)/i';
         $preparedArgs = array();
         $out = & $preparedArgs;
-        
+
         foreach ($args as $arg){
             // --foo --bar=baz
             if (substr($arg, 0, 2) == '--'){
                 $eqPos = strpos($arg, '=');
-                
+
                 // --foo
                 if ($eqPos === false){
                     $key = substr($arg, 2);
@@ -225,7 +234,7 @@ class CliController extends AbstractNamespace
                     $value = (strpos($value, ' ') !== false) ? $value : array_values(array_filter(
                         explode(',', $value), function ($v) { return trim($v) != ''; }
                     ));
-                    $out[$key] = ( ! is_array($value) || (is_array($value) && count($value) > 1)) 
+                    $out[$key] = ( ! is_array($value) || empty($value) || (is_array($value) && count($value) > 1))
                         ? $value : $value[0];
                 }
             // -k=value -abc
@@ -242,7 +251,7 @@ class CliController extends AbstractNamespace
                 // -abc
                 } else {
                     $chars = str_split(substr($arg, 1));
-                
+
                     foreach ($chars as $char){
                         $key = $char;
                         $out[$key] = isset($out[$key]) ? $out[$key] : true;
@@ -258,7 +267,7 @@ class CliController extends AbstractNamespace
                 $out = & $preparedArgs[$key]['args'];
             }
         }
-        
+
         return $preparedArgs;
     }
 
@@ -273,25 +282,25 @@ class CliController extends AbstractNamespace
     {
         $taskNamespace = $this;
         $currentNamespacePath = '';
-        
+
         // Consider possible missing namespace (ie. "help") and forward to "core"
         if (count($namespacePath) == 0) {
             $namespacePath = array('Core');
         }
-        
+
         // Loop through each namespace
         foreach ($namespacePath as $namespaceName) {
             $taskNamespace = $taskNamespace->getNamespace($namespaceName);
-            
+
             // If the given namespace returned "null", throw exception
             if ($taskNamespace === null) {
                 throw CliException::namespaceDoesNotExist($namespaceName, $currentNamespacePath);
             }
-            
+
             $currentNamespacePath = (( ! empty($currentNamespacePath)) ? ':' : '') 
                                   . $taskNamespace->getName();
         }
-        
+
         return $taskNamespace;
     }
 }

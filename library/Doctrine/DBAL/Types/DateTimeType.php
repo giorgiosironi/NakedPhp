@@ -18,12 +18,12 @@ class DateTimeType extends Type
 
     public function getSqlDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
-        return $platform->getDateTimeTypeDeclarationSql($fieldDeclaration);
+        return $platform->getDateTimeTypeDeclarationSQL($fieldDeclaration);
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return ($value !== null) 
+        return ($value !== null)
             ? $value->format($platform->getDateTimeFormatString()) : null;
     }
     

@@ -165,7 +165,7 @@ class ZendX_Doctrine2_EntityManagerFactory
                     $driver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
 
                     if(isset($options['metadata']['classDirectory'])) {
-                        $driver->setClassDirectory($options['metadata']['classDirectory']);
+                        $driver->addPaths(array($options['metadata']['classDirectory']));
                     } else {
                         throw new ZendX_Doctrine2_Exception("Doctrine Annotation Driver requires to set a class directory for the entities.");
                     }

@@ -128,23 +128,44 @@ class ClassMetadataFactory
     public function getMetadataFor($className)
     {
         if ( ! isset($this->_loadedMetadata[$className])) {
-            $cacheKey = "$className\$CLASSMETADATA";
+            $realClassName = $className;
+
+            // Check for namespace alias
+            if (strpos($className, ':') !== false) {
+                list($namespaceAlias, $simpleClassName) = explode(':', $className);
+                $realClassName = $this->_em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
+
+                if (isset($this->_loadedMetadata[$realClassName])) {
+                    // We do not have the alias name in the map, include it
+                    $this->_loadedMetadata[$className] = $this->_loadedMetadata[$realClassName];
+
+                    return $this->_loadedMetadata[$realClassName];
+                }
+            }
+
             if ($this->_cacheDriver) {
-                if (($cached = $this->_cacheDriver->fetch($cacheKey)) !== false) {
-                    $this->_loadedMetadata[$className] = $cached;
+                if (($cached = $this->_cacheDriver->fetch("$realClassName\$CLASSMETADATA")) !== false) {
+                    $this->_loadedMetadata[$realClassName] = $cached;
                 } else {
-                    foreach ($this->_loadMetadata($className) as $loadedClassName) {
-                        $this->_cacheDriver->save($cacheKey, $this->_loadedMetadata[$className], null);
+                    foreach ($this->_loadMetadata($realClassName) as $loadedClassName) {
+                        $this->_cacheDriver->save(
+                            "$loadedClassName\$CLASSMETADATA", $this->_loadedMetadata[$loadedClassName], null
+                        );
                     }
                 }
             } else {
-                $this->_loadMetadata($className);
+                $this->_loadMetadata($realClassName);
+            }
+
+            if ($className != $realClassName) {
+                // We do not have the alias name in the map, include it
+                $this->_loadedMetadata[$className] = $this->_loadedMetadata[$realClassName];
             }
         }
-        
+
         return $this->_loadedMetadata[$className];
     }
-    
+
     /**
      * Checks whether the factory has the metadata for a class loaded already.
      * 
@@ -183,8 +204,9 @@ class ClassMetadataFactory
         }
         
         $loaded = array();
-        
+
         // Collect parent classes, ignoring transient (not-mapped) classes.
+        //TODO: Evaluate whether we can use class_parents() here.
         $parentClass = $name;
         $parentClasses = array();
         while ($parentClass = get_parent_class($parentClass)) {
@@ -219,6 +241,7 @@ class ClassMetadataFactory
                 $class->setVersioned($parent->isVersioned);
                 $class->setVersionField($parent->versionField);
                 $class->setDiscriminatorMap($parent->discriminatorMap);
+                $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
             }
 
             // Invoke driver
@@ -234,15 +257,15 @@ class ClassMetadataFactory
             }
             if ($parent && ! $parent->isMappedSuperclass) {
                 if ($parent->isIdGeneratorSequence()) {
-                    $class->setSequenceGeneratorDefinition($parent->getSequenceGeneratorDefinition());
+                    $class->setSequenceGeneratorDefinition($parent->sequenceGeneratorDefinition);
                 } else if ($parent->isIdGeneratorTable()) {
-                    $class->getTableGeneratorDefinition($parent->getTableGeneratorDefinition());
+                    $class->getTableGeneratorDefinition($parent->tableGeneratorDefinition);
                 }
                 if ($generatorType = $parent->generatorType) {
                     $class->setIdGeneratorType($generatorType);
                 }
-                if ($idGenerator = $parent->getIdGenerator()) {
-                    $class->setIdGenerator($idGenerator);
+                if ($parent->idGenerator) {
+                    $class->setIdGenerator($parent->idGenerator);
                 }
             } else {
                 $this->_completeIdGeneratorMapping($class);
@@ -350,7 +373,7 @@ class ClassMetadataFactory
                 break;
             case ClassMetadata::GENERATOR_TYPE_SEQUENCE:
                 // If there is no sequence definition yet, create a default definition
-                $definition = $class->getSequenceGeneratorDefinition();
+                $definition = $class->sequenceGeneratorDefinition;
                 if ( ! $definition) {
                     $sequenceName = $class->getTableName() . '_' . $class->getSingleIdentifierColumnName() . '_seq';
                     $definition['sequenceName'] = $this->_targetPlatform->fixSchemaElementName($sequenceName);

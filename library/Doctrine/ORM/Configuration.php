@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  *  $Id$
  *
@@ -21,8 +21,6 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\DoctrineException;
-
 /**
  * Configuration container for all configuration options of Doctrine.
  * It combines all configuration options from DBAL & ORM.
@@ -33,14 +31,13 @@ use Doctrine\Common\DoctrineException;
  * pair and add the option to the _attributes array with a proper default value.
  */
 class Configuration extends \Doctrine\DBAL\Configuration
-{    
+{
     /**
      * Creates a new configuration that can be used for Doctrine.
      */
     public function __construct()
     {
         parent::__construct();
-        
         $this->_attributes = array_merge($this->_attributes, array(
             'resultCacheImpl' => null,
             'queryCacheImpl' => null,
@@ -48,8 +45,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
             'metadataDriverImpl' => null,
             'proxyDir' => null,
             'useCExtension' => false,
-            'namedQueries' => array(),
-            'namedNativeQueries' => array(),
             'autoGenerateProxyClasses' => true,
             'proxyNamespace' => null
         ));
@@ -74,7 +69,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         return $this->_attributes['proxyDir'];
     }
-    
+
     /**
      * Gets a boolean flag that indicates whether proxy classes should always be regenerated
      * during each script execution.
@@ -85,7 +80,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         return $this->_attributes['autoGenerateProxyClasses'];
     }
-    
+
     /**
      * Sets a boolean flag that indicates whether proxy classes should always be regenerated
      * during each script execution.
@@ -96,12 +91,22 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         $this->_attributes['autoGenerateProxyClasses'] = $bool;
     }
-    
+
+    /**
+     * Gets the namespace where proxy classes reside.
+     * 
+     * @return string
+     */
     public function getProxyNamespace()
     {
         return $this->_attributes['proxyNamespace'];
     }
-    
+
+    /**
+     * Sets the namespace where proxy classes reside.
+     * 
+     * @param string $ns
+     */
     public function setProxyNamespace($ns)
     {
         $this->_attributes['proxyNamespace'] = $ns;
@@ -117,6 +122,44 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setMetadataDriverImpl($driverImpl)
     {
         $this->_attributes['metadataDriverImpl'] = $driverImpl;
+    }
+
+    /**
+     * Adds a namespace under a certain alias.
+     *
+     * @param string $alias
+     * @param string $namespace
+     */
+    public function addEntityNamespace($alias, $namespace)
+    {
+        $this->_attributes['entityNamespaces'][$alias] = $namespace;
+    }
+
+    /**
+     * Resolves a registered namespace alias to the full namespace.
+     *
+     * @param string $entityNamespaceAlias 
+     * @return string
+     * @throws MappingException
+     */
+    public function getEntityNamespace($entityNamespaceAlias)
+    {
+        if ( ! isset($this->_attributes['entityNamespaces'][$entityNamespaceAlias])) {
+            throw ORMException::unknownEntityNamespace($entityNamespaceAlias);
+        }
+
+        return trim($this->_attributes['entityNamespaces'][$entityNamespaceAlias], '\\');
+    }
+
+    /**
+     * Set the entity alias map
+     *
+     * @param array $entityAliasMap
+     * @return void
+     */
+    public function setEntityNamespaces(array $entityNamespaces)
+    {
+        $this->_attributes['entityNamespaces'] = $entityNamespaces;
     }
 
     /**
@@ -194,32 +237,32 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         $this->_attributes['metadataCacheImpl'] = $cacheImpl;
     }
-    
+
     /**
      * Gets a boolean flag that indicates whether Doctrine should make use of the
      * C extension.
-     * 
+     *
      * @return boolean TRUE if Doctrine is configured to use the C extension, FALSE otherwise.
      */
     public function getUseCExtension()
     {
         return $this->_attributes['useCExtension'];
     }
-    
+
     /**
      * Sets a boolean flag that indicates whether Doctrine should make use of the
      * C extension.
-     * 
+     *
      * @param boolean $boolean Whether to make use of the C extension or not.
      */
     public function setUseCExtension($boolean)
     {
         $this->_attributes['useCExtension'] = $boolean;
     }
-    
+
     /**
      * Adds a named DQL query to the configuration.
-     * 
+     *
      * @param string $name The name of the query.
      * @param string $dql The DQL query string.
      */
@@ -227,59 +270,140 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         $this->_attributes['namedQueries'][$name] = $dql;
     }
-    
+
     /**
      * Gets a previously registered named DQL query.
-     * 
+     *
      * @param string $name The name of the query.
      * @return string The DQL query.
      */
     public function getNamedQuery($name)
     {
+        if ( ! isset($this->_attributes['namedQueries'][$name])) {
+            throw ORMException::namedQueryNotFound($name);
+        }
         return $this->_attributes['namedQueries'][$name];
     }
-    
+
     /**
      * Adds a named native query to the configuration.
-     * 
+     *
      * @param string $name The name of the query.
-     * @param string $sql The native SQL query string. 
+     * @param string $sql The native SQL query string.
      * @param ResultSetMapping $rsm The ResultSetMapping used for the results of the SQL query.
      */
     public function addNamedNativeQuery($name, $sql, Query\ResultSetMapping $rsm)
     {
         $this->_attributes['namedNativeQueries'][$name] = array($sql, $rsm);
     }
-    
+
     /**
      * Gets the components of a previously registered named native query.
-     * 
+     *
      * @param string $name The name of the query.
      * @return array A tuple with the first element being the SQL string and the second
      *          element being the ResultSetMapping.
      */
     public function getNamedNativeQuery($name)
     {
+        if ( ! isset($this->_attributes['namedNativeQueries'][$name])) {
+            throw ORMException::namedNativeQueryNotFound($name);
+        }
         return $this->_attributes['namedNativeQueries'][$name];
     }
-    
+
     /**
      * Ensures that this Configuration instance contains settings that are
      * suitable for a production environment.
-     * 
-     * @throws DoctrineException If a configuration setting has a value that is not
-     *                           suitable for a production environment.
+     *
+     * @throws ORMException If a configuration setting has a value that is not
+     *                      suitable for a production environment.
      */
     public function ensureProductionSettings()
     {
         if ( ! $this->_attributes['queryCacheImpl']) {
-            throw DoctrineException::queryCacheNotConfigured();
+            throw ORMException::queryCacheNotConfigured();
         }
         if ( ! $this->_attributes['metadataCacheImpl']) {
-            throw DoctrineException::metadataCacheNotConfigured();
+            throw ORMException::metadataCacheNotConfigured();
         }
         if ($this->_attributes['autoGenerateProxyClasses']) {
-            throw DoctrineException::proxyClassesAlwaysRegenerating();
+            throw ORMException::proxyClassesAlwaysRegenerating();
         }
+    }
+
+    /**
+     * Registers a custom DQL function that produces a string value.
+     * Such a function can then be used in any DQL statement in any place where string
+     * functions are allowed.
+     *
+     * @param string $name
+     * @param string $className
+     */
+    public function addCustomStringFunction($name, $className)
+    {
+        $this->_attributes['customStringFunctions'][strtolower($name)] = $className;
+    }
+
+    /**
+     * Gets the implementation class name of a registered custom string DQL function.
+     * 
+     * @param string $name
+     * @return string
+     */
+    public function getCustomStringFunction($name)
+    {
+        return isset($this->_attributes['customStringFunctions'][$name]) ?
+                $this->_attributes['customStringFunctions'][$name] : null;
+    }
+
+    /**
+     * Registers a custom DQL function that produces a numeric value.
+     * Such a function can then be used in any DQL statement in any place where numeric
+     * functions are allowed.
+     *
+     * @param string $name
+     * @param string $className
+     */
+    public function addCustomNumericFunction($name, $className)
+    {
+        $this->_attributes['customNumericFunctions'][strtolower($name)] = $className;
+    }
+
+    /**
+     * Gets the implementation class name of a registered custom numeric DQL function.
+     * 
+     * @param string $name
+     * @return string
+     */
+    public function getCustomNumericFunction($name)
+    {
+        return isset($this->_attributes['customNumericFunctions'][$name]) ?
+                $this->_attributes['customNumericFunctions'][$name] : null;
+    }
+
+    /**
+     * Registers a custom DQL function that produces a date/time value.
+     * Such a function can then be used in any DQL statement in any place where date/time
+     * functions are allowed.
+     *
+     * @param string $name
+     * @param string $className
+     */
+    public function addCustomDatetimeFunction($name, $className)
+    {
+        $this->_attributes['customDatetimeFunctions'][strtolower($name)] = $className;
+    }
+
+    /**
+     * Gets the implementation class name of a registered custom date/time DQL function.
+     * 
+     * @param string $name
+     * @return string
+     */
+    public function getCustomDatetimeFunction($name)
+    {
+        return isset($this->_attributes['customDatetimeFunctions'][$name]) ?
+                $this->_attributes['customDatetimeFunctions'][$name] : null;
     }
 }

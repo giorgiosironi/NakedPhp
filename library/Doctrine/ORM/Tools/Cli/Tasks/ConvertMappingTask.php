@@ -25,7 +25,10 @@ use Doctrine\Common\Cli\Tasks\AbstractTask,
     Doctrine\Common\Cli\CliException,
     Doctrine\Common\Cli\Option,
     Doctrine\Common\Cli\OptionGroup,
-    Doctrine\ORM\Tools\Export\ClassMetadataExporter;
+    Doctrine\ORM\Tools\Export\ClassMetadataExporter,
+    Doctrine\ORM\Mapping\Driver\DriverChain,
+    Doctrine\ORM\Mapping\Driver\AnnotationDriver,
+    Doctrine\ORM\Mapping\Driver\Driver;
 
 /**
  * CLI Task to convert your mapping information between the various formats
@@ -111,6 +114,7 @@ class ConvertMappingTask extends AbstractTask
     {
         $arguments = $this->getArguments();
         $cme = new ClassMetadataExporter();
+        $cme->setEntityManager($this->getConfiguration()->getAttribute('em'));
         $printer = $this->getPrinter();
         
         // Get exporter and configure it
@@ -126,34 +130,11 @@ class ConvertMappingTask extends AbstractTask
 
         $from = (array) $arguments['from'];
 
-        if ($this->_isDoctrine1Schema($from)) {
-            $printer->writeln('Converting Doctrine 1 schema to Doctrine 2 mapping files', 'INFO');
-
-            $converter = new \Doctrine\ORM\Tools\ConvertDoctrine1Schema($from);
-            $metadatas = $converter->getMetadatasFromSchema();
-        } else {
-            foreach ($from as $source) {
-                $sourceArg = $source;
-                $type = $this->_determineSourceType($sourceArg);
-                
-                if ( ! $type) {
-                    throw DoctrineException::invalidMappingSourceType($sourceArg);
-                }
-                
-                $source = $this->_getSourceByType($type, $sourceArg);
-                
-                $printer->writeln(
-                    sprintf(
-                        'Adding "%s" mapping source which contains the "%s" format', 
-                        $printer->format($sourceArg, 'KEYWORD'), $printer->format($type, 'KEYWORD')
-                    )
-                );
-
-                $cme->addMappingSource($source, $type);
-            }
-            
-            $metadatas = $cme->getMetadatasForMappingSources();
+        foreach ($from as $source) {
+            $cme->addMappingSource($source);
         }
+
+        $metadatas = $cme->getMetadatas();
 
         foreach ($metadatas as $metadata) {
             $printer->writeln(
@@ -161,9 +142,10 @@ class ConvertMappingTask extends AbstractTask
             );
         }
 
+        $printer->writeln('');
         $printer->writeln(
             sprintf(
-                'Exporting "%s" mapping information to directory "%s"',
+                'Exporting "%s" mapping information to "%s"',
                 $printer->format($arguments['to'], 'KEYWORD'), 
                 $printer->format($arguments['dest'], 'KEYWORD')
             )
@@ -171,74 +153,5 @@ class ConvertMappingTask extends AbstractTask
 
         $exporter->setMetadatas($metadatas);
         $exporter->export();
-    }
-
-    private function _isDoctrine1Schema(array $from)
-    {
-        if ( ! class_exists('sfYaml', false)) {
-            require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYaml.class.php';
-            require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYamlDumper.class.php';
-            require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYamlInline.class.php';
-            require_once __DIR__ . '/../../../../../vendor/sfYaml/sfYamlParser.class.php';
-        }
-        
-        $files = glob(current($from) . '/*.yml');
-        
-        if ($files) {
-            $array = \sfYaml::load($files[0]);
-            $first = current($array);
-            
-            // We're dealing with a Doctrine 1 schema if you have
-            // a columns index in the first model array
-            return isset($first['columns']);
-        } else {
-            return false;
-        }
-    }
-
-    private function _determineSourceType($source)
-    {
-        // If the --from=<VALUE> is a directory lets determine if it is
-        // annotations, yaml, xml, etc.
-        if (is_dir($source)) {
-            // Find the files in the directory
-            $files = glob($source . '/*.*');
-            
-            if ( ! $files) {
-                throw new \InvalidArgumentException(
-                    sprintf('No mapping files found in "%s"', $source)
-                );
-            }
-
-            // Get the contents of the first file
-            $contents = file_get_contents($files[0]);
-
-            // Check if it has a class definition in it for annotations
-            if (preg_match("/class (.*)/", $contents)) {
-              return 'annotation';
-            // Otherwise lets determine the type based on the extension of the 
-            // first file in the directory (yml, xml, etc)
-            } else {
-              $info = pathinfo($files[0]);
-              
-              return $info['extension'];
-            }
-        // Nothing special for database
-        } else if ($source == 'database') {
-            return 'database';
-        }
-    }
-
-    private function _getSourceByType($type, $source)
-    {
-        // If --from==database then the source is an instance of SchemaManager
-        // for the current EntityMAnager
-        if ($type == 'database') {
-            $em = $this->getConfiguration()->getAttribute('em');
-            
-            return $em->getConnection()->getSchemaManager();
-        } else {
-            return $source;
-        }
     }
 }

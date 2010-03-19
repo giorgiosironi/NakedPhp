@@ -147,7 +147,7 @@ abstract class AbstractQuery
     }
 
     /**
-     * Get all defined parameters
+     * Get all defined parameters.
      *
      * @return array Defined parameters
      */
@@ -158,10 +158,10 @@ abstract class AbstractQuery
         }
         return $this->_params;
     }
-    
+
     /**
      * Gets a query parameter.
-     * 
+     *
      * @param mixed $key The key (index or name) of the bound parameter.
      * @return mixed The value of the bound parameter.
      */
@@ -178,7 +178,7 @@ abstract class AbstractQuery
      * @return string SQL query
      */
     abstract public function getSql();
-    
+
     /**
      * Sets a query parameter.
      *
@@ -191,7 +191,7 @@ abstract class AbstractQuery
         $this->_params[$key] = $value;
         return $this;
     }
-    
+
     /**
      * Sets a collection of query parameters.
      *
@@ -227,7 +227,7 @@ abstract class AbstractQuery
     public function setResultCacheDriver($resultCacheDriver = null)
     {
         if ($resultCacheDriver !== null && ! ($resultCacheDriver instanceof \Doctrine\Common\Cache\Cache)) {
-            throw DoctrineException::invalidResultCacheObject($resultCacheDriver);
+            throw ORMException::invalidResultCacheDriver();
         }
         $this->_resultCacheDriver = $resultCacheDriver;
         if ($resultCacheDriver) {
@@ -375,9 +375,9 @@ abstract class AbstractQuery
 
     /**
      * Gets the single result of the query.
-     * 
+     *
      * Enforces the presence as well as the uniqueness of the result.
-     * 
+     *
      * If the result is not unique, a NonUniqueResultException is thrown.
      * If there is no result, a NoResultException is thrown.
      *
@@ -389,11 +389,11 @@ abstract class AbstractQuery
     public function getSingleResult($hydrationMode = null)
     {
         $result = $this->execute(array(), $hydrationMode);
-        
+
         if ($this->_hydrationMode !== self::HYDRATE_SINGLE_SCALAR && ! $result) {
             throw new NoResultException;
         }
-        
+
         if (is_array($result)) {
             if (count($result) > 1) {
                 throw new NonUniqueResultException;
@@ -405,7 +405,7 @@ abstract class AbstractQuery
             }
             return $result->first();
         }
-        
+
         return $result;
     }
 
@@ -456,7 +456,7 @@ abstract class AbstractQuery
      */
     public function iterate(array $params = array(), $hydrationMode = self::HYDRATE_OBJECT)
     {
-        return $this->_em->getHydrator($this->_hydrationMode)->iterate(
+        return $this->_em->newHydrator($this->_hydrationMode)->iterate(
             $this->_doExecute($params, $hydrationMode), $this->_resultSetMapping
         );
     }
@@ -472,16 +472,19 @@ abstract class AbstractQuery
     {
         // If there are still pending insertions in the UnitOfWork we need to flush
         // in order to guarantee a correct result.
+        //TODO: Think this over. Its tricky. Not doing this can lead to strange results
+        //      potentially, but doing it could result in endless loops when querying during
+        //      a flush, i.e. inside an event listener.
         if ($this->_em->getUnitOfWork()->hasPendingInsertions()) {
             $this->_em->flush();
         }
 
         if ($hydrationMode !== null) {
-            $this->_hydrationMode = $hydrationMode;
+            $this->setHydrationMode($hydrationMode);
         }
-    
+
         $params = $this->getParameters($params);
-        
+
         if (isset($params[0])) {
             throw QueryException::invalidParameterPosition(0);
         }
@@ -494,11 +497,11 @@ abstract class AbstractQuery
             if ($cached === false) {
                 // Cache miss.
                 $stmt = $this->_doExecute($params);
-                
+
                 $result = $this->_em->getHydrator($this->_hydrationMode)->hydrateAll(
                         $stmt, $this->_resultSetMapping, $this->_hints
                         );
-                
+
                 $cacheDriver->save($id, $result, $this->_resultCacheTTL);
 
                 return $result;
@@ -538,7 +541,7 @@ abstract class AbstractQuery
      * Will return the configured id if it exists otherwise a hash will be
      * automatically generated for you.
      *
-     * @param array $params 
+     * @param array $params
      * @return string $id
      */
     protected function _getResultCacheId(array $params)
@@ -546,17 +549,20 @@ abstract class AbstractQuery
         if ($this->_resultCacheId) {
             return $this->_resultCacheId;
         } else {
-            return md5($this->getDql() . var_export($params, true));
+            $sql = $this->getSql();
+            ksort($this->_hints);
+            return md5(implode(";", (array)$sql) . var_export($params, true) .
+                var_export($this->_hints, true)."&hydrationMode=".$this->_hydrationMode);
         }
     }
 
     /**
      * Prepares the given parameters for execution in an SQL statement.
-     * 
+     *
      * Note to inheritors: This method must return a numerically, continuously indexed array,
      * starting with index 0 where the values (the parameter values) are in the order
      * in which the parameters appear in the SQL query.
-     * 
+     *
      * @return array The SQL parameter array.
      */
     abstract protected function _prepareParams(array $params);

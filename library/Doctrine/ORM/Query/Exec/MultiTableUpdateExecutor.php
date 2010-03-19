@@ -127,8 +127,8 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
                 'type' => \Doctrine\DBAL\Types\Type::getType($rootClass->getTypeOfColumn($idColumnName))
             );
         }
-        $this->_createTempTableSql = $platform->getCreateTemporaryTableSnippetSql() . ' ' . $tempTable . ' ('
-                . $platform->getColumnDeclarationListSql($columnDefinitions)
+        $this->_createTempTableSql = $platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable . ' ('
+                . $platform->getColumnDeclarationListSQL($columnDefinitions)
                 . ', PRIMARY KEY(' . $idColumnList . '))';
         $this->_dropTempTableSql = 'DROP TABLE ' . $tempTable;
     }
@@ -152,7 +152,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
         // Execute UPDATE statements
         for ($i=0, $count=count($this->_sqlStatements); $i<$count; ++$i) {
-            $conn->executeUpdate($this->_sqlStatements[$i], $this->_sqlParameters[$i]);
+            $conn->executeUpdate($this->_sqlStatements[$i], isset($this->_sqlParameters[$i]) ? $this->_sqlParameters[$i] : array());
         }
 
         // Drop temporary table

@@ -22,7 +22,6 @@
 namespace Doctrine\DBAL;
 
 use Doctrine\Common\EventManager,
-    Doctrine\Common\DoctrineException,
     Doctrine\DBAL\DBALException;
 
 /**
@@ -67,7 +66,7 @@ class Connection
      */
     const FETCH_ASSOC       = 2;
     const FETCH_BOTH        = 4;
-    const FETCH_COLUMN      = 7;
+    //const FETCH_COLUMN      = 7; Apparently not used.
     const FETCH_NUM         = 3;
     const ATTR_AUTOCOMMIT   = 0;
 
@@ -308,6 +307,11 @@ class Connection
         $this->_conn = $this->_driver->connect($this->_params, $user, $password, $driverOptions);
         $this->_isConnected = true;
 
+        if ($this->_eventManager->hasListeners(Events::postConnect)) {
+            $eventArgs = new \Doctrine\DBAL\Event\ConnectionEventArgs($this);
+            $this->_eventManager->dispatchEvent(Events::postConnect, $eventArgs);
+        }
+
         return true;
     }
 
@@ -405,7 +409,7 @@ class Connection
     {
         $this->_transactionIsolationLevel = $level;
         
-        return $this->executeUpdate($this->_platform->getSetTransactionIsolationSql($level));
+        return $this->executeUpdate($this->_platform->getSetTransactionIsolationSQL($level));
     }
 
     /**
@@ -489,7 +493,7 @@ class Connection
      */
     public function setCharset($charset)
     {
-        $this->executeUpdate($this->_platform->getSetCharsetSql($charset));
+        $this->executeUpdate($this->_platform->getSetCharsetSQL($charset));
     }
 
     /**

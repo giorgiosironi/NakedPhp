@@ -21,8 +21,6 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\DoctrineException;
-
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
  * of an entity and it's associations.
@@ -56,6 +54,13 @@ class ClassMetadata extends ClassMetadataInfo
      * @var array
      */
     public $reflFields = array();
+    
+    /**
+     * The prototype from which new instances of the mapped class are created.
+     * 
+     * @var object
+     */
+    private $_prototype;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
@@ -70,8 +75,6 @@ class ClassMetadata extends ClassMetadataInfo
         $this->namespace = $this->reflClass->getNamespaceName();
         $this->primaryTable['name'] = $this->reflClass->getShortName();
         $this->rootEntityName = $entityName;
-        
-        //$this->prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
     }
 
     /**
@@ -156,7 +159,7 @@ class ClassMetadata extends ClassMetadataInfo
      * with the same order as the field order in {@link identifier}.
      *
      * @param object $entity
-     * @return mixed
+     * @return array
      */
     public function getIdentifierValues($entity)
     {
@@ -172,15 +175,6 @@ class ClassMetadata extends ClassMetadataInfo
         } else {
             return array($this->identifier[0] => $this->reflFields[$this->identifier[0]]->getValue($entity));
         }
-    }
-    
-    public function getColumnValues($entity, array $columns)
-    {
-        $values = array();
-        foreach ($columns as $column) {
-            $values[] = $this->reflFields[$this->fieldNames[$column]]->getValue($entity);
-        }
-        return $values;
     }
 
     /**
@@ -214,6 +208,17 @@ class ClassMetadata extends ClassMetadataInfo
     }
 
     /**
+     * Gets the specified field's value off the given entity.
+     *
+     * @param object $entity
+     * @param string $field
+     */
+    public function getFieldValue($entity, $field)
+    {
+        return $this->reflFields[$field]->getValue($entity);
+    }
+
+    /**
      * Sets the field mapped to the specified column to the specified value on the given entity.
      *
      * @param object $entity
@@ -241,21 +246,7 @@ class ClassMetadata extends ClassMetadataInfo
 	    $refProp->setAccessible(true);
 	    $this->reflFields[$sourceFieldName] = $refProp;
     }
-    
-    /**
-     * Dispatches the lifecycle event of the given entity to the registered
-     * lifecycle callbacks and lifecycle listeners.
-     *
-     * @param string $event  The lifecycle event.
-     * @param Entity $entity  The Entity on which the event occured.
-     */
-    public function invokeLifecycleCallbacks($lifecycleEvent, $entity)
-    {
-        foreach ($this->lifecycleCallbacks[$lifecycleEvent] as $callback) {
-            $entity->$callback();
-        }
-    }
-    
+
     /**
      * Gets the (possibly quoted) column name of a mapped field for safe use
      * in an SQL statement.
@@ -284,21 +275,7 @@ class ClassMetadata extends ClassMetadataInfo
                 $platform->quoteIdentifier($this->primaryTable['name']) :
                 $this->primaryTable['name'];
     }
-    
-    /**
-     * Gets the (possibly quoted) name of the discriminator column for safe use
-     * in an SQL statement.
-     * 
-     * @param AbstractPlatform $platform
-     * @return string
-     */
-    public function getQuotedDiscriminatorColumnName($platform)
-    {
-        return isset($this->discriminatorColumn['quoted']) ?
-                $platform->quoteIdentifier($this->discriminatorColumn['name']) :
-                $this->discriminatorColumn['name'];
-    }
-    
+
     /**
      * Creates a string representation of this instance.
      *
@@ -322,7 +299,7 @@ class ClassMetadata extends ClassMetadataInfo
     public function __sleep()
     {
         return array(
-            'associationMappings', // unserialization bottleneck with many assocs
+            'associationMappings', // unserialization "bottleneck" with many associations
             'changeTrackingPolicy',
             'columnNames', //TODO: Not really needed. Can use fieldMappings[$fieldName]['columnName']
             'customRepositoryClassName',
@@ -336,7 +313,7 @@ class ClassMetadata extends ClassMetadataInfo
             'idGenerator', //TODO: Does not really need to be serialized. Could be moved to runtime.
             'inheritanceType',
             'inheritedAssociationFields',
-            'inverseMappings', //TODO: Remove!
+            'inverseMappings', //TODO: Remove! DDC-193
             'isIdentifierComposite',
             'isMappedSuperclass',
             'isVersioned',
@@ -377,13 +354,22 @@ class ClassMetadata extends ClassMetadataInfo
             } else {
                 $reflField = $this->reflClass->getProperty($field);
             }
-                
+
             $reflField->setAccessible(true);
             $this->reflFields[$field] = $reflField;
         }
-        
-        //$this->prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
     }
     
-    //public $prototype;
+    /**
+     * Creates a new instance of the mapped class, without invoking the constructor.
+     * 
+     * @return object
+     */
+    public function newInstance()
+    {
+        if ($this->_prototype === null) {
+            $this->_prototype = unserialize(sprintf('O:%d:"%s":0:{}', strlen($this->name), $this->name));
+        }
+        return clone $this->_prototype;
+    }
 }

@@ -65,14 +65,14 @@ class AnnotationReader
      * Constructor. Initializes a new AnnotationReader that uses the given 
      * Cache provider.
      * 
-     * @param Cache $cache The cache provider to use.
+     * @param Cache $cache The cache provider to use. If none is provided, ArrayCache is used.
      */
-    public function __construct(Cache $cache)
+    public function __construct(Cache $cache = null)
     {
         $this->_parser = new Parser;
-        $this->_cache = $cache;
+        $this->_cache = $cache ?: new \Doctrine\Common\Cache\ArrayCache;
     }
-    
+
     /**
      * Sets the default namespace that the AnnotationReader should assume for annotations
      * with not fully qualified names.
@@ -83,7 +83,18 @@ class AnnotationReader
     {
         $this->_parser->setDefaultAnnotationNamespace($defaultNamespace);
     }
-    
+
+    /**
+     * Sets an alias for an annotation namespace.
+     * 
+     * @param $namespace
+     * @param $alias
+     */
+    public function setAnnotationNamespaceAlias($namespace, $alias)
+    {
+        $this->_parser->setAnnotationNamespaceAlias($namespace, $alias);
+    }
+
     /**
      * Gets the annotations applied to a class.
      * 
@@ -94,7 +105,9 @@ class AnnotationReader
     public function getClassAnnotations(ReflectionClass $class)
     {
         $cacheKey = $class->getName() . self::$CACHE_SALT;
-        
+
+        //FIXME: Just use ->fetch(), otherwise some drivers, i.e. APC will fetch twice because they
+        // implement contains() in terms of fetch(), *sigh*.
         if ($this->_cache->contains($cacheKey)) {
             return $this->_cache->fetch($cacheKey);
         }
@@ -129,7 +142,9 @@ class AnnotationReader
     public function getPropertyAnnotations(ReflectionProperty $property)
     {
         $cacheKey = $property->getDeclaringClass()->getName() . '$' . $property->getName() . self::$CACHE_SALT;
-        
+
+        //FIXME: Just use ->fetch(), otherwise some drivers, i.e. APC will fetch twice because they
+        // implement contains() in terms of fetch(), *sigh*.
         if ($this->_cache->contains($cacheKey)) {
             return $this->_cache->fetch($cacheKey);
         }
@@ -165,7 +180,9 @@ class AnnotationReader
     public function getMethodAnnotations(ReflectionMethod $method)
     {
         $cacheKey = $method->getDeclaringClass()->getName() . '#' . $method->getName() . self::$CACHE_SALT;
-        
+
+        //FIXME: Just use ->fetch(), otherwise some drivers, i.e. APC will fetch twice because they
+        // implement contains() in terms of fetch(), *sigh*.
         if ($this->_cache->contains($cacheKey)) {
             return $this->_cache->fetch($cacheKey);
         }

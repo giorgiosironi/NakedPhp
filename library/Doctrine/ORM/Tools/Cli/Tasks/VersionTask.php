@@ -21,7 +21,8 @@
  
 namespace Doctrine\ORM\Tools\Cli\Tasks;
 
-use Doctrine\Common\Cli\Tasks\AbstractTask;
+use Doctrine\Common\Cli\Tasks\AbstractTask,
+    Doctrine\Common\Version;
 
 /**
  * CLI Task to display the doctrine version
@@ -56,6 +57,6 @@ class VersionTask extends AbstractTask
      */
     public function run()
     {
-        $this->getPrinter()->writeln('You are currently running Doctrine 2.0.0 Alpha 4', 'INFO');
+        $this->getPrinter()->writeln('You are currently running Doctrine ' . Version::VERSION, 'INFO');
     }
 }

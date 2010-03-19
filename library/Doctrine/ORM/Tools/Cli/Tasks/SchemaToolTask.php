@@ -145,7 +145,7 @@ class SchemaToolTask extends AbstractTask
         
         if ($metadataDriver instanceof \Doctrine\ORM\Mapping\Driver\AnnotationDriver) {
             if (isset($arguments['class-dir'])) {
-                $metadataDriver->setClassDirectory($arguments['class-dir']);
+                $metadataDriver->addPaths((array) $arguments['class-dir']);
             } else {
                 throw new CliException(
                     'The supplied configuration uses the annotation metadata driver. ' . 
@@ -186,7 +186,7 @@ class SchemaToolTask extends AbstractTask
         if ($isDrop) {
             if (isset($arguments['dump-sql'])) {
                 foreach ($tool->getDropSchemaSql($classes) as $sql) {
-                    $printer->writeln($sql);
+                    $printer->writeln($sql . ";");
                 }
             } else {
                 $printer->writeln('Dropping database schema...', 'INFO');
@@ -198,7 +198,7 @@ class SchemaToolTask extends AbstractTask
         if ($isCreate) {
             if (isset($arguments['dump-sql'])) {
                 foreach ($tool->getCreateSchemaSql($classes) as $sql) {
-                    $printer->writeln($sql);
+                    $printer->writeln($sql . ";");
                 }
             } else {
                 $printer->writeln('Creating database schema...', 'INFO');
@@ -212,7 +212,7 @@ class SchemaToolTask extends AbstractTask
             
             if (isset($arguments['dump-sql'])) {
                 foreach ($tool->getUpdateSchemaSql($classes, $saveMode) as $sql) {
-                    $printer->writeln($sql);
+                    $printer->writeln($sql . ";");
                 }
             } else {
                 $printer->writeln('Updating database schema...', 'INFO');

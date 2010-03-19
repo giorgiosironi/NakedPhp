@@ -17,20 +17,49 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the LGPL. For more information, see
  * <http://www.doctrine-project.org>.
- */
+*/
 
-namespace Doctrine\ORM\Proxy;
+namespace Doctrine\ORM\Tools\Event;
+
+use Doctrine\DBAL\Schema\Schema;
+use Doctrine\ORM\EntityManager;
 
 /**
- * Interface for proxy classes that are additionally instrumented in a way
- * that allows easier operation for the ORM.
- * 
- * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
+ * Event Args used for the Events::postGenerateSchema event.
+ *
+ * @license     http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link        www.doctrine-project.com
+ * @since       1.0
+ * @version     $Revision$
+ * @author      Benjamin Eberlei <kontakt@beberlei.de>
  */
-interface InstrumentedProxy extends Proxy
+class GenerateSchemaEventArgs extends \Doctrine\Common\EventArgs
 {
-    function __persistenceGet__($field);
-    function __persistenceSet__($field, $value);
-    //function __persistenceSetState__(array $state);
+    private $_em = null;
+    private $_schema = null;
+
+    /**
+     * @param ClassMetadata $classMetadata
+     * @param Schema $schema
+     * @param Table $classTable
+     */
+    public function __construct(EntityManager $em, Schema $schema)
+    {
+        $this->_em = $em;
+        $this->_schema = $schema;
+    }
+
+    /**
+     * @return EntityManager
+     */
+    public function getEntityManager() {
+        return $this->_em;
+    }
+
+    /**
+     * @return Schema
+     */
+    public function getSchema() {
+        return $this->_schema;
+    }
 }

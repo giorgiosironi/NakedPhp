@@ -21,72 +21,51 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\DoctrineException,
-    Doctrine\Common\Cache\ArrayCache,
+use Doctrine\Common\Cache\ArrayCache,
     Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\DBAL\Schema\AbstractSchemaManager,
     Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Mapping\MappingException,
-    Doctrine\Common\Util\Inflector;
+    Doctrine\Common\Util\Inflector,
+    Doctrine\ORM\Mapping\Driver\AbstractFileDriver;
 
 /**
  * The PhpDriver includes php files which just populate ClassMetadataInfo
  * instances with plain php code
  *
- * @license http://www.opensource.org/licenses/lgpl-license.php LGPL
- * @link    www.doctrine-project.org
- * @since   2.0
- * @version $Revision$
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
+ * @license 	http://www.opensource.org/licenses/lgpl-license.php LGPL
+ * @link    	www.doctrine-project.org
+ * @since   	2.0
+ * @version     $Revision$
+ * @author		Benjamin Eberlei <kontakt@beberlei.de>
+ * @author		Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author      Jonathan H. Wage <jonwage@gmail.com>
+ * @author      Roman Borschel <roman@code-factory.org>
  */
-class PhpDriver implements Driver
+class PhpDriver extends AbstractFileDriver
 {
-    /** The directory path to look in for php files */
-    private $_directory;
+    /**
+     * {@inheritdoc}
+     */
+    protected $_fileExtension = '.php';
 
-    /** The array of class names found and the path to the file */
-    private $_classPaths = array();
+    protected $_metadata;
 
-    public function __construct($directory)
-    {
-        $this->_directory = $directory;
-    }
-
+    /**
+     * {@inheritdoc}
+     */
     public function loadMetadataForClass($className, ClassMetadataInfo $metadata)
     {
-        $path = $this->_classPaths[$className];
-        include $path;
-    }
-
-    public function isTransient($className)
-    {
-        return true;
+        $this->_metadata = $metadata;
+        $this->_loadMappingFile($this->_findMappingFile($className));
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function getAllClassNames()
+    protected function _loadMappingFile($file)
     {
-        if ( ! is_dir($this->_directory)) {
-            throw MappingException::phpDriverRequiresConfiguredDirectoryPath();
-        }
-        $iter = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->_directory),
-                \RecursiveIteratorIterator::LEAVES_ONLY);
-
-        $classes = array();
-        foreach ($iter as $item) {
-            $info = pathinfo($item->getPathName());
-            if ( ! isset($info['extension']) || $info['extension'] != 'php') {
-                continue;
-            }
-            $className = $info['filename'];
-            $classes[] = $className;
-            $this->_classPaths[$className] = $item->getPathName();
-        }
-
-        return $classes;
+        $metadata = $this->_metadata;
+        include $file;
     }
 }

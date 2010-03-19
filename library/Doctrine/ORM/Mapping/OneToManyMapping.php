@@ -32,10 +32,13 @@ namespace Doctrine\ORM\Mapping;
  * <b>IMPORTANT NOTE:</b>
  *
  * The fields of this class are only public for 2 reasons:
- * 1) To allow fast, internal READ access.
+ * 1) To allow fast READ access.
  * 2) To drastically reduce the size of a serialized instance (private/protected members
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
+ *    
+ * Instances of this class are stored serialized in the metadata cache together with the
+ * owning <tt>ClassMetadata</tt> instance.
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
@@ -43,28 +46,21 @@ namespace Doctrine\ORM\Mapping;
  */
 class OneToManyMapping extends AssociationMapping
 {
-    /** Whether to delete orphaned elements (removed from the collection) */
+    /**
+     * READ-ONLY: Whether to delete orphaned elements (removed from the collection)
+     *
+     * @var boolean
+     */
     public $orphanRemoval = false;
+
     /** FUTURE: The key column mapping, if any. The key column holds the keys of the Collection. */
     //public $keyColumn;
-    
-    /** 
-     * TODO: Allow any combination of source/target columns in lazy loading.
-     * What is supported now is primary key (that can spread on multiple fields)
-     * pointed to foreign keys on the target
-    public $targetColumns;
-     */
 
     /**
-     * Initializes a new OneToManyMapping.
-     *
-     * @param array $mapping  The mapping information.
+     * READ-ONLY: Order this collection by the given SQL snippet.
      */
-    public function __construct(array $mapping)
-    {
-        parent::__construct($mapping);
-    }
-    
+    public $orderBy;
+
     /**
      * Validates and completes the mapping.
      *
@@ -76,13 +72,21 @@ class OneToManyMapping extends AssociationMapping
     {
         parent::_validateAndCompleteMapping($mapping);
 
-        // one-side MUST be inverse (must have mappedBy)
+        // OneToMany-side MUST be inverse (must have mappedBy)
         if ( ! isset($mapping['mappedBy'])) {
             throw MappingException::oneToManyRequiresMappedBy($mapping['fieldName']);
         }
         
+        //TODO: if orphanRemoval, cascade=remove is implicit!
         $this->orphanRemoval = isset($mapping['orphanRemoval']) ?
                 (bool) $mapping['orphanRemoval'] : false;
+
+        if (isset($mapping['orderBy'])) {
+            if (!is_array($mapping['orderBy'])) {
+                throw new \InvalidArgumentException("'orderBy' is expected to be an array, not ".gettype($mapping['orderBy']));
+            }
+            $this->orderBy = $mapping['orderBy'];
+        }
     }
     
     /**
@@ -119,7 +123,7 @@ class OneToManyMapping extends AssociationMapping
         $persister = $em->getUnitOfWork()->getEntityPersister($this->targetEntityName);
         // a one-to-many is always inverse (does not have foreign key)
         $sourceClass = $em->getClassMetadata($this->sourceEntityName);
-        $owningAssoc = $em->getClassMetadata($this->targetEntityName)->associationMappings[$this->mappedByFieldName];
+        $owningAssoc = $em->getClassMetadata($this->targetEntityName)->associationMappings[$this->mappedBy];
         // TRICKY: since the association is specular source and target are flipped
         foreach ($owningAssoc->targetToSourceKeyColumns as $sourceKeyColumn => $targetKeyColumn) {
             // getting id
@@ -130,6 +134,6 @@ class OneToManyMapping extends AssociationMapping
             }
         }
 
-        $persister->loadOneToManyCollection($conditions, $targetCollection);
+        $persister->loadOneToManyCollection($this, $conditions, $targetCollection);
     }
 }
