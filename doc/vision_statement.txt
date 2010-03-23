@@ -1,0 +1,8 @@
+The purpose of NakedPhp is to animate an object-oriented Domain Model written in PHP 5, automating some of the tasks to leave the developer the time to focus on the core domain.
+The layering of a web application does not change with the usage of NakedPhp, but some of the layers are automatically generated on the fly. The generation is not oriented to scaffolding, so there is no physical source code generated and the generated components are always synchronized with the Domain Model.
+The typical layers in a MVC application are:
+- Presentation Layer: the user interface (generated and customizable).
+- Service Layer: controllers (generic class provided).
+- Domain Layer: the application-specific, contains all the business logic which is mostly delegated from the other layers.
+- Persistence Layer: generic, configured via annotations.
+
