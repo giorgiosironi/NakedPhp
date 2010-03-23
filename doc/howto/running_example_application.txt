@@ -1,4 +1,8 @@
 The example application runs on an SQLite database.
-To run it, refer to example/public/ as the DocumentRoot in your webserver configuration.
-Also ensure that example/database and example/database.sqlite have respectively 777 and 666 permissions (accessible from the webserver user).
-Load /naked-php in the browser to access the user interface.
+To run it, refer to example/public/ as the DocumentRoot in your webserver configuration. The Zend Framework requirements apply - for example you should have mod_rewrite enabled in Apache.
+
+Before accessing it, run `phing build-example` in the root of the package. It makes sure that:
+- the example SQLite database is created and is empty.
+- example/database and example/database.sqlite have respectively 777 and 666 permissions (accessible from the webserver user).
+
+After running the setup, load /naked-php in the browser to access the user interface.

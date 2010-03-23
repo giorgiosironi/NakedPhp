@@ -2,7 +2,7 @@
     <property name="srcRoot" value="./" />
     <property name="docRoot" value="/var/www/doc/nakedphp" />
 
-    <target name="test">
+    <target name="test" depends="build-example">
         <exec command="phpunit --bootstrap tests/bootstrap.php --configuration tests/phpunit.xml --colors" dir="${srcRoot}" passthru="true" />
         <exec command="phpunit --bootstrap=example/application/bootstrap.php  --configuration example/application/tests/phpunit.xml --colors" dir="${srcRoot}" passthru="true" />
     </target>
@@ -27,7 +27,7 @@
     </target>
 
     <target name="build-example">
-        <exec command="php example/bin/doctrine schema-tool --re-create --config=example/bin/cli-config.php" dir="${srcRoot}" passthru="true" />
+        <exec command="php example/bin/doctrine orm:schema-tool --re-create --config=example/bin/cli-config.php" dir="${srcRoot}" passthru="true" />
         <chmod file="example/database/" mode="0777" />
         <chmod file="example/database/database.sqlite" mode="0666" />
     </target>
