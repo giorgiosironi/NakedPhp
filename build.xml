@@ -28,6 +28,8 @@
 
     <target name="build-example">
         <exec command="php example/bin/doctrine schema-tool --re-create --config=example/bin/cli-config.php" dir="${srcRoot}" passthru="true" />
+        <chmod file="example/database/" mode="0777" />
+        <chmod file="example/database/database.sqlite" mode="0666" />
     </target>
 
     <target name="zf-import">
