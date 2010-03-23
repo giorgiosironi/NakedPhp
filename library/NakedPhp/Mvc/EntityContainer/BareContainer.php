@@ -29,13 +29,30 @@ class BareContainer implements EntityContainer
      */
     private $_objects = array();
 
+    private $_stateDiscoverer;
+
     private $_states = array();
     private $_counter = 0;
+
+    public function __construct(StateDiscoverer $stateDiscoverer = null)
+    {
+        $this->_stateDiscoverer = $stateDiscoverer;
+    }
+
+    public function __sleep()
+    {
+        return array('_objects', '_states', '_counter');
+    }
+
+    public function initStateDiscoverer($stateDiscoverer)
+    {
+        $this->_stateDiscoverer = $stateDiscoverer;
+    }
 
     /**
      * {inheritdoc}
      */
-    public function add(NakedObject $object, $state = self::STATE_NEW)
+    public function add(NakedObject $object, $state = null)
     {
         $index = $this->contains($object);
         if ($index) {
@@ -43,6 +60,11 @@ class BareContainer implements EntityContainer
         }
         $this->_counter++;
         $this->_objects[$this->_counter] = $object;
+        if ($state === null) {
+            $state = $this->_stateDiscoverer->isTransient($object) 
+                   ? self::STATE_NEW
+                   : self::STATE_DETACHED;
+        }
         $this->_states[$this->_counter] = $state;
         return $this->_counter;
     }

@@ -26,7 +26,7 @@ class StateBareIteratorTest extends \PHPUnit_Framework_TestCase
     {
         $this->_originalObject = new NakedObjectStub(new \stdClass);
         $bareContainer = new BareContainer();
-        $expectedKey = $bareContainer->add($this->_originalObject);
+        $expectedKey = $bareContainer->add($this->_originalObject, EntityContainer::STATE_NEW);
         $this->_entityContainer = new StateBareIterator($bareContainer);
     }
     

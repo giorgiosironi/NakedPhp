@@ -58,8 +58,11 @@ class Factory
 
     public function getBareContainer()
     {
+        $stateDiscoverer = new Storage\DoctrineStateDiscoverer($this->_em);
         if (!isset($this->_getSessionBridge()->bareContainer)) {
-            $this->_getSessionBridge()->bareContainer = new Mvc\EntityContainer\BareContainer(array());
+            $this->_getSessionBridge()->bareContainer = new Mvc\EntityContainer\BareContainer($stateDiscoverer);
+        } else {
+            $this->_getSessionBridge()->bareContainer->initStateDiscoverer($stateDiscoverer);
         }
         return $this->_getSessionBridge()->bareContainer;
     }

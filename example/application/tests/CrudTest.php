@@ -263,7 +263,6 @@ class Example_CrudTest extends Example_AbstractTest
         $this->_newDispatch('/naked-php/clear');
         $this->_newDispatch('/naked-php/call/type/service/object/Example_Model_PlaceFactory/method/findAllCities');
         $this->_newDispatch('/naked-php/save');
-        echo $this->response->getBody();
         $this->assertQueryContentContains('#object table tr.updated td.number', 2);
     }
     

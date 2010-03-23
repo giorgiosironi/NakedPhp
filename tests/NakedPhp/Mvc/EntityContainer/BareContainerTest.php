@@ -14,6 +14,7 @@
  */
 
 namespace NakedPhp\Mvc\EntityContainer;
+use NakedPhp\MetaModel\NakedObject;
 use NakedPhp\Mvc\EntityContainer;
 use NakedPhp\Stubs\NakedObjectStub;
 
@@ -23,7 +24,8 @@ class BareContainerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_container = new BareContainer();
+        $this->_stateDiscoverer = new DummyStateDiscoverer();
+        $this->_container = new BareContainer($this->_stateDiscoverer);
     }
 
     private function _getEntity()
@@ -69,11 +71,20 @@ class BareContainerTest extends \PHPUnit_Framework_TestCase
 
     }
 
-    public function testSetsStateOfAddedObjectsAsNew()
+    public function testSetsStateOfAddedObjectsAsNewIfTheStateDiscovererSaysItIsTransient()
     {
         $entity = $this->_getEntity();
+        $this->_stateDiscoverer->setTransient(true);
         $key = $this->_container->add($entity);
         $this->assertEquals(EntityContainer::STATE_NEW, $this->_container->getState($key));
+    }
+
+    public function testSetsStateOfAddedObjectsAsDetachedIfTheStateDiscovererSaysItIsNotTransient()
+    {
+        $entity = $this->_getEntity();
+        $this->_stateDiscoverer->setTransient(false);
+        $key = $this->_container->add($entity);
+        $this->assertEquals(EntityContainer::STATE_DETACHED, $this->_container->getState($key));
     }
 
     public function testAllowsManualStateSetting()
@@ -158,5 +169,20 @@ class BareContainerTest extends \PHPUnit_Framework_TestCase
         foreach ($this->_container as $object) {
             $this->asserTrue(false);
         } 
+    }
+}
+
+class DummyStateDiscoverer implements StateDiscoverer
+{
+    private $_dummyResult = false;
+
+    public function isTransient(NakedObject $object)
+    {
+        return $this->_dummyResult;
+    }
+
+    public function setTransient($result)
+    {
+        $this->_dummyResult = $result;
     }
 }
