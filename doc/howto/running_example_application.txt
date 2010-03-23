@@ -1,0 +1,4 @@
+The example application runs on an SQLite database.
+To run it, refer to example/public/ as the DocumentRoot in your webserver configuration.
+Also ensure that example/database and example/database.sqlite have respectively 777 and 666 permissions (accessible from the webserver user).
+Load /naked-php in the browser to access the user interface.
