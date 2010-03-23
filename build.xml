@@ -22,6 +22,8 @@
         <exec command="git checkout-index --prefix=${destinationRoot} -a" dir="${srcRoot}" passthru="true" />
         <chmod file="${destinationRoot}example/database/" mode="0777" />
         <chmod file="${destinationRoot}example/database/database.sqlite" mode="0666" />
+        <delete dir="${destinationRoot}.git" />
+        <delete dir="${destinationRoot}.gitignore" />
     </target>
 
     <target name="build-example">
