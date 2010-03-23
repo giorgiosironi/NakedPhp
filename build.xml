@@ -16,12 +16,22 @@
         <exec command="phpdoc -d library/NakedPhp/ -t ${docRoot} #TODO phpdoc phing task" dir="${srcRoot}" passthru="true" />
     </target>
 
-    <target name="export">
+    <target name="copy-example">
         <delete dir="${destinationRoot}" />
         <mkdir dir="${destinationRoot}" />
         <exec command="git checkout-index --prefix=${destinationRoot} -a" dir="${srcRoot}" passthru="true" />
         <chmod file="${destinationRoot}example/database/" mode="0777" />
         <chmod file="${destinationRoot}example/database/database.sqlite" mode="0666" />
+        <delete dir="${destinationRoot}.git" />
+        <delete dir="${destinationRoot}.gitignore" />
+    </target>
+    
+    <target name="export">
+        <delete dir="${destinationRoot}" />
+        <mkdir dir="${destinationRoot}" />
+        <exec command="git checkout ${version}" dir="${srcRoot}" passthru="true" />
+        <exec command="git checkout-index --prefix=${destinationRoot} -a" dir="${srcRoot}" passthru="true" />
+        <exec command="git checkout master" dir="${srcRoot}" passthru="true" />
         <delete dir="${destinationRoot}.git" />
         <delete dir="${destinationRoot}.gitignore" />
     </target>
