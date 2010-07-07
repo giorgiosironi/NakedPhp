@@ -1,0 +1,8 @@
+= Namespaces =
+NakedPhp\Form: contains form generators.
+NakedPhp\MetaModel: most important. It contains interfaces upon everything depends, such as NakedObject and NakedObjectSpecification.
+NakedPhp\Mvc: encapsulate the user interaction and the part of the object graph affected in the session.
+NakedPhp\ProgModel: implements the interfaces of MetaModel.
+NakedPhp\Reflect: builds the Specifications from a Domain Model constituted of Php classes (Entities and Services).
+NakedPhp\Service: services exposed to the Mvc Controller.
+NakedPhp\Storage: encapsulate the persistence layer.

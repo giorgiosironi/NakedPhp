@@ -1,0 +1,9 @@
+Collection: one-to-many NakedObjectAssociation.
+Entity: stateful class. Example names are User, Post, Group, Message. Opposite of Service. Properties are serializability and no field references to Services.
+NakedObject: wrapper for objects or values (strings, integers) of the Domain Model.
+Facet: extension to a MetaModel object. Facet are recognized by the user interface and encapsulate the behavior of a component, decoupling it from. For example, the Hidden Facet manage the hiding of a property, being it created via an annotation or via an hide*() method.
+NakedObjectSpecification: representation of Domain Model classes.
+NakedObjectAction: method available to the end user. Methods are used also for inferring behavior in the user interface, and such methods are not Actions and are not contained in the Specification.
+NakedObjectAssociation: property or collection of an Entity Specification.
+Property: one-to-one NakedObjectAssociation.
+Service: class without getters and setters. It exposes functionalities that do not fit on Entities. Repositories and Factories are Services; a Mailer is a service too.
