@@ -154,7 +154,7 @@ class DoctrineTest extends AbstractDoctrineTest
      */
     private function _getContainer(array $fixture = array())
     {
-        $container = new BareContainer;
+        $container = new BareContainer(new DoctrineStateDiscoverer($this->_em));
         foreach ($fixture as $name => $state) {
             $user = $this->_getNewUser($name);
             $key = $container->add($user);
