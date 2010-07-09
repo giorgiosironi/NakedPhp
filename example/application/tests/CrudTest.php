@@ -127,7 +127,7 @@ class Example_CrudTest extends Example_AbstractTest
     public function testPlaceFactoryMethodWhichRequiresACityCreatesObject()
     {
         $this->_createCity('London');
-        $this->_resetAll();
+        $this->_newRequest();
         $this->getRequest()
              ->setMethod('POST')
              ->setPost(array(
@@ -156,7 +156,7 @@ class Example_CrudTest extends Example_AbstractTest
     public function testObjectsAreNeverDuplicatedInTheSession()
     {
         $this->_createPlace();
-        $this->_resetAll();
+        $this->_newRequest();
         $this->getRequest()
              ->setMethod('POST')
              ->setPost(array(
@@ -241,7 +241,6 @@ class Example_CrudTest extends Example_AbstractTest
         $this->assertRedirectTo('/naked-php/view/type/entity/object/2');
 
         $this->_newDispatch('/naked-php/view/type/entity/object/2');
-        echo $this->response->getBody();
         $this->assertQueryContentContains(self::CSS_SESSION_BAR . ' .detached', 'Lisbona');
     }
 
@@ -257,6 +256,7 @@ class Example_CrudTest extends Example_AbstractTest
         $this->assertQueryContentContains(self::CSS_METHOD, 'findAllCities');
 
         $this->resetStorage();
+        $this->resetSession();
         $this->_newDispatch(self::URL_PLACEFACTORY);
         $this->assertNotQueryContentContains(self::CSS_METHOD, 'findAllCities');
     }
