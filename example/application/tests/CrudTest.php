@@ -233,9 +233,16 @@ class Example_CrudTest extends Example_AbstractTest
         $this->assertRedirectTo('/naked-php/view/type/entity/object/1');
 
         $this->_newDispatch('/naked-php/view/type/entity/object/1');
-        $this->assertQueryContentContains(self::CSS_SESSION_BAR, '2 Example_Model_City');
+        $this->assertQueryContentContains(self::CSS_SESSION_BAR . ' .detached', '2 Example_Model_City');
         $this->assertQueryContentContains('.nakedphp_collection.Example_Model_City td', 'Lisbona');
         $this->assertQueryContentContains('.nakedphp_collection.Example_Model_City td', 'Barcellona');
+
+        $this->_newDispatch('/naked-php/view/type/entity/object/1/field/0');
+        $this->assertRedirectTo('/naked-php/view/type/entity/object/2');
+
+        $this->_newDispatch('/naked-php/view/type/entity/object/2');
+        echo $this->response->getBody();
+        $this->assertQueryContentContains(self::CSS_SESSION_BAR . ' .detached', 'Lisbona');
     }
 
     /**

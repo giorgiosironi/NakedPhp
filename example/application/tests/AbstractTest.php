@@ -89,6 +89,7 @@ abstract class Example_AbstractTest extends Zend_Test_PHPUnit_ControllerTestCase
 
     protected function _resetAll()
     {
+        $this->_em->clear();
         $this->resetRequest()
              ->resetResponse();
     }
