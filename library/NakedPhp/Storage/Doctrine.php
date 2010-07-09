@@ -47,7 +47,7 @@ class Doctrine
                     $actions[self::ACTION_NEW] += $this->_persist($no);
                     break;
                 case EntityContainer::STATE_DETACHED:
-                    $actions[self::ACTION_UPDATED] += $this->_merge($no);
+                    //$actions[self::ACTION_UPDATED] += $this->_merge($no);
                     break;
                 case EntityContainer::STATE_REMOVED:
                     $actions[self::ACTION_REMOVED] += $this->_remove($no);
@@ -81,6 +81,9 @@ class Doctrine
         return $this->_foreachIfCollection($no, $callback);
     }
 
+    public function merge() {
+    }
+
     /**
      * @return integer  number of objects affected
      */
@@ -102,7 +105,7 @@ class Doctrine
         $em = $this->_em;
         $callback = function($object) use ($em) {
             $entity = $object->getObject();
-            $entity = $em->merge($entity);
+            //$entity = $em->merge($entity);
             $em->remove($entity);
         };
         return $this->_foreachIfCollection($no, $callback);
