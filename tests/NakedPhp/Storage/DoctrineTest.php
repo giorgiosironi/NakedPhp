@@ -18,6 +18,8 @@ use Doctrine\ORM\UnitOfWork;
 use NakedPhp\Mvc\EntityContainer;
 use NakedPhp\Mvc\EntityContainer\BareContainer;
 use NakedPhp\ProgModel\Facet;
+use NakedPhp\ProgModel\Facet\CollectionArray;
+use NakedPhp\ProgModel\Facet\Collection\TypeOfHardcoded;
 use NakedPhp\Stubs\DummyCollectionFacet;
 use NakedPhp\Stubs\NakedObjectStub;
 use NakedPhp\Stubs\User;
@@ -37,11 +39,41 @@ class DoctrineTest extends AbstractDoctrineTest
         $this->_storage = new Doctrine($this->_em);
     }
 
+    public function testMergesDetachedEntitiesWhileLeavingNewOnesUntouched()
+    {
+        $container = $this->_getContainer(array(
+            'Picard' => EntityContainer::STATE_NEW,
+            'Riker' => EntityContainer::STATE_DETACHED,
+            'Data' => EntityContainer::STATE_REMOVED
+        ));
+
+        $this->_storage->merge($container);
+        $this->assertFalse($this->_em->contains($container->get(1)->getObject()));
+        $this->assertTrue($this->_em->contains($container->get(2)->getObject()));
+        $this->assertTrue($this->_em->contains($container->get(3)->getObject()));
+    }
+
+    public function testMergesCollectionsByMergingTheSingleEntities()
+    {
+        $container = $this->_getContainer();
+        $collection = array($this->_getDetachedUser('Picard')->getObject());
+        $nakedObject = new NakedObjectStub($collection);
+        $nakedObject->addFacet(new CollectionArray(new TypeOfHardcoded(null)));
+        $container->add($nakedObject, EntityContainer::STATE_DETACHED);
+
+        $this->_storage->merge($container);
+
+        $newCollection = $nakedObject->getObject();
+        $this->assertTrue($this->_em->contains($newCollection[0]));
+    }
+
     public function testSavesNewEntities()
     {
         $container = $this->_getContainer(array(
             'Picard' => EntityContainer::STATE_NEW
         ));
+
+        $this->_storage->merge($container);
         $result = $this->_storage->save($container);
 
         $this->_assertExistsOne('Picard');
@@ -63,6 +95,8 @@ class DoctrineTest extends AbstractDoctrineTest
         $container = $this->_getContainer();
         $key = $container->add($collection);
         $container->setState($key, EntityContainer::STATE_NEW);
+
+        $this->_storage->merge($container);
         $result = $this->_storage->save($container);
 
         $this->assertEquals(2, $result[Doctrine::ACTION_NEW]);
@@ -78,9 +112,11 @@ class DoctrineTest extends AbstractDoctrineTest
         $container = $this->_getContainer(array(
             'Picard' => EntityContainer::STATE_NEW
         ));
+        $this->_storage->merge($container);
         $this->_storage->save($container);
 
         $this->_simulateNewPage();
+        $this->_storage->merge($container);
         $this->_storage->save($container);
 
         $this->_assertExistsOne('Picard');
@@ -92,6 +128,8 @@ class DoctrineTest extends AbstractDoctrineTest
         $picard->setName('Locutus');
         $container = $this->_getContainer();
         $key = $container->add($picard, EntityContainer::STATE_DETACHED);
+
+        $this->_storage->merge($container);
         $result = $this->_storage->save($container);
 
         $this->assertEquals(1, $result[Doctrine::ACTION_UPDATED]);
@@ -105,6 +143,8 @@ class DoctrineTest extends AbstractDoctrineTest
         $container = $this->_getContainer();
 
         $key = $container->add($picard, EntityContainer::STATE_REMOVED);
+
+        $this->_storage->merge($container);
         $result = $this->_storage->save($container);
 
         $this->assertEquals(1, $result[Doctrine::ACTION_REMOVED]);
@@ -119,6 +159,7 @@ class DoctrineTest extends AbstractDoctrineTest
         $container->add($detachedUser = $this->_getDetachedUser('Picard'), EntityContainer::STATE_DETACHED);
         $detachedUser->setName(null);
         try {
+            $this->_storage->merge($container);
             $this->_storage->save($container);
         } catch (\NakedPhp\Storage\Exception $e) {
             $this->assertEquals(EntityContainer::STATE_NEW, $container->getState(1)); 
@@ -156,7 +197,11 @@ class DoctrineTest extends AbstractDoctrineTest
     {
         $container = new BareContainer(new DoctrineStateDiscoverer($this->_em));
         foreach ($fixture as $name => $state) {
-            $user = $this->_getNewUser($name);
+            if ($state === EntityContainer::STATE_NEW) {
+                $user = $this->_getNewUser($name);
+            } else {
+                $user = $this->_getDetachedUser($name);
+            }
             $key = $container->add($user);
             $container->setState($key, $state);
         }

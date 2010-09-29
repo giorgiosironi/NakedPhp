@@ -54,9 +54,14 @@ abstract class Example_AbstractTest extends Zend_Test_PHPUnit_ControllerTestCase
         $this->_em->clear();
     }
 
+    public function resetSession()
+    {
+        $_SESSION = array();
+    }
+
     protected function _createCity($name)
     {
-        $this->_resetAll();
+        $this->_newRequest();
         $this->getRequest()
              ->setMethod('POST')
              ->setPost(array(
@@ -67,7 +72,7 @@ abstract class Example_AbstractTest extends Zend_Test_PHPUnit_ControllerTestCase
 
     protected function _createPlaceCategory($name)
     {
-        $this->_resetAll();
+        $this->_newRequest();
         $this->getRequest()
              ->setMethod('POST')
              ->setPost(array(
@@ -83,12 +88,13 @@ abstract class Example_AbstractTest extends Zend_Test_PHPUnit_ControllerTestCase
     
     protected function _newDispatch($url)
     {
-        $this->_resetAll();
+        $this->_newRequest();
         $this->dispatch($url);
     }
 
-    protected function _resetAll()
+    protected function _newRequest()
     {
+        $this->_em->clear();
         $this->resetRequest()
              ->resetResponse();
     }

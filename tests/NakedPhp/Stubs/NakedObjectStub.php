@@ -87,7 +87,7 @@ class NakedObjectStub extends NakedBareObject
         return null;
     }
 
-    public function createNewInstance($object, NakedObjectSpecification $spec)
+    public function createNewInstance($object, NakedObjectSpecification $spec = null)
     {
         return new self($object, $spec);
     }

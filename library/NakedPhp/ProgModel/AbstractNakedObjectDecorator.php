@@ -70,6 +70,11 @@ abstract class AbstractNakedObjectDecorator implements NakedObject, \IteratorAgg
         return $this->_entity->getObject();
     }
 
+    public function replace($object)
+    {
+        throw new Exception("Replacing an object is allowed only in bare, not in decorators. Access the decorated object.");
+    }
+
     /**
      * {@inheritdoc}
      * Proxies to wrapped entity, unwrapping the argument.

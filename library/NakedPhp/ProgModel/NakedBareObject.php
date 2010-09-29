@@ -82,6 +82,11 @@ class NakedBareObject extends AbstractNakedObject implements \IteratorAggregate
         return $this->_wrapped === $object;
     }
 
+    public function replace($object)
+    {
+        $this->_wrapped = $object;
+    }
+
     /**
      * {@inheritdoc}
      */

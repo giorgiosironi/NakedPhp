@@ -81,17 +81,44 @@ class Doctrine
         return $this->_foreachIfCollection($no, $callback);
     }
 
+    public function merge(EntityContainer $container) {
+        foreach ($container as $key => $no) {
+            $state = $container->getState($key);
+            switch ($state) {
+                case EntityContainer::STATE_NEW:
+                    break;
+                case EntityContainer::STATE_DETACHED:
+                case EntityContainer::STATE_REMOVED:
+                    $this->_merge($no);
+                    break;
+                default:
+                    throw new Exception("State not recognized: $state.");
+            }
+        }
+    }
+
     /**
      * @return integer  number of objects affected
      */
     protected function _merge(NakedObject $no)
     {
-        $em = $this->_em;
-        $callback = function($object) use ($em) {
-            $entity = $object->getObject();
-            $em->merge($entity);
-        };
-        return $this->_foreachIfCollection($no, $callback);
+        if (($collectionFacet = $no->getFacet('Collection')) !== null) {
+            $number = 0;
+            $newArray = array();
+            foreach ($collectionFacet->iterator($no) as $key => $item) {
+                $newEntity = $this->_em->merge($item->getObject());
+                $newArray[$key] = $newEntity;
+                $number++;
+            }
+            $no->replace($newArray);
+        } else {
+            $entity = $no->getObject();
+            $newEntity = $this->_em->merge($entity);
+            $no->replace($newEntity);
+            $number = 1;
+        }
+
+        return $number;
     }
 
     /**
@@ -102,7 +129,7 @@ class Doctrine
         $em = $this->_em;
         $callback = function($object) use ($em) {
             $entity = $object->getObject();
-            $entity = $em->merge($entity);
+            //$entity = $em->merge($entity);
             $em->remove($entity);
         };
         return $this->_foreachIfCollection($no, $callback);

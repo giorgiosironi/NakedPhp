@@ -75,4 +75,9 @@ interface NakedObject extends ActionContainer, AssociationContainer, FacetHolder
      * @return NakedObject
      */
     public function createNewInstance($object, NakedObjectSpecification $spec);
+
+    /**
+     * @param mixed $object     the new object to wrap
+     */
+    public function replace($object);
 }

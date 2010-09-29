@@ -127,7 +127,7 @@ class Example_CrudTest extends Example_AbstractTest
     public function testPlaceFactoryMethodWhichRequiresACityCreatesObject()
     {
         $this->_createCity('London');
-        $this->_resetAll();
+        $this->_newRequest();
         $this->getRequest()
              ->setMethod('POST')
              ->setPost(array(
@@ -156,7 +156,7 @@ class Example_CrudTest extends Example_AbstractTest
     public function testObjectsAreNeverDuplicatedInTheSession()
     {
         $this->_createPlace();
-        $this->_resetAll();
+        $this->_newRequest();
         $this->getRequest()
              ->setMethod('POST')
              ->setPost(array(
@@ -233,9 +233,15 @@ class Example_CrudTest extends Example_AbstractTest
         $this->assertRedirectTo('/naked-php/view/type/entity/object/1');
 
         $this->_newDispatch('/naked-php/view/type/entity/object/1');
-        $this->assertQueryContentContains(self::CSS_SESSION_BAR, '2 Example_Model_City');
+        $this->assertQueryContentContains(self::CSS_SESSION_BAR . ' .detached', '2 Example_Model_City');
         $this->assertQueryContentContains('.nakedphp_collection.Example_Model_City td', 'Lisbona');
         $this->assertQueryContentContains('.nakedphp_collection.Example_Model_City td', 'Barcellona');
+
+        $this->_newDispatch('/naked-php/view/type/entity/object/1/field/0');
+        $this->assertRedirectTo('/naked-php/view/type/entity/object/2');
+
+        $this->_newDispatch('/naked-php/view/type/entity/object/2');
+        $this->assertQueryContentContains(self::CSS_SESSION_BAR . ' .detached', 'Lisbona');
     }
 
     /**
@@ -250,6 +256,7 @@ class Example_CrudTest extends Example_AbstractTest
         $this->assertQueryContentContains(self::CSS_METHOD, 'findAllCities');
 
         $this->resetStorage();
+        $this->resetSession();
         $this->_newDispatch(self::URL_PLACEFACTORY);
         $this->assertNotQueryContentContains(self::CSS_METHOD, 'findAllCities');
     }

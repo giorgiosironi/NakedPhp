@@ -31,6 +31,11 @@ class Controller extends \Zend_Controller_Action
     private $_bareContainer;
 
     /**
+     * @var NakedPhp\Storage\Doctrine
+     */
+    private $_storage;
+
+    /**
      * @var ContextContainer  remembers current workflow
      */
     private $_contextContainer;
@@ -59,6 +64,10 @@ class Controller extends \Zend_Controller_Action
     {
         $this->_factory = $this->getInvokeArg('bootstrap')->getResource('Nakedphp');
         $this->_bareContainer = $this->_factory->getBareContainer();
+
+        $this->_storage = $this->_factory->getPersistenceStorage();
+        $this->_storage->merge($this->_bareContainer);
+
         $this->view->session = $this->_factory->getStateBareIterator();
         $this->view->context = $this->_contextContainer = $this->_factory->getContextContainer();
         $this->view->services = $this->_services = $this->_factory->getServiceIterator();
@@ -182,8 +191,7 @@ class Controller extends \Zend_Controller_Action
 
     public function saveAction()
     {
-        $storage = $this->_factory->getPersistenceStorage();
-        $this->view->result = $storage->save($this->_bareContainer);
+        $this->view->result = $this->_storage->save($this->_bareContainer);
     }
 
     public function clearAction()

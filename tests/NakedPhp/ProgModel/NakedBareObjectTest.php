@@ -37,6 +37,16 @@ class NakedBareObjectTest extends AbstractNakedObjectTest
         $this->assertTrue($no->isWrapping($this));
     }
 
+    /**
+     * @depends testContainsItsWrappedObject
+     */
+    public function testWrappedObjectCanBeReplaced()
+    {
+        $no = new NakedBareObject($this, null);
+        $no->replace($newWrapped = new \stdClass);
+        $this->assertTrue($no->isWrapping($newWrapped));
+    }
+
     public function testRetainsClassMetaModel()
     {
         $no = new NakedBareObject($this, $class = new NakedObjectSpecificationStub());
