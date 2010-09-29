@@ -1,5 +1,0 @@
-<phpunit>
-    <testsuite name="Naked Php test suite">
-        <directory suffix="Test.php">tests/</directory>
-    </testsuite>
-</phpunit>

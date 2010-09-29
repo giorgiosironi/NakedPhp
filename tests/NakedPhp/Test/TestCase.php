@@ -23,8 +23,8 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * HACK: this is necessary to pass $this externally
      */
-    public function once() { return parent::once(); }
-    public function returnValue($value) { return parent::returnValue($value); }
+    public static function once() { return parent::once(); }
+    public static function returnValue($value) { return parent::returnValue($value); }
 
     /**
      * <code>

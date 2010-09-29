@@ -3,8 +3,8 @@
     <property name="docRoot" value="/var/www/doc/nakedphp" />
 
     <target name="test" depends="build-example">
-        <exec command="phpunit --bootstrap tests/bootstrap.php --configuration tests/phpunit.xml --colors" dir="${srcRoot}" passthru="true" />
-        <exec command="phpunit --bootstrap=example/application/bootstrap.php  --configuration example/application/tests/phpunit.xml --colors" dir="${srcRoot}" passthru="true" />
+        <exec command="phpunit --bootstrap tests/bootstrap.php --colors tests/" dir="${srcRoot}" passthru="true" />
+        <exec command="phpunit --bootstrap example/application/bootstrap.php --colors example/application/tests" dir="${srcRoot}" passthru="true" />
     </target>
 
     <target name="doc">
